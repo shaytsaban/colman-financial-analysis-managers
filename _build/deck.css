@@ -422,3 +422,4 @@ code.xl{direction:ltr;unicode-bidi:isolate;display:inline-block;font:700 20px 'M
 .sorter.cmp .tasktxt{font-size:18px;padding:6px 12px;margin-bottom:4px}.sorter.cmp .stbl{border-spacing:0 3px;font-size:17.5px}.sorter.cmp .stbl td{padding:2px 10px}
 .sorter.cmp .so{padding:2px 9px;font-size:16.5px;margin-right:4px}.sorter.cmp .fbbar{min-height:34px;margin-top:4px;padding:5px 12px;font-size:17.5px}.sorter.cmp .actbar{margin-top:4px}
 .route.r7 .rcard{min-height:128px}
+.tbl2.mini td,.tbl2.mini th{padding:3px 8px;font-size:16.5px}.tbl2.mini td:last-child{text-align:left;white-space:nowrap}
