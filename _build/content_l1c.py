@@ -192,7 +192,7 @@ S('s-home', 'לקראת המפגש הבא', 'לקראת המפגש הבא',
   '<div class="row eq2 top">'
   + '<div class="card"><b class="ct">לתרגול עצמי</b><ul class="lg"><li>' + TX('תרגילי הבית מחכים בשקפים הבאים, בסוף המצגת. כל הגיליונות שלהם, ושל כל השאלות, נמצאים בקובץ התרגול של שיעור 1.') + '</li><li>' + TX('בחוברת התרגילים של הקורס: תרגילים לשיעור 1, וגם לשיעורים הבאים.') + '</li><li>'
   + TX('פתרו בלי להציץ בפתרון שבמצגת. אחר כך השוו, תא אחר תא.') + '</li></ul></div>'
-  + '<div class="card"><b class="ct">קריאה למפגש 1</b><ul class="lg en"><li>Weygandt et al., Ch. 1</li><li>Wahlen et al., Ch. 1</li><li>Barth, Landsman &amp; Lang (2008)</li></ul>'
+  + '<div class="card"><b class="ct">קריאה לנושא 1</b><ul class="lg en"><li>Weygandt et al., Ch. 1</li><li>Wahlen et al., Ch. 1</li><li>Barth, Landsman &amp; Lang (2008)</li></ul>'
   + '<b class="ct">במפגש הבא</b><ul class="lg"><li>' + TX('ארבעת הדוחות הכספיים, אחד אחרי השני.') + '</li><li>' + TX('הקשרים ביניהם: איך הרווח עובר להון, ואיך ההון נכנס למאזן.') + '</li><li>' + TX('דוחות של חברה אמיתית ממאי״ה.') + '</li></ul></div></div>'
   + TOON('cup', 'נתראה במפגש 2. המאזן כבר מחכה.'), kick='חלק 7 · לבית')
 

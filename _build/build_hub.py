@@ -15,7 +15,7 @@ def rec(k):
 UP = [(2, 'ארבעת הדוחות הכספיים והקשרים ביניהם'), (3, 'ניתוח דוחות באמצעות יחסים פיננסיים: נזילות, איתנות, יעילות ורווחיות'), (4, 'יסודות המימון: ריבית וערך הזמן של הכסף'), (5, 'ריבית נומינלית, אפקטיבית וריאלית, והחלטות השקעה'), (6, 'לוחות שפיצר ומימון בתנאי אינפלציה'), (7, 'סיכום וחזרה לקראת הבחינה')]
 D = open(os.path.join(H, '..', 'lectures', 'lecture-1', 'presentation.html'), encoding='utf8').read()
 NS, NX, NM = D.count('<section class="slide'), D.count('act xlq'), D.count('class="mc"')
-NB = len(re.findall(r"^E\('", open(os.path.join(H, '..', '..', 'colman-financial-analysis-managers-private', 'booklet.py'), encoding='utf8').read(), re.M))
+NB = len(re.findall(r"^E\('", open(os.path.join(H, 'booklet.py'), encoding='utf8').read(), re.M))
 ups = ''.join(f'<li><span class="un">{n(i if isinstance(i, int) else i.replace(" ו-", "-").replace(" עד ", "-"))}</span><span>{t}</span><em>בקרוב</em></li>' for i, t in UP)
 src = open(os.path.join(H, '..', '..', 'finance-for-managers', 'index.html'), encoding='utf8').read()
 css = re.search(r'<style>(.*?)</style>', src, re.S).group(1)
@@ -79,7 +79,7 @@ page = f'''<!doctype html>
 <header class="hero"><div class="wrap">
 <div class="kick"><span>המסלול האקדמי של המכללה למנהל · בית הספר לתקשורת וניהול · סמסטר א׳ תשפ״ז</span></div>
 <h1>מימון וניתוח פיננסי למנהלים</h1>
-<p class="lead">הקורס עוסק בקריאה ובניתוח של דוחות כספיים, וביסודות המימון: ריבית, ערך הזמן של הכסף, הלוואות והחלטות השקעה. לכל שיעור באתר: מצגת אינטראקטיבית עם גיליונות Excel חיים שבודקים את הנוסחה שלכם, סיכום כתוב וקובץ תרגול. חוברת תרגילים לכל שבעת השיעורים נמצאת בקובצי הקורס.</p>
+<p class="lead">הקורס עוסק בקריאה ובניתוח של דוחות כספיים, וביסודות המימון: ריבית, ערך הזמן של הכסף, הלוואות והחלטות השקעה. לכל מפגש באתר: מצגת אינטראקטיבית עם גיליונות Excel חיים שבודקים את הנוסחה שלכם, סיכום כתוב וקובץ תרגול. חוברת תרגילים לכל שבעת נושאי הקורס, עם פתרונות, נמצאת בקובצי הקורס.</p>
 <p class="meta">ד״ר שי צבאן · קוד הקורס {n('432348')}</p>
 </div></header>
 <main class="wrap">
@@ -91,14 +91,16 @@ page = f'''<!doctype html>
 <section class="block" id="course-files">
 <h2 class="sec">קובצי הקורס</h2>
 <div class="cgrid">
-<a class="lk s" href="materials/syllabus.pdf" target="_blank" rel="noopener"><span class="e">📋</span><span><b>סילבוס הקורס (PDF)</b><span class="d">נושאי שבעת המפגשים, קריאה, מדיניות הקורס, והציון: מבחן מסכם, {n('100%')}.</span></span></a>
-<a class="lk s" href="materials/booklet.pdf" target="_blank" rel="noopener"><span class="e">📘</span><span><b>חוברת תרגילים (PDF)</b><span class="d">{n(NB)} תרגילים, לפי שיעור, לכל שבעת המפגשים. החוברת היא הערכה לפי הסילבוס, ותתעדכן לפי ההתקדמות.</span></span></a>
+<a class="lk s" href="materials/syllabus.pdf" target="_blank" rel="noopener"><span class="e">📋</span><span><b>סילבוס הקורס (PDF)</b><span class="d">שבעת נושאי הקורס, שנלמדים ב-13 מפגשים, קריאה, מדיניות הקורס, והציון: מבחן מסכם, {n('100%')}.</span></span></a>
+<a class="lk s" href="materials/booklet.pdf" target="_blank" rel="noopener"><span class="e">📘</span><span><b>חוברת תרגילים (PDF)</b><span class="d">{n(NB)} תרגילים, מסודרים לפי שבעת נושאי הקורס.</span></span></a>
 <a class="lk x" href="materials/booklet-practice.xlsx" download><span class="e">📊</span><span><b>קובץ התרגול של החוברת (Excel)</b><span class="d">גיליון לכל תרגיל: הנתונים בתאים כחולים, ותאים צהובים ריקים לנוסחאות שלכם.</span></span></a>
+<a class="lk r" href="materials/booklet-solutions.pdf" target="_blank" rel="noopener"><span class="e">✅</span><span><b>פתרונות החוברת (PDF)</b><span class="d">לכל תרגיל: הנוסחה בכל תא, התוצאה והמסקנה. פותחים רק אחרי שפותרים.</span></span></a>
+<a class="lk r" href="materials/booklet-solutions.xlsx" download><span class="e">✅</span><span><b>קובץ הפתרונות של החוברת (Excel)</b><span class="d">אותם גיליונות, עם נוסחאות חיות.</span></span></a>
 </div>
-<p class="cnote">מדיניות בינה מלאכותית: היתר מלא. חובה לבדוק את אמינות התוצרים, לציין את השימוש, ולמלא טופס הצהרה באתר הקורס. הפתרונות של החוברת אינם מתפרסמים: שאלות על תרגיל במייל.</p>
+<p class="cnote">מדיניות בינה מלאכותית: היתר מלא. חובה לבדוק את אמינות התוצרים, לציין את השימוש, ולמלא טופס הצהרה באתר הקורס. פתרונות החוברת מתפרסמים לצד התרגילים. כדאי לפתור קודם לבד.</p>
 </section>
 <section class="block">
-<h2 class="sec">השיעורים</h2>
+<h2 class="sec">המפגשים</h2>
 <article class="lec" id="lesson-1">
 <div class="lec-head"><div class="lec-n">1</div><div><h3>מבוא: חשבונאות פיננסית ומידע לקבלת החלטות</h3><div class="sub">מפגש {n(1)} · {n("5.11.2026")}</div></div></div>
 <div class="lec-body">
@@ -118,18 +120,19 @@ page = f'''<!doctype html>
 <a class="lk s" href="lectures/lecture-1/summary.pdf"><span class="e">📄</span><span><b>סיכום השיעור (PDF)</b><span class="d">כל תוכן המצגת במסמך אחד: הגדרות, השאלות והפתרון שלהן בגיליון, ומילון מושגים.</span></span></a>
 </div></div>
 <div class="grp"><h5>3. תרגול</h5><div class="links">
-<a class="lk x" href="materials/practice-1.xlsx" download><span class="e">📊</span><span><b>קובץ התרגול של שיעור 1 (Excel)</b><span class="d">כל {n(NX)} השאלות של המצגת, באותן כתובות תאים. התאים הצהובים ריקים: כותבים בהם את הנוסחאות.</span></span></a>
-<a class="lk s" href="materials/booklet.pdf" target="_blank" rel="noopener"><span class="e">📘</span><span><b>חוברת התרגילים: שיעור 1</b><span class="d">תרגילים 1-1 עד 1-7 בחוברת, וגיליונות באותם מספרים בקובץ התרגול של החוברת.</span></span></a>
+<a class="lk x" href="materials/practice-1.xlsx" download><span class="e">📊</span><span><b>קובץ התרגול של מפגש 1 (Excel)</b><span class="d">כל {n(NX)} השאלות של המצגת, באותן כתובות תאים. התאים הצהובים ריקים: כותבים בהם את הנוסחאות.</span></span></a>
+<a class="lk r" href="materials/practice-1-solutions.xlsx" download><span class="e">✅</span><span><b>קובץ הפתרונות של מפגש 1 (Excel)</b><span class="d">אותם גיליונות עם נוסחאות חיות. פותחים רק אחרי שפותרים.</span></span></a>
+<a class="lk s" href="materials/booklet.pdf" target="_blank" rel="noopener"><span class="e">📘</span><span><b>חוברת התרגילים: נושא 1</b><span class="d">תרגילים 1-1 עד 1-7 בחוברת, וגיליונות באותם מספרים בקובץ התרגול של החוברת. הפתרונות בקובצי הקורס.</span></span></a>
 </div></div>
 </div>
 </div>
 <div class="todo"><h4>📝 מה עושים בשיעור {n(1)}</h4><ol>
 <li><b>בשיעור:</b> עובדים במצגת, בגיליונות שבתוך השקפים.</li>
-<li><b>אחרי השיעור:</b> קוראים את הסיכום, ופותרים בקובץ התרגול את כל השאלות של המצגת.</li>
-<li><b>לקראת מפגש 2:</b> תרגילי שיעור 1 בחוברת, וקריאה: Weygandt et al., Ch. 1; Wahlen et al., Ch. 1; Barth et al. (2008).</li>
+<li><b>אחרי השיעור:</b> קוראים את הסיכום, ופותרים בקובץ התרגול את כל השאלות של המצגת. אחר כך בודקים בקובץ הפתרונות.</li>
+<li><b>לקראת מפגש 2:</b> תרגילי נושא 1 בחוברת, ובדיקה מול הפתרונות.</li>
 </ol></div>
 </article>
-<h2 class="sec" style="margin-top:36px">השיעורים הבאים</h2>
+<h2 class="sec" style="margin-top:36px">הנושאים הבאים</h2>
 <ul class="ups">{ups}</ul>
 </section>
 <footer>ד״ר שי צבאן · פניות במייל: <a href="mailto:shay.tsaban@gmail.com">shay.tsaban@gmail.com</a>, עם שם המוסד ושם הקורס</footer>

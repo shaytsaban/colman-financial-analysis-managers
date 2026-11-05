@@ -1,5 +1,5 @@
 # Exercise booklet (PDF, questions only), its practice workbook (yellow answer cells left empty) and a private solutions workbook.
-# Run: python3 build_booklet.py  ->  ../materials/booklet.pdf, ../materials/booklet-practice.xlsx, and ../../colman-financial-analysis-managers-private/booklet-solutions.xlsx
+# Run: python3 build_booklet.py  ->  ../materials/booklet.pdf, booklet-solutions.pdf, booklet-practice.xlsx and booklet-solutions.xlsx
 # Every answer is computed twice: by fin.py, and by a LibreOffice recalculation of the solutions workbook. Answer keys are never written into the repository.
 import os, re, sys, shutil, subprocess, tempfile, html
 H = os.path.dirname(os.path.abspath(__file__))
@@ -8,9 +8,8 @@ import fin
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 REPO = os.path.abspath(os.path.join(H, '..'))
-PRIV = os.path.abspath(os.path.join(REPO, '..', 'colman-financial-analysis-managers-private'))
 # the exercises and their answer formulas live outside the repository, so the keys are never published
-exec(open(os.path.join(PRIV, 'booklet.py'), encoding='utf8').read())
+exec(open(os.path.join(H, 'booklet.py'), encoding='utf8').read())
 FONTS = os.path.join(REPO, '..', 'iit-build', 'fonts')
 CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 COURSE = 'מימון וניתוח פיננסי למנהלים'
@@ -75,10 +74,10 @@ def xfmt(f):
 
 def build(path, solved):
     wb = Workbook(); w0 = wb.active; w0.title = 'הוראות'; w0.sheet_view.rightToLeft = True; w0.column_dimensions['A'].width = 110
-    lines = [f'{COURSE}: חוברת תרגילים, ' + ('קובץ פתרונות (פרטי, לא לפרסום)' if solved else 'קובץ תרגול'), 'המסלול האקדמי של המכללה למנהל · ד״ר שי צבאן · סמסטר א׳ תשפ״ז', '',
-             'כל גיליון הוא תרגיל אחד מהחוברת, לפי מספרו (למשל 3-2: שיעור 3, תרגיל 2). השאלה המלאה כתובה בראש הגיליון.',
+    lines = [f'{COURSE}: חוברת תרגילים, ' + ('קובץ פתרונות' if solved else 'קובץ תרגול'), 'המסלול האקדמי של המכללה למנהל · ד״ר שי צבאן · סמסטר א׳ תשפ״ז', '',
+             'כל גיליון הוא תרגיל אחד מהחוברת, לפי מספרו (למשל 3-2: נושא 3, תרגיל 2). השאלה המלאה כתובה בראש הגיליון.',
              'התאים הכחולים הם נתוני השאלה. ' + ('התאים הירוקים מכילים נוסחאות חיות.' if solved else 'התאים הצהובים ריקים: כתבו בהם נוסחאות עם הפניות לתאים, לא מספרים.'),
-             'החוברת היא הערכה של התרגילים לכל שיעור לפי הסילבוס. ייתכנו שינויים בהתאם להתקדמות.', 'כל המספרים להמחשה בלבד. החברות בתרגילים הומצאו להמחשה.']
+             'התרגילים מסודרים לפי שבעת הנושאים של הסילבוס, שנלמדים לאורך 13 המפגשים של הקורס.', 'כל המספרים להמחשה בלבד. החברות בתרגילים הומצאו להמחשה.']
     for i, t in enumerate(lines, 1):
         c = w0.cell(i, 1, t); c.alignment = Alignment(horizontal='right', wrap_text=True); c.font = Font(name='Arial', size=16 if i == 1 else 12, bold=i == 1, color=NAVY)
     for e in EX:
@@ -107,8 +106,7 @@ def build(path, solved):
 
 
 # ---------------------------------------------------------------- workbooks and their check
-os.makedirs(PRIV, exist_ok=True)
-prac = os.path.join(REPO, 'materials', 'booklet-practice.xlsx'); solp = os.path.join(PRIV, 'booklet-solutions.xlsx')
+prac = os.path.join(REPO, 'materials', 'booklet-practice.xlsx'); solp = os.path.join(REPO, 'materials', 'booklet-solutions.xlsx')
 build(prac, False); build(solp, True)
 PY = {}
 for e in EX:
@@ -129,12 +127,6 @@ assert not errs
 P = load_workbook(prac)
 leak = sum(1 for e in EX for a in PY[e['id']] if P[e['id']][a].value is not None)
 print('answers leaked into the practice workbook:', leak); assert leak == 0
-# the answers, for the lecturer only
-with open(os.path.join(PRIV, 'booklet-answers.txt'), 'w', encoding='utf8') as f:
-    for e in EX:
-        labels, *_ = layout(e)
-        f.write(f'{e["id"]} {e["t"]}\n' + ''.join(f'  {a} {labels.get("A" + a[1:], "")}: {v:,.4f}\n' for a, v in PY[e['id']].items()))
-
 # ---------------------------------------------------------------- the PDF: questions only
 def P_(s):
     # numbers and Latin runs isolated as LTR, so the Hebrew sentence keeps its order
@@ -152,7 +144,7 @@ def P_(s):
 body = ''
 SEEN = {}
 for L, lt in LESSONS.items():
-    body += f'<section><h1><span class="sn">{L}</span>שיעור {L}: {lt}</h1>'
+    body += f'<section><h1><span class="sn">{L}</span>נושא {L}: {lt}</h1>'
     for e in [x for x in EX if x['id'].startswith(f'{L}-')]:
         first = SEEN.setdefault(id(e['data']), e['id'])
         qs = ''.join(f'<p>{P_(html.escape(q, quote=False))}</p>' for q in e['q'][:-1]) if first == e['id'] else f'<p>{P_("נתוני החברה בטבלה של תרגיל " + first + ".")}</p>'
@@ -162,9 +154,9 @@ for L, lt in LESSONS.items():
         qs += f'<p>{P_(html.escape(e["q"][-1], quote=False))}</p>'
         body += f'<div class="ex"><h3>תרגיל <span class="n">{e["id"]}</span>: {P_(html.escape(e["t"], quote=False))}</h3>{qs}<p class="sh">בקובץ התרגול: גיליון <span class="n">{e["id"]}</span>.</p></div>'
     body += '</section>'
-intro = ('<div class="intro"><p><b>איך עובדים עם החוברת.</b> לכל שיעור כמה תרגילים, לפי נושאי הסילבוס. החוברת היא הערכה: לשיעורים 2 עד 7 ייתכנו שינויים לפי ההתקדמות בכיתה. '
+intro = ('<div class="intro"><p><b>איך עובדים עם החוברת.</b> התרגילים מסודרים לפי שבעת הנושאים של הסילבוס, שנלמדים לאורך 13 המפגשים של הקורס. '
          'כל תרגיל נפתר ב-Excel: בקובץ התרגול יש גיליון לכל תרגיל, עם הנתונים בתאים כחולים ותאים צהובים ריקים לתשובות. כותבים נוסחאות עם הפניות לתאים, ולא מספרים.</p>'
-         '<p>הפתרונות אינם מתפרסמים. שאלות על תרגיל: במייל. כל המספרים להמחשה בלבד, והחברות בתרגילים הומצאו להמחשה.</p></div>')
+         '<p>פתרו קודם לבד, ורק אחר כך בדקו בחוברת הפתרונות ובקובץ הפתרונות. כל המספרים להמחשה בלבד, והחברות בתרגילים הומצאו להמחשה.</p></div>')
 CSS = '''
 @font-face{font-family:"David";src:url("david.ttf");font-weight:400}
 @font-face{font-family:"David";src:url("davidbd.ttf");font-weight:700}
@@ -186,17 +178,57 @@ h3{font-size:12.4pt;color:#1b2d55;margin:0 0 .8mm;break-after:avoid}
 .intro{background:#eef2ff;border-right:1.2mm solid #1b2d55;border-radius:1.2mm;padding:1.6mm 3mm;margin-bottom:2mm}.intro p{margin:0 0 1mm}
 '''
 cover = ('<div class="cover"><div class="c-top">המסלול האקדמי של המכללה למנהל · בית הספר לתקשורת וניהול</div><div class="c-title">חוברת תרגילים</div>'
-         f'<div class="c-sub">{COURSE}: תרגילים לכל שבעת השיעורים, לפתרון ב-Excel.</div><div class="c-line"></div>'
+         f'<div class="c-sub">{COURSE}: תרגילים לכל שבעת נושאי הקורס, לפתרון ב-Excel.</div><div class="c-line"></div>'
          f'<div class="c-meta">קוד הקורס <span class="n">432348</span> · סמסטר א׳ תשפ״ז<br><span class="n">{len(EX)}</span> תרגילים. קובץ התרגול באתר הקורס.</div>'
          '<div class="c-author"><div class="c-name">ד״ר שי צבאן</div><div class="c-mail" dir="ltr">shay.tsaban@gmail.com</div></div></div>')
 page = f'<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>{COURSE} | חוברת תרגילים</title><style>{CSS}</style></head><body>{cover}{intro}{body}</body></html>'
 for bad in ('—', '־', '–'):
     assert bad not in page, bad
-d = tempfile.mkdtemp(dir=os.environ.get('TMPDIR'))
-for f in ('david.ttf', 'davidbd.ttf'): shutil.copy(os.path.join(FONTS, f), d)
-open(os.path.join(d, 'b.html'), 'w', encoding='utf8').write(page)
-out = os.path.join(REPO, 'materials', 'booklet.pdf')
-subprocess.run([CHROME, '--headless=new', '--disable-gpu', '--no-sandbox', f'--user-data-dir={d}/p', '--no-pdf-header-footer', '--virtual-time-budget=6000', f'--print-to-pdf={out}', 'file://' + d + '/b.html'], capture_output=True, timeout=120)
-shutil.rmtree(d, True)
-import fitz
-D = fitz.open(out); print('booklet pages', len(D), sorted({f[3].split('+')[-1] for p in D for f in p.get_fonts()}))
+
+
+def render(page, name):
+    for bad in ('—', '־', '–'):
+        assert bad not in page, bad
+    d = tempfile.mkdtemp(dir=os.environ.get('TMPDIR'))
+    for f in ('david.ttf', 'davidbd.ttf'): shutil.copy(os.path.join(FONTS, f), d)
+    open(os.path.join(d, 'b.html'), 'w', encoding='utf8').write(page)
+    out = os.path.join(REPO, 'materials', name)
+    subprocess.run([CHROME, '--headless=new', '--disable-gpu', '--no-sandbox', f'--user-data-dir={d}/p', '--no-pdf-header-footer', '--virtual-time-budget=6000', f'--print-to-pdf={out}', 'file://' + d + '/b.html'], capture_output=True, timeout=120)
+    shutil.rmtree(d, True)
+    import fitz
+    D = fitz.open(out); print(name, 'pages', len(D), sorted({f[3].split('+')[-1] for p in D for f in p.get_fonts()}))
+
+
+render(page, 'booklet.pdf')
+
+# ---------------------------------------------------------------- the solutions book: every answer cell with its formula and value, then the conclusion
+def fmtv(v, f):
+    if f.startswith('pct'): t = f'{v * 100:,.{int(f[-1])}f}%'
+    else: t = f'{v:,.{int(f[-1])}f}'
+    return t.replace('-', '−')
+
+
+sbody = ''
+for L, lt in LESSONS.items():
+    sbody += f'<section><h1><span class="sn">{L}</span>נושא {L}: {lt}</h1>'
+    for e in [x for x in EX if x['id'].startswith(f'{L}-')]:
+        labels, cells, sol, fmt = layout(e)
+        rows = ''
+        for a, fx in sol.items():
+            r = a[1:]
+            lab = labels.get('A' + r, '')
+            if e['cols']: lab += f' · {labels.get(a[0] + "2", "")}'
+            if e['table'] and int(r) > e['_th'] and int(r) <= e['_th'] + e['table']['rows']:
+                lab = f'שנה {int(r) - e["_th"]} · ' + labels.get(a[0] + str(e['_th']), '')
+            rows += f'<tr><td>{P_(html.escape(lab, quote=False))}</td><td class="c"><span class="n">{a}</span></td><td><code class="n">{html.escape(fx)}</code></td><td class="c"><span class="n">{fmtv(PY[e["id"]][a], fmt[a])}</span></td></tr>'
+        tbl = f'<table class="sol"><tr><th>מה מחשבים</th><th>תא</th><th>נוסחה</th><th>תוצאה</th></tr>{rows}</table>'
+        sbody += (f'<div class="ex"><h3>תרגיל <span class="n">{e["id"]}</span>: {P_(html.escape(e["t"], quote=False))}</h3>'
+                  f'<p class="sh">הנוסחאות בכתובות התאים של גיליון <span class="n">{e["id"]}</span> בקובץ התרגול.</p>{tbl}'
+                  f'<p class="cc"><b>מסקנה:</b> {P_(html.escape(C[e["id"]], quote=False))}</p></div>')
+    sbody += '</section>'
+SCSS = CSS + 'table.sol{width:100%;border-collapse:collapse;font-size:10.4pt;margin:.6mm 0 1.2mm}.sol th{background:#1b2d55;color:#fff;padding:.4mm 2mm;text-align:right}.sol td{border-bottom:.25mm solid #d9d2c3;padding:.3mm 2mm}.sol td.c{text-align:center;white-space:nowrap}.sol code{font-family:"Courier New",monospace;font-size:9.6pt;direction:ltr;unicode-bidi:isolate}.cc{background:#e3f6ea;border-right:1.2mm solid #25a65f;border-radius:1mm;padding:.8mm 2.4mm;margin-top:1mm}'
+scover = cover.replace('>חוברת תרגילים<', '>פתרונות חוברת התרגילים<').replace('תרגילים לכל שבעת נושאי הקורס, לפתרון ב-Excel.', 'הפתרון של כל תרגיל: הנוסחה בכל תא, התוצאה, והמסקנה.')
+sintro = ('<div class="intro"><p><b>איך משתמשים בפתרונות.</b> פותרים קודם לבד, בקובץ התרגול. רק אחר כך משווים: נוסחה מול נוסחה, ותוצאה מול תוצאה. '
+          'כל נוסחה נכונה מתקבלת, גם אם היא כתובה אחרת. קובץ הפתרונות ב-Excel מכיל את אותן נוסחאות, חיות.</p></div>')
+spage = f'<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>{COURSE} | פתרונות חוברת התרגילים</title><style>{SCSS}</style></head><body>{scover}{sintro}{sbody}</body></html>'
+render(spage, 'booklet-solutions.pdf')

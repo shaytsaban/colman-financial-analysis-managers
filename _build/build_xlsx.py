@@ -41,10 +41,10 @@ def sname(sp):
 
 def build(path, solved):
     wb = Workbook(); w0 = wb.active; w0.title = 'הוראות'; w0.sheet_view.rightToLeft = True; w0.column_dimensions['A'].width = 100
-    lines = [f'{COURSE}, שיעור {LESSON}: ' + ('קובץ פתרונות' if solved else 'קובץ תרגול'), f'{INST} · ד״ר שי צבאן · {SEM}', '',
+    lines = [f'{COURSE}, מפגש {LESSON}: ' + ('קובץ פתרונות' if solved else 'קובץ תרגול'), f'{INST} · ד״ר שי צבאן · {SEM}', '',
              ('התאים הירוקים מכילים נוסחאות חיות. שנו נתון בתא כחול, והתוצאות יתעדכנו.' if solved else 'התאים הצהובים ריקים: כתבו בהם נוסחאות. התאים הכחולים הם הנתונים.'),
              'כל גיליון כאן הוא גיליון מהמצגת, באותן כתובות תאים. כתבו נוסחאות עם הפניות לתאים, ולא מספרים. קבעו תאים עם $ לפני גרירה.',
-             ('השוו לקובץ שלכם רק אחרי שפתרתם, נוסחה מול נוסחה (Ctrl+`).' if solved else 'רק אחרי שפתרתם: משווים לפתרון צעד אחר צעד בגיליון שבמצגת.'),
+             ('השוו לקובץ שלכם רק אחרי שפתרתם, נוסחה מול נוסחה (Ctrl+`).' if solved else 'רק אחרי שפתרתם: משווים לקובץ הפתרונות, נוסחה מול נוסחה.'),
              'כל נוסחה נכונה מתקבלת. בקובץ הפתרונות מופיעה דרך אחת בלבד.', NOTE, '', 'הגיליונות:'] + [sname(s) + ': ' + s['title'].split(':', 1)[-1].strip() for s in XSPECS]
     for i, t in enumerate(lines, 1):
         c = w0.cell(i, 1, t); c.alignment = Alignment(horizontal='right', wrap_text=True); c.font = Font(name='Arial', size=16 if i == 1 else 12, bold=i == 1, color=NAVY if i == 1 else '16213A')
@@ -105,9 +105,7 @@ def engine_values():
 os.makedirs(OUT, exist_ok=True)
 pr, so = f'practice-{LESSON}.xlsx', f'practice-{LESSON}-solutions.xlsx'
 build(os.path.join(OUT, pr), False)
-PRIV = os.path.abspath(os.path.join(H, '..', '..', 'colman-financial-analysis-managers-private'))   # answer keys stay out of the repository
-os.makedirs(PRIV, exist_ok=True)
-raw = os.path.join(PRIV, so)
+raw = os.path.join(OUT, so)   # the solutions workbook is published beside the practice workbook
 build(raw, True)
 d = tempfile.mkdtemp(dir=os.environ.get('TMPDIR'))
 pr_ = subprocess.Popen(['soffice', '--headless', f'-env:UserInstallation=file://{d}/lo', '--convert-to', 'xlsx:Calc MS Excel 2007 XML', '--outdir', d, raw], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
