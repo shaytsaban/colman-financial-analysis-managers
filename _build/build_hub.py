@@ -100,7 +100,7 @@ page = f'''<!doctype html>
 <section class="block">
 <h2 class="sec">השיעורים</h2>
 <article class="lec" id="lesson-1">
-<div class="lec-head"><div class="lec-n">1</div><div><h3>מבוא: חשבונאות פיננסית ומידע לקבלת החלטות</h3><div class="sub">מפגש {n(1)}</div></div></div>
+<div class="lec-head"><div class="lec-n">1</div><div><h3>מבוא: חשבונאות פיננסית ומידע לקבלת החלטות</h3><div class="sub">מפגש {n(1)} · {n("5.11.2026")}</div></div></div>
 <div class="lec-body">
 <div><h4>מה לומדים בשיעור</h4><ul class="learn">
 <li>מה צריך לדעת על חברה: הכנסות, הוצאות ורווח</li>
