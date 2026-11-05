@@ -72,7 +72,7 @@ def SCALE(n=0, left='נכסים', right='התחייבויות + הון עצמי'
     return ST(n, inner, cls='card animw') if n else f'<div class="card animw">{inner}</div>'
 
 
-def HUB(users, center='קפה נועה בע״מ', W=760, H=330):
+def HUB(users, center='קפה נועה בע״מ', W=760, H=316):
     """The company in the centre and its readers around it. users: (label, question, toon key, click, inside?)."""
     cx, cy = W / 2, H / 2
     import math
@@ -80,8 +80,8 @@ def HUB(users, center='קפה נועה בע״מ', W=760, H=330):
     k = len(users)
     for i, (lab, q, tk, s, inside) in enumerate(users):
         a = math.pi * (0.5 + 2 * i / k)
-        x, y = cx + 272 * math.cos(a), cy - 122 * math.sin(a)
-        col = '#e8960c' if inside else '#0f9d90'
+        x, y = cx + 272 * math.cos(a), cy - 116 * math.sin(a)
+        col = {0: '#0f9d90', 1: '#e8960c', 2: '#8a93aa'}[inside]
         art = TOONS.get(tk, '')
         g = (f'<line x1="{cx + 100 * math.cos(a):.1f}" y1="{cy - 38 * math.sin(a):.1f}" x2="{x:.1f}" y2="{y:.1f}" stroke="{col}" stroke-width="2.4" stroke-dasharray="5 5"/>'
              f'<g transform="translate({x - 104:.1f} {y - 27:.1f})"><rect x="0" y="0" width="208" height="54" rx="12" fill="#fff" stroke="{col}" stroke-width="2.6"/>'

@@ -6,7 +6,7 @@ COURSE = 'מימון וניתוח פיננסי למנהלים'
 INST = 'המסלול האקדמי של המכללה למנהל · בית הספר לתקשורת וניהול'
 SEM = 'סמסטר א׳ תשפ״ז'
 LESSON = globals().get('LESSON', 1)
-TOTAL_PARTS = {1: 6}[LESSON]
+TOTAL_PARTS = {1: 7}[LESSON]
 # per lesson: deck title, subtitle, chips, cover line and the next meeting. The meeting dates are not in the syllabus.
 LMETA = {
  1: dict(date='', h1=('חשבונאות פיננסית', 'ומידע לקבלת החלטות'), title='מבוא לחשבונאות פיננסית',
@@ -29,8 +29,11 @@ def ST(n, html, tag='div', cls=''):
 
 def DEF(name, text, demo, n=0, trm=None, cls=''):
     """One definition with its small numeric demonstration."""
+    m = re.search(r'\s*\(([A-Za-z][^()]*)\)$', name)
+    en = f' <bdi class="den" dir="ltr">({m.group(1)})</bdi>' if m else ''
+    if m: name = name[:m.start()]
     hd = f'[[{trm}|{name}]]' if trm else name
-    inner = f'<b class="dn">{TX(hd)}</b><p>{TX(text)}</p><div class="demo"><b>דוגמה:</b> {TX(demo)}</div>'
+    inner = f'<b class="dn">{TX(hd)}{en}</b><p>{TX(text)}</p><div class="demo"><b>דוגמה:</b> {TX(demo)}</div>'
     return ST(n, inner, cls='card def ' + cls) if n else f'<div class="card def {cls}">{inner}</div>'
 
 
@@ -142,7 +145,7 @@ def SORTER(aid, title, h, task, options, rows):
     for a, b, c in rows:
         bs = ''.join(f'<button class="so" data-i="{i}">{o}</button>' for i, o in enumerate(options))
         r += f'<tr class="srow" data-a="{b}" data-w="{_html.escape(TX(c), quote=True)}"><td>{TX(a)}</td><td>{bs}</td></tr>'
-    body = (f'<div class="act sorter" id="{aid}-w"><div class="tasktxt"><b>המשימה:</b> {TX(task)}</div><table class="stbl">{r}</table>'
+    body = (f'<div class="act sorter{" cmp" if len(rows) > 6 else ""}" id="{aid}-w"><div class="tasktxt"><b>המשימה:</b> {TX(task)}</div><table class="stbl">{r}</table>'
             f'<div class="fbbar">בחרו תשובה בכל שורה.</div><div class="actbar">{RST}<span class="score">0 / {len(rows)}</span></div></div>')
     S(aid, title, h, body, kick=f'חלק {CUR[0]} · פעילות')
 
@@ -495,5 +498,5 @@ def RL(items, start=1):
 
 exec(R('content_g.py'))
 exec(R('content_v.py'))
-for _f in {1: ['content_l1a.py', 'content_l1b.py', 'content_l1c.py']}[LESSON]:
+for _f in {1: ['content_l1a.py', 'content_l1d.py', 'content_l1b.py', 'content_l1c.py']}[LESSON]:
     exec(R(_f))
