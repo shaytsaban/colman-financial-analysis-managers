@@ -22,6 +22,12 @@ $$('#drawer .tabs button').forEach(b=>b.onclick=()=>setMode(b.dataset.k));$('#dx
 $('#gwrap').innerHTML=gk.map(k=>`<button class="gitem" data-t="${k}">${G[k].h}<div class="gen">${G[k].en}</div></button>`).join('');
 $('#gpl').innerHTML=gk.map(k=>`<div class="gp"><b>${G[k].h}</b> (${G[k].en})<br>${G[k].p}<br>דוגמה: ${G[k].ex}</div>`).join('');
 
+/* ---------- 'more explanation' popup ---------- */
+const mo=document.createElement('div');mo.id='moreov';mo.innerHTML='<div class="more-box" role="dialog" aria-modal="true"><button class="more-x" aria-label="סגירה">✕</button><div class="more-in"></div></div>';document.body.appendChild(mo);
+function closeMore(){mo.classList.remove('open');}
+mo.addEventListener('click',e=>{if(e.target===mo||e.target.closest('.more-x'))closeMore();});
+document.addEventListener('click',e=>{const b=e.target.closest('.morebtn');if(!b)return;e.stopPropagation();const c=b.parentElement.querySelector('.more-c');mo.querySelector('.more-in').innerHTML=c?c.innerHTML:'';mo.classList.add('open');},true);
+
 /* ---------- navigation ---------- */
 function show(i,reveal){if(i<0||i>=slides.length)return;slides[cur].classList.remove('on');cur=i;slides[cur].classList.add('on');setAll(slides[cur],!!reveal);if(reveal)$$('.sheet',slides[cur]).forEach(x=>x.__api&&x.__api.buildAll&&x.__api.buildAll());
  $('#cnt').textContent=(cur+1)+' / '+slides.length;$('#progi').style.width=((cur+1)/slides.length*100)+'%';
@@ -37,7 +43,7 @@ function prev(){const s=shown(slides[cur]);if(s.length){s[s.length-1].forEach(e=
  const bd=$$('.sheet',slides[cur]).map(x=>x.__api).find(a=>a&&a.built&&a.built()>0);if(bd){bd.buildBack();return;}show(cur-1,true);}
 $('#bNext').onclick=next;$('#bPrev').onclick=prev;
 $('#prog').onclick=e=>{const r=e.currentTarget.getBoundingClientRect();const f=(r.right-e.clientX)/r.width;show(Math.min(slides.length-1,Math.floor(f*slides.length)));};
-function closeOverlays(keepDrawer){$('#menu').classList.remove('open');$('#gloss').classList.remove('open');if(!keepDrawer)dr.classList.remove('open');}
+function closeOverlays(keepDrawer){closeMore();$('#menu').classList.remove('open');$('#gloss').classList.remove('open');if(!keepDrawer)dr.classList.remove('open');}
 $('#closex').onclick=()=>closeOverlays();
 $('#bMenu').onclick=()=>{closeOverlays();$('#menu').classList.add('open');};
 $('#bGloss').onclick=()=>{closeOverlays();$('#gloss').classList.add('open');};

@@ -112,6 +112,15 @@ def Q(sid, tag, title, stem, sol, ans, note=None, extra=None):
     S(sid, head, head, body, kick=f'חלק {CUR[0]} · {tag}', cls='qslide')
 
 
+def MORE(title, paras):
+    """A 'more explanation' button that opens a popup (deck); in the summary PDF the same text prints as a note."""
+    body = ''.join(f'<p>{TX(FXW(x))}</p>' for x in paras)
+    if MODE == 'pdf':
+        return f'<div class="band note"><b>הסבר נוסף: {TX(title)}.</b> ' + ' '.join(TX(FXW(x)) for x in paras) + '</div>'
+    return (f'<button class="morebtn" type="button">🔎 הסבר נוסף</button>'
+            f'<div class="more-c" hidden><div class="more-h">{TX(title)}</div>{body}</div>')
+
+
 def CAP(t):
     return f'<p class="cap">{TX(t)}</p>'
 

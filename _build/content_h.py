@@ -13,7 +13,7 @@ def STEPROWS(rows, start=1, why=True):
 
 
 
-def ISQ(sid, tag, title, stem, v, note=None, done='', xtitle='', build=None):
+def ISQ(sid, tag, title, stem, v, note=None, done='', xtitle='', build=None, more=''):
     """An income statement in its own format: the lines in the order of the statement, amounts typed in, every profit a formula."""
     d = {'A1': 'סעיף', 'B1': 'ש״ח', 'A2': 'הכנסות ממכירות', 'A3': 'עלות המכירות', 'A4': 'רווח גולמי', 'A5': 'הוצאות מכירה ושיווק', 'A6': 'הוצאות הנהלה וכלליות', 'A7': 'רווח תפעולי',
          'A8': 'הוצאות מימון', 'A9': 'רווח לפני מסים על ההכנסה', 'A10': 'מסים על ההכנסה', 'A11': 'רווח נקי', 'A13': 'שיעור מס',
@@ -25,10 +25,10 @@ def ISQ(sid, tag, title, stem, v, note=None, done='', xtitle='', build=None):
        traps={'B10': [('=B7*B13', 'המס מחושב על הרווח <b>לפני מס</b>, אחרי הוצאות המימון: =B9*B13.')], 'B7': [('=B4-B5', 'שכחתם את הוצאות ההנהלה והכלליות.')]},
        steps=[dict(cells={'B4': '=B2-B3'}, note='רווח גולמי: =B2-B3.'), dict(cells={'B7': '=B4-B5-B6'}, note='רווח תפעולי: =B4-B5-B6.'),
               dict(cells={'B9': '=B7-B8'}, note='רווח לפני מס: =B7-B8.'), dict(cells={'B10': '=B9*B13', 'B11': '=B9-B10'}, note='מס: =B9*B13. רווח נקי: =B9-B10.')],
-       note=note or [], done=done, xtitle=xtitle, build=build)
+       note=note or [], done=done, xtitle=xtitle, build=build, qmc=more)
 
 
-def BSQ(sid, tag, title, stem, ca, nca, cl, ncl, sc, re_, note=None, done='', xtitle=''):
+def BSQ(sid, tag, title, stem, ca, nca, cl, ncl, sc, re_, note=None, done='', xtitle='', more=''):
     """A balance sheet in its own format: assets on one side, liabilities and equity on the other, each group with its total.
     ca: three (label, amount); nca, ncl: one (label, amount); cl: two (label, amount)."""
     d = {'A1': 'נכסים', 'B1': 'ש״ח', 'C1': 'התחייבויות והון עצמי', 'D1': 'ש״ח',
@@ -45,5 +45,5 @@ def BSQ(sid, tag, title, stem, ca, nca, cl, ncl, sc, re_, note=None, done='', xt
        traps={'D11': [('=D5+D10', 'שכחתם את ההתחייבות הלא שוטפת בשורה 7.')], 'B11': [('=B6', 'שכחתם את הנכס הלא שוטף בשורה 8.')]},
        steps=[dict(cells={'B6': '=SUM(B3:B5)', 'B11': '=B6+B8'}, note='צד הנכסים: סך נכסים שוטפים, ואז סך הנכסים.'),
               dict(cells={'D5': '=D3+D4', 'D10': '=D8+D9', 'D11': '=D5+D7+D10'}, note='הצד השני: שוטפות, הון עצמי, ובסוף הכול יחד. שני הסכומים בשורה 11 שווים.', sel='D5', sel2='D11')],
-       note=note or [], done=done, xtitle=xtitle)
+       note=note or [], done=done, xtitle=xtitle, qmc=more)
 
