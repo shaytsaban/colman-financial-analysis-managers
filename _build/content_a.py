@@ -6,7 +6,7 @@ COURSE = 'מימון וניתוח פיננסי למנהלים'
 INST = 'המסלול האקדמי של המכללה למנהל · בית הספר לתקשורת וניהול'
 SEM = 'סמסטר א׳ תשפ״ז'
 LESSON = globals().get('LESSON', 1)
-TOTAL_PARTS = {1: 4, 2: 4}[LESSON]
+TOTAL_PARTS = {1: 4, 2: 7}[LESSON]
 # per lesson: deck title, subtitle, chips, cover line and the next meeting. The meeting dates are not in the syllabus.
 LMETA = {
  1: dict(date='5.11.2026', h1=('חשבונאות פיננסית', 'ומידע לקבלת החלטות'), title='מבוא לחשבונאות פיננסית',
@@ -14,10 +14,10 @@ LMETA = {
          cover='מה צריך לדעת על חברה: הכנסה, הוצאה ורווח; חשבונאות פיננסית מול ניהולית; דוח רווח והפסד, שורה אחר שורה, וסיווג הוצאות; בסיס מצטבר; הדוח על המצב הכספי: נכסים והתחייבויות שוטפים ולא שוטפים, והון עצמי כמקור מימון; תרגול סיווג ובניית דוחות.',
          next_h='מי משתמש בדוחות, ומשוואת המאזן', next_t='ממשיכים מהמקום שבו עצרנו: מי משתמש בדוחות ולמה, מי מחייב לדווח (חברה פרטית וציבורית, חוק, תקינה וביקורת), ומשוואת המאזן, עסקה אחר עסקה.'),
  # meeting 2: a draft that opens with the parts meeting 1 did not reach. Not published until Shay approves it.
- 2: dict(date='', draft=True, h1=('מי משתמש בדוחות', 'ומשוואת המאזן'), title='מי משתמש בדוחות ומשוואת המאזן',
-         sub='בשביל מי נבנים הדוחות, מי מחייב לפרסם אותם, ואיך כל עסקה שומרת על מאזן מאוזן.', chip='כל שאלה נפתרת ב-Excel',
-         cover='מטרת הדוחות ומעגלי המשתמשים; מאפייני המידע; פערי מידע ובעיית הנציג; חברה פרטית וציבורית; כללי חשבונאות, חוקים, רשות ניירות ערך וביקורת; משוואת המאזן, עסקה אחר עסקה.',
-         next_h='יעודכן', next_t='יעודכן.')}[LESSON]
+ 2: dict(date='', draft=True, h1=('ארבעת הדוחות', 'והקשרים ביניהם'), title='ארבעת הדוחות והקשרים ביניהם',
+         sub='מי קורא את הדוחות ומי מחייב לפרסם אותם, משוואת המאזן, הדוח על השינויים בהון, הדוח על תזרימי המזומנים, והגשרים ביניהם.', chip='כל שאלה נפתרת ב-Excel',
+         cover='מטרת הדוחות ומעגלי המשתמשים; מאפייני המידע; חברה פרטית וציבורית, כללים, חוקים וביקורת; משוואת המאזן, עסקה אחר עסקה; הדוח על השינויים בהון ודיבידנד; הדוח על תזרימי המזומנים בשלוש פעילויות, ולמה מזומן אינו רווח; שלושת הגשרים בין הדוחות; דוחות אמיתיים במאי״ה.',
+         next_h='ניתוח דוחות באמצעות יחסים פיננסיים', next_t='נזילות, איתנות, יעילות ורווחיות: איך הופכים את המספרים בדוחות לתשובות על החברה.')}[LESSON]
 XSPECS = []        # every live sheet, in deck order: the practice workbooks are built from these
 SL = []            # every slide, in order
 CUR = [None]       # current part number
@@ -513,5 +513,5 @@ def RL(items, start=1):
 exec(R('content_g.py'))
 exec(R('content_v.py'))
 exec(R('content_h.py'))
-for _f in {1: ['content_l1a.py', 'content_l1d.py', 'content_l1e.py'], 2: ['content_l2a.py']}[LESSON]:
+for _f in {1: ['content_l1a.py', 'content_l1d.py', 'content_l1e.py'], 2: ['content_l2a.py', 'content_l2b.py', 'content_l2c.py']}[LESSON]:
     exec(R(_f))

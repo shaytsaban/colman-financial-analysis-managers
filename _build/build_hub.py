@@ -15,8 +15,10 @@ def rec(k):
     return f'<div class="rec1" id="rec-{k}"><h4>הקלטת המפגש, {n("5.11.2026")}</h4>{items}</div>'
 
 
-UP = [(1, 'המשך הנושא, במפגש 2: מי משתמש בדוחות, מי מחייב לדווח, ומשוואת המאזן'), (2, 'ארבעת הדוחות הכספיים והקשרים ביניהם'), (3, 'ניתוח דוחות באמצעות יחסים פיננסיים: נזילות, איתנות, יעילות ורווחיות'), (4, 'יסודות המימון: ריבית וערך הזמן של הכסף'), (5, 'ריבית נומינלית, אפקטיבית וריאלית, והחלטות השקעה'), (6, 'לוחות שפיצר ומימון בתנאי אינפלציה'), (7, 'סיכום וחזרה לקראת הבחינה')]
+UP = [(3, 'ניתוח דוחות באמצעות יחסים פיננסיים: נזילות, איתנות, יעילות ורווחיות'), (4, 'יסודות המימון: ריבית וערך הזמן של הכסף'), (5, 'ריבית נומינלית, אפקטיבית וריאלית, והחלטות השקעה'), (6, 'לוחות שפיצר ומימון בתנאי אינפלציה'), (7, 'סיכום וחזרה לקראת הבחינה')]
 D = open(os.path.join(H, '..', 'lectures', 'lecture-1', 'presentation.html'), encoding='utf8').read()
+D2 = open(os.path.join(H, '..', 'lectures', 'lecture-2', 'presentation.html'), encoding='utf8').read()
+NS2, NX2 = D2.count('<section class="slide'), D2.count('act xlq')
 NS, NX, NM = D.count('<section class="slide'), D.count('act xlq'), D.count('class="mc"')
 NB = len(re.findall(r"^E\('", open(os.path.join(H, 'booklet.py'), encoding='utf8').read(), re.M))
 ups = ''.join(f'<li><span class="un">{n(i if isinstance(i, int) else i.replace(" ו-", "-").replace(" עד ", "-"))}</span><span>{t}</span><em>בקרוב</em></li>' for i, t in UP)
@@ -52,7 +54,7 @@ css += '''
 .solutions .btn2:hover{transform:translateY(-2px)}
 .solutions .btn2 small{display:block;font-weight:500;font-size:13px;opacity:.9}
 .lk.x .e{background:#e3f6ea}.lk.r .e{background:#fff0d2}
-.rec1{margin-top:18px}.rec1 h4{margin-bottom:8px}.recone{margin-bottom:12px}.reclab{font-size:15px;font-weight:700;color:var(--navy2);margin-bottom:5px}
+.draft{display:inline-block;background:#fff0d2;border:1.5px dashed #a86703;color:#7a4a00;border-radius:8px;padding:0 8px;font-size:15px;vertical-align:middle;margin-right:6px}.rec1{margin-top:18px}.rec1 h4{margin-bottom:8px}.recone{margin-bottom:12px}.reclab{font-size:15px;font-weight:700;color:var(--navy2);margin-bottom:5px}
 .recbox{position:relative;aspect-ratio:16/9;max-width:420px;border-radius:14px;overflow:hidden;background:linear-gradient(150deg,#0f1b33,#27447f);box-shadow:0 6px 18px rgba(15,27,51,.18)}
 .recbox iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .recwait{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#d6e0f7;text-align:center;font-size:15px}
@@ -133,6 +135,33 @@ page = f'''<!doctype html>
 <li><b>אחרי השיעור:</b> קוראים את הסיכום, ופותרים בקובץ התרגול את כל השאלות של המצגת. אחר כך בודקים בקובץ הפתרונות.</li>
 <li><b>לקראת מפגש 2:</b> תרגילים 1-1, 1-6 ו-1-7 בחוברת, ובדיקה מול הפתרונות.</li>
 </ol></div>
+</article>
+<article class="lec" id="lesson-2">
+<div class="lec-head"><div class="lec-n">2</div><div><h3>ארבעת הדוחות והקשרים ביניהם <span class="draft">טיוטה</span></h3><div class="sub">מפגש {n(2)}</div></div></div>
+<div class="lec-body">
+<div><h4>מה לומדים בשיעור</h4><ul class="learn">
+<li>מי משתמש בדוחות, ולמה: משקיעים ונושים, ומעגל שני</li>
+<li>מי מחייב לדווח: חברה פרטית וציבורית, חוק, תקינה וביקורת</li>
+<li>משוואת המאזן, עסקה אחר עסקה</li>
+<li>הדוח על השינויים בהון, ודיבידנד</li>
+<li>הדוח על תזרימי המזומנים: שוטפת, השקעה ומימון, ולמה מזומן אינו רווח</li>
+<li>שלושה גשרים בין הדוחות, ודוחות אמיתיים במאי״ה</li>
+<li>תרגול עצמי: עשרה תרגולים עם גיליון, רמזים וכפתור ״הסבר נוסף״</li>
+</ul></div>
+<div><h4>חומרי השיעור</h4>
+<div class="grp"><h5>1. בשיעור</h5><div class="links">
+<a class="lk p" href="lectures/lecture-2/presentation.html"><span class="e">🖥️</span><span><b>מצגת השיעור</b><span class="d">{n(NS2)} שקפים, וגיליון Excel חי ליד כל שאלה ({n(NX2)} גיליונות), עם בדיקה, רמזים ופתרון צעד אחר צעד.</span></span></a>
+</div></div>
+<div class="grp"><h5>2. אחרי השיעור, לחזרה</h5><div class="links">
+<a class="lk s" href="lectures/lecture-2/summary.pdf"><span class="e">📄</span><span><b>סיכום השיעור (PDF)</b><span class="d">כל תוכן המצגת במסמך אחד: הגדרות, השאלות והפתרון שלהן בגיליון, ומילון מושגים.</span></span></a>
+</div></div>
+<div class="grp"><h5>3. תרגול</h5><div class="links">
+<a class="lk x" href="materials/practice-2.xlsx" download><span class="e">📊</span><span><b>קובץ התרגול של מפגש 2 (Excel)</b><span class="d">כל {n(NX2)} השאלות של המצגת, באותן כתובות תאים. התאים הצהובים ריקים.</span></span></a>
+<a class="lk r" href="materials/practice-2-solutions.xlsx" download><span class="e">✅</span><span><b>קובץ הפתרונות של מפגש 2 (Excel)</b><span class="d">אותם גיליונות עם נוסחאות חיות. פותחים רק אחרי שפותרים.</span></span></a>
+<a class="lk s" href="materials/booklet.pdf" target="_blank" rel="noopener"><span class="e">📘</span><span><b>חוברת התרגילים: נושאים 1 ו-2</b><span class="d">תרגילים 1-2 עד 1-5, ותרגילי נושא 2, עם פתרונות בקובצי הקורס.</span></span></a>
+</div></div>
+</div>
+</div>
 </article>
 <h2 class="sec" style="margin-top:36px">הנושאים הבאים</h2>
 <ul class="ups">{ups}</ul>

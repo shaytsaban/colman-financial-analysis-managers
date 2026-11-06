@@ -437,3 +437,4 @@ code.xl{direction:ltr;unicode-bidi:isolate;display:inline-block;font:700 20px 'M
 .more-h{font-size:24px;font-weight:800;color:#1b2d55;margin-bottom:10px}
 .more-in p{font-size:19px;line-height:1.5;margin:0 0 10px;color:#16213a}
 .more-c p{font-size:19px}
+.stmt.ce td.amt,.stmt.ce th:not(:first-child){text-align:center}
