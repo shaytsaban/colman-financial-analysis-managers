@@ -13,7 +13,7 @@ HEAD = f'{COURSE} · מפגש {LESSON}' + (f' · {LMETA["date"]}' if LMETA['date
 def render(s, total):
     k = s['kind']
     if k == 'title':
-        chips = [f'{NX} גיליונות Excel חיים בתוך השקפים'] + ([f'{NSV} תרגילים עם רמזים'] if NSV else []) + [f'{NMC} שאלות רב ברירה', LMETA['chip']]
+        chips = (['טיוטה'] if LMETA.get('draft') else []) + [f'{NX} גיליונות Excel חיים בתוך השקפים'] + ([f'{NSV} תרגילים עם רמזים'] if NSV else []) + [f'{NMC} שאלות רב ברירה', LMETA['chip']]
         return (f'<section class="slide dark s1 on" id="s-title" data-title="פתיחה">'
                 '<div class="orb" style="width:320px;height:320px;background:radial-gradient(circle at 30% 30%,#58e0cf,#0f9d90 60%,transparent 72%);left:-90px;top:-70px"></div>'
                 '<div class="orb" style="width:180px;height:180px;background:radial-gradient(circle at 30% 30%,#ffd37a,#e8960c 60%,transparent 72%);left:230px;bottom:90px;animation-delay:-3s"></div>'
@@ -47,7 +47,9 @@ slides_html = '\n'.join(render(s, TOTAL_PARTS) for s in SL)
 fonts = R('shell/fonts.css')
 base = R('shell/base.css')
 tail = R('shell/tail.html')
-gj = json.dumps({k: {f: (TX(FXW(v)) if f != 'en' else v) for f, v in g.items()} for k, g in G.items()}, ensure_ascii=False)
+# the glossary of a lesson holds the terms its slides use
+_used = set(re.findall(r'data-t="(\w+)"', slides_html))
+gj = json.dumps({k: {f: (TX(FXW(v)) if f != 'en' else v) for f, v in g.items()} for k, g in G.items() if k in _used}, ensure_ascii=False)
 js = f'const COURSE={json.dumps(COURSE, ensure_ascii=False)};const LESSON={LESSON};\nconst G={gj};\n' + R('deck.js') + '\n' + R('xl.js') + '\n' + R('act.js')
 title = f'{COURSE} | שיעור {LESSON} | {LMETA["title"]}'
 html = (f'<!doctype html>\n<html lang="he" dir="rtl">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>{title}</title>\n<style>\n'

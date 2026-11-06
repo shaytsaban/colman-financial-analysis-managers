@@ -201,10 +201,27 @@ function mount(host,cfg){
  function startEdit(initial,keep,mode){const a=addr(sel.r,sel.c);sel2={...sel};editing={a,where:'cell',orig:S.raw[a]||'',mode:mode||(keep?'edit':'enter'),ptr:null};const el=td(a);
   el.className+=' ed';el.innerHTML=`<div class="xl-ed"><div class="xl-ov" aria-hidden="true"></div><input class="xl-in" dir="auto" spellcheck="false" autocomplete="off"></div>`;const inp=el.querySelector('input');inp.value=keep?(S.raw[a]||''):initial;
   inp.focus({preventScroll:true});inp.setSelectionRange(inp.value.length,inp.value.length);
-  inp.oninput=()=>{if(editing){editing.ptr=null;}sync();};inp.onkeydown=keyEdit;inp.onkeyup=inp.onclick=()=>sync();sync();modeTip();}
+  inp.oninput=()=>{if(editing){editing.ptr=null;}sync();suggest();};inp.onkeydown=keyEdit;inp.onkeyup=inp.onclick=()=>sync();sync();modeTip();suggest();}
+
+ /* function suggestions, as in Excel: letters typed after = or an operator open a list; Tab (or a click) writes the name and its opening bracket, so cells can be selected next */
+ const FNS=['ABS','AVERAGE','COUNT','COUNTA','EFFECT','FV','IF','IRR','MAX','MIN','NOMINAL','NPER','NPV','PMT','POWER','PV','RATE','ROUND','SQRT','SUM','SUMPRODUCT'];
+ function fnToken(){const inp=curInput();if(!inp||inp.value[0]!=='=')return null;const pre=inp.value.slice(0,inp.selectionStart);const m=/(^=|[=+\-*\/^(,:;<>&]\s*)([A-Za-z]+)$/.exec(pre);
+  if(!m)return null;const w=m[2].toUpperCase();const L=FNS.filter(f=>f.startsWith(w));return L.length?{start:pre.length-m[2].length,end:pre.length,list:L}:null;}
+ function hideSug(){const b=host.querySelector('.xl-sug');if(b)b.remove();if(editing)editing.sug=null;}
+ function suggest(){hideSug();if(!editing||editing.where!=='cell')return;const t=fnToken();if(!t)return;editing.sug=t;const box=document.createElement('div');box.className='xl-sug';
+  box.innerHTML=t.list.slice(0,6).map((f,i)=>`<div class="xl-sg${i?'':' on'}" data-f="${f}">${f}</div>`).join('')+'<div class="xl-sgh">Tab: בחירה</div>';
+  box.addEventListener('mousedown',e=>{const d=e.target.closest('.xl-sg');if(d){e.preventDefault();acceptSug(d.dataset.f);}});
+  /* placed on the sheet itself, outside the scroll area, so a low row does not clip it; above the cell when there is no room below */
+  if(getComputedStyle(host).position==='static')host.style.position='relative';host.appendChild(box);
+  const hr=host.getBoundingClientRect(),k=hr.width/host.offsetWidth||1,er=td(editing.a).getBoundingClientRect();
+  let top=(er.bottom-hr.top)/k;const h=box.offsetHeight;if(top+h>host.offsetHeight&&(er.top-hr.top)/k-h>0)top=(er.top-hr.top)/k-h;
+  box.style.top=top+'px';box.style.left=Math.max(0,(er.left-hr.left)/k)+'px';}
+ function acceptSug(f){const inp=curInput(),t=editing&&editing.sug;if(!inp||!t)return false;f=f||t.list[0];inp.value=inp.value.slice(0,t.start)+f+'('+inp.value.slice(t.end);
+  const p=t.start+f.length+1;inp.setSelectionRange(p,p);inp.focus({preventScroll:true});hideSug();editing.ptr=null;sync();toastX(`נכתב \u2066${f}(\u2069. עכשיו מסמנים את התאים`);return true;}
+
  function modeTip(){if(editing)toastX(editing.mode==='edit'?'מצב עריכה (F2): החצים מזיזים את הסמן':'מצב הזנה: אחרי אופרטור, החצים בוחרים תא');}
  function curInput(){return editing?(editing.where==='bar'?bar:td(editing.a).querySelector('input')):null;}
- function endEdit(){editing=null;barOv.innerHTML='';bar.classList.remove('xl-clr');g.querySelectorAll('td[data-rf]').forEach(el=>{el.style.boxShadow='';el.style.backgroundColor='';el.classList.remove('ptr');delete el.dataset.rf;});}
+ function endEdit(){const sb=host.querySelector('.xl-sug');if(sb)sb.remove();editing=null;barOv.innerHTML='';bar.classList.remove('xl-clr');g.querySelectorAll('td[data-rf]').forEach(el=>{el.style.boxShadow='';el.style.backgroundColor='';el.classList.remove('ptr');delete el.dataset.rf;});}
  function pctEntry(a,v){if(!/^pct/.test(S.fmt[a]||'')||!/^-?(\d+(\.\d*)?|\.\d+)$/.test(v))return v;const x=parseFloat(v);return Math.abs(x)>=1?v+'%':v;}
  function commit(dr,dc){if(!editing)return;const v=pctEntry(editing.a,curInput().value.trim());S.set(editing.a,v);endEdit();move(dr,dc);render();focusG();if(cfg.onChange)cfg.onChange();}
  function cancel(){endEdit();render();focusG();}
@@ -217,7 +234,9 @@ function mount(host,cfg){
   editing.ptr={start:st,len:t.length,anchor,cur};inp.setSelectionRange(st+t.length,st+t.length);inp.focus({preventScroll:true});sync();}
  function keyEdit(e){e.stopPropagation();
   if(e.key==='Enter'){e.preventDefault();commit(e.shiftKey?-1:1,0);return;}
-  if(e.key==='Tab'){e.preventDefault();commit(0,e.shiftKey?-1:1);return;}
+  if(e.key==='Tab'){e.preventDefault();if(!e.shiftKey&&editing.sug&&acceptSug(editing.sug.pick))return;commit(0,e.shiftKey?-1:1);return;}
+  if((e.key==='ArrowDown'||e.key==='ArrowUp')&&editing.sug){e.preventDefault();const t=editing.sug,n=Math.min(t.list.length,6);t.i=((t.i||0)+(e.key==='ArrowDown'?1:-1)+n)%n;t.pick=t.list[t.i];
+   host.querySelectorAll('.xl-sg').forEach((d,k)=>d.classList.toggle('on',k===t.i));return;}
   if(e.key==='Escape'){e.preventDefault();cancel();return;}
   if(e.key==='F2'){e.preventDefault();editing.mode=editing.mode==='edit'?'enter':'edit';editing.ptr=null;modeTip();return;}
   if(NAV[e.key]&&editing.mode==='enter'){e.preventDefault();const d=NAV[e.key],p=editing.ptr;

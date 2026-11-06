@@ -53,7 +53,7 @@ def _textnum(seg):
     return NUM.sub(lambda m: f'<span class="n">{m.group(0)}</span>', seg)
 
 
-_FXT = re.compile(r'(?<![\w¤$])=?[(¤A-Z0-9][¤A-Z0-9().,:*/^+\-−%]*[¤A-Z0-9)%]')
+_FXT = re.compile(r'(?<![\w¤$])=?[(¤A-Z0-9][¤A-Z0-9().,:*/^+\-−%]*[¤A-Z0-9)%(]')   # a trailing ( stays with its formula: =SUM(
 
 
 def FXW(t):

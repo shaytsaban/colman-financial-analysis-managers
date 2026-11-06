@@ -5,7 +5,7 @@
 המסלול האקדמי של המכללה למנהל, בית הספר לתקשורת וניהול, סמסטר א׳ תשפ״ז. ד״ר שי צבאן.
 
 - `index.html`: דף הבית.
-- `lectures/lecture-1/`: מצגת השיעור (`presentation.html`) וסיכום PDF (`summary.pdf`).
+- `lectures/lecture-1/`: מצגת מפגש 1 (`presentation.html`) וסיכום PDF (`summary.pdf`). מפגש 1 הגיע עד חלק 3; החלקים שלא הספקנו עברו למפגש 2 (`_build/content_l2a.py`, `python3 build_deck.py 2`), שעדיין לא מתפרסם.
 - `materials/`: סילבוס; חוברת תרגילים לשבעת נושאי הקורס (`booklet.pdf`), הפתרונות שלה (`booklet-solutions.pdf`), קובץ התרגול וקובץ הפתרונות שלה (`booklet-practice.xlsx`, `booklet-solutions.xlsx`); וקובץ התרגול וקובץ הפתרונות של מפגש 1 (`practice-1.xlsx`, `practice-1-solutions.xlsx`). הקורס: 13 מפגשים, שבעה נושאים.
 - `_build/`: מקורות הבנייה. התוכן כתוב פעם אחת (`content_*.py`) ומזין גם את המצגת וגם את הסיכום.
   - `python3 build_deck.py 1`: המצגת. גיליונות ה-Excel החיים רצים על `xl.js`.

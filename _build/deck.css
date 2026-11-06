@@ -423,3 +423,7 @@ code.xl{direction:ltr;unicode-bidi:isolate;display:inline-block;font:700 20px 'M
 .sorter.cmp .so{padding:2px 9px;font-size:16.5px;margin-right:4px}.sorter.cmp .fbbar{min-height:34px;margin-top:4px;padding:5px 12px;font-size:17.5px}.sorter.cmp .actbar{margin-top:4px}
 .route.r7 .rcard{min-height:128px}
 .tbl2.mini td,.tbl2.mini th{padding:3px 8px;font-size:16.5px}.tbl2.mini td:last-child{text-align:left;white-space:nowrap}
+.xl-sug{position:absolute;top:100%;left:0;min-width:150px;background:#fff;border:1px solid #b7c6bd;box-shadow:0 6px 16px rgba(0,0,0,.18);z-index:30;direction:ltr;text-align:left;font:600 15px/1.2 "Segoe UI",Arial,sans-serif}
+.xl-sg{padding:4px 10px;cursor:pointer;color:#16213a}.xl-sg.on{background:#217346;color:#fff}.xl-sg:hover{background:#e3f1e8;color:#16213a}
+.xl-sgh{padding:3px 10px;font-size:14px;color:#5d6a86;border-top:1px solid #e3e3e3;direction:rtl;text-align:right}
+.route.r4{grid-template-columns:repeat(4,1fr)}.route.r4 .rcard{min-height:150px}
