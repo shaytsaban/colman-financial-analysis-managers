@@ -3,7 +3,7 @@ import os, re
 H = os.path.dirname(os.path.abspath(__file__))
 n = lambda s: f'<span class="n">{s}</span>'
 # the recordings of each meeting: (YouTube id or '' until it is uploaded, label)
-REC = {1: [('esIJkot7pak', 'חלק 1 (מתוך 2)'), ('', 'חלק 2 (מתוך 2)')]}
+REC = {1: [('esIJkot7pak', 'חלק א׳: עד ההפסקה'), ('c-G8rGVlHvk', 'חלק ב׳: אחרי ההפסקה')]}
 
 
 def rec(k):
@@ -12,7 +12,7 @@ def rec(k):
         inner = (f'<iframe src="https://www.youtube-nocookie.com/embed/{v}" title="הקלטת מפגש {k}, {lab}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>'
                  if v else '<div class="recwait"><span class="play">▶</span><b>הקלטת השיעור</b><span>תעלה כאן בקרוב</span></div>')
         items += f'<div class="recone"><div class="reclab">{lab}</div><div class="recbox">{inner}</div></div>'
-    return f'<div class="rec1" id="rec-{k}"><h4>הקלטת המפגש, {n("5.11.2026")}</h4>{items}</div>'
+    return f'<div class="rec1" id="rec-{k}"><h4>הקלטת המפגש, {n("5.11.2026")}</h4><div class="recrow">{items}</div></div>'
 
 
 UP = [(3, 'ניתוח דוחות באמצעות יחסים פיננסיים: נזילות, איתנות, יעילות ורווחיות'), (4, 'יסודות המימון: ריבית וערך הזמן של הכסף'), (5, 'ריבית נומינלית, אפקטיבית וריאלית, והחלטות השקעה'), (6, 'לוחות שפיצר ומימון בתנאי אינפלציה'), (7, 'סיכום וחזרה לקראת הבחינה')]
@@ -54,8 +54,8 @@ css += '''
 .solutions .btn2:hover{transform:translateY(-2px)}
 .solutions .btn2 small{display:block;font-weight:500;font-size:13px;opacity:.9}
 .lk.x .e{background:#e3f6ea}.lk.r .e{background:#fff0d2}
-.draft{display:inline-block;background:#fff0d2;border:1.5px dashed #a86703;color:#7a4a00;border-radius:8px;padding:0 8px;font-size:15px;vertical-align:middle;margin-right:6px}.rec1{margin-top:18px}.rec1 h4{margin-bottom:8px}.recone{margin-bottom:12px}.reclab{font-size:15px;font-weight:700;color:var(--navy2);margin-bottom:5px}
-.recbox{position:relative;aspect-ratio:16/9;max-width:420px;border-radius:14px;overflow:hidden;background:linear-gradient(150deg,#0f1b33,#27447f);box-shadow:0 6px 18px rgba(15,27,51,.18)}
+.draft{display:inline-block;background:#fff0d2;border:1.5px dashed #a86703;color:#7a4a00;border-radius:8px;padding:0 8px;font-size:15px;vertical-align:middle;margin-right:6px}.rec1{margin-top:18px}.rec1 h4{margin-bottom:8px}.recrow{display:flex;gap:12px;flex-wrap:wrap}.recone{flex:1 1 220px;min-width:0;margin-bottom:12px}.reclab{font-size:15px;font-weight:700;color:var(--navy2);margin-bottom:5px}
+.recbox{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:linear-gradient(150deg,#0f1b33,#27447f);box-shadow:0 6px 18px rgba(15,27,51,.18)}
 .recbox iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .recwait{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#d6e0f7;text-align:center;font-size:15px}
 .recwait .play{width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.14);display:grid;place-items:center;font-size:22px;color:#fff;margin-bottom:6px;direction:ltr}
