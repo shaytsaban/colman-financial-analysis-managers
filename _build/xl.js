@@ -141,7 +141,7 @@ function mount(host,cfg){
  const load=()=>{base=baseNow();S.raw={};S.fmt={...(cfg.fmt||{})};Object.entries(base).forEach(([a,v])=>S.set(a,v));S.recalc();};load();
  const W=cfg.widths||[];
  host.classList.add('xl');
- host.innerHTML=`<div class="xl-top"><div class="xl-name" title="תיבת השם">A1</div><div class="xl-fx">fx</div><input class="xl-bar" dir="auto" spellcheck="false" autocomplete="off"></div>
+ host.innerHTML=`<div class="xl-top"><div class="xl-name" title="תיבת השם">A1</div><div class="xl-fx">fx</div><input class="xl-bar" dir="ltr" spellcheck="false" autocomplete="off"></div>
   <div class="xl-tools">${cfg.tools===false?'':`<button data-x="formulas" title="הצגת נוסחאות">נוסחאות</button>`}${cfg.targets?`<button data-x="check" class="xl-go">✔ בדיקה</button>${cfg.steps?'<button data-x="step" class="xl-st">▶ צעד אחר צעד</button>':''}${cfg.hints?'<button data-x="hint">💡 רמז</button>':''}${cfg.remind?'<button data-x="remind">📐 תזכורת נוסחה</button>':''}${cfg.partial?'<button data-x="part">פתרון חלקי</button>':''}<button data-x="solve">פתרון מלא</button>`:''}<button data-x="reset">איפוס</button><span class="xl-msg"></span></div>
   <div class="xl-wrap"${cfg.maxh?` style="max-height:${cfg.maxh}px"`:''}><table class="xl-g" tabindex="0"><thead><tr><th class="xl-c0"></th>${Array.from({length:C},(_,c)=>`<th style="width:${W[c]||92}px">${colName(c)}</th>`).join('')}</tr></thead><tbody>${Array.from({length:R-R0},(_,k)=>k+R0).map(r=>`<tr><th class="xl-rn">${r+1}</th>${Array.from({length:C},(_,c)=>`<td data-a="${addr(r,c)}"></td>`).join('')}</tr>`).join('')}</tbody></table></div>
   ${cfg.targets?'<div class="xl-fb"></div>':''}`;
@@ -165,7 +165,7 @@ function mount(host,cfg){
   const ae=td(addr(sel.r,sel.c));if(ae&&cfg.maxh)keepVisible(ae);
   g.querySelectorAll('th.hs').forEach(x=>x.classList.remove('hs'));const hr=g.tHead.rows[0].cells;for(let c=Math.min(sel.c,sel2.c);c<=Math.max(sel.c,sel2.c);c++)hr[c+1].classList.add('hs');
   g.querySelectorAll('tbody th.xl-rn').forEach(th=>{const r=+th.textContent-1;if(r>=Math.min(sel.r,sel2.r)&&r<=Math.max(sel.r,sel2.r))th.classList.add('hs');});
-  nameB.textContent=selName();if(!editing||editing.where!=='bar')bar.value=S.raw[addr(sel.r,sel.c)]||'';
+  nameB.textContent=selName();if(!editing||editing.where!=='bar')bar.value=S.raw[addr(sel.r,sel.c)]||'';barDir();
   if(cfg.onSelect)cfg.onSelect(selName());}
  /* ---------- editing, as in Excel: Enter mode (typing) and Edit mode (F2 or double click); references are coloured while a formula is written ---------- */
  const RC=['#1a73e8','#d93025','#8e24aa','#188038','#e37400','#00838f','#c2185b'];
@@ -189,7 +189,9 @@ function mount(host,cfg){
   let h='',k=0;fs.forEach(f=>{h+=esc(v.slice(k,f.i))+`<span style="color:${f.c}">${esc(f.t)}</span>`;k=f.i+f.t.length;});h+=esc(v.slice(k));
   ov.innerHTML=h;ov.style.direction=getComputedStyle(inp).direction;inp.classList.add('xl-clr');}
  const barOv=document.createElement('div');barOv.className='xl-ov xl-bov';bar.parentNode.insertBefore(barOv,bar);
- function sync(){const inp=curInput();if(!inp)return;if(inp!==bar)bar.value=inp.value;else{const el=td(editing.a).querySelector('input');if(el)el.value=bar.value;}
+ /* a formula, a number or an empty box reads left to right; only Hebrew text reads right to left */
+ function barDir(){const v=bar.value,d=/[\u0590-\u05FF]/.test(v)&&!/^\s*[=+\-]/.test(v)?'rtl':'ltr';if(bar.dir!==d)bar.dir=d;}
+ function sync(){const inp=curInput();if(!inp)return;if(inp!==bar)bar.value=inp.value;else{const el=td(editing.a).querySelector('input');if(el)el.value=bar.value;}barDir();
   const ci=td(editing.a).querySelector('input');if(ci){fitEditor(ci);colourise(ci,ci.previousSibling);}Object.assign(barOv.style,{left:bar.offsetLeft+'px',top:bar.offsetTop+'px',width:bar.offsetWidth+'px',height:bar.offsetHeight+'px'});colourise(bar,barOv);barOv.scrollLeft=bar.scrollLeft;paintRefs();}
  const meas=document.createElement('canvas').getContext('2d');
  function fitEditor(inp){meas.font=getComputedStyle(inp).font;const w=Math.ceil(meas.measureText(inp.value).width)+18;const box=inp.parentNode;box.style.width=Math.max(box.parentNode.clientWidth,w)+'px';}
@@ -254,12 +256,16 @@ function mount(host,cfg){
  function toastX(t){msg.textContent=t;clearTimeout(toastX.t);toastX.t=setTimeout(()=>{if(msg.textContent===t)msg.textContent='';},1800);}
  /* pointer: select, drag a range, insert a reference while writing a formula, or drag the fill handle */
  let drag=null;
+ let lastDown=null;
  g.addEventListener('pointerdown',e=>{const cell=e.target.closest('td');
-  if(e.target.classList.contains('xl-fh')){e.preventDefault();drag={k:'fill',b:blk(),to:null};try{g.setPointerCapture(e.pointerId);}catch(_){}return;}
+  /* the first press redraws the grid, so the browser's own dblclick may never arrive: two presses on the same cell count as one */
+  const twice=k=>{const now=e.timeStamp,hit=lastDown&&lastDown.k===k&&now-lastDown.t<450&&Math.abs(e.clientX-lastDown.x)<8&&Math.abs(e.clientY-lastDown.y)<8;lastDown=hit?null:{k,t:now,x:e.clientX,y:e.clientY};return hit;};
+  if(e.target.classList.contains('xl-fh')){e.preventDefault();if(twice('fh')){fillDownAuto();return;}drag={k:'fill',b:blk(),to:null};try{g.setPointerCapture(e.pointerId);}catch(_){}return;}
   if(!cell)return;const p=parseAddr(cell.dataset.a);
   if(editing&&editing.a===cell.dataset.a)return;
   if(editing&&pointable()){e.preventDefault();insertRef(cell.dataset.a);drag={k:'ptr',a:p};try{g.setPointerCapture(e.pointerId);}catch(_){}return;}
   if(editing)commit(0,0);
+  if(twice(cell.dataset.a)){e.preventDefault();sel={...p};sel2={...p};render();startEdit('',true,'edit');dblAt=e.timeStamp;return;}
   e.preventDefault();sel={...p};sel2={...p};drag={k:'sel'};try{g.setPointerCapture(e.pointerId);}catch(_){}render();focusG();});
  g.addEventListener('pointermove',e=>{if(!drag)return;
   /* dragging past the top or bottom edge of a scrolling sheet scrolls it, as in Excel */
@@ -286,15 +292,26 @@ function mount(host,cfg){
    const se=to.v?series[c]:series['r'+r];if(se){const k=to.v?r-b.r0:c-b.c0;S.set(a,String(Math.round((se.a+se.st*k)*1e9)/1e9)+(se.pc?'%':''));if(S.fmt[src])S.fmt[a]=S.fmt[src];continue;}
    S.set(a,raw==null?'':shift(raw,r-sr,c-sc));if(S.fmt[src])S.fmt[a]=S.fmt[src];else delete S.fmt[a];}
   sel={r:to.r0,c:to.c0};sel2={r:to.r1,c:to.c1};render();toastX('הנוסחה שוכפלה, וההפניות התעדכנו בכל תא');if(cfg.onChange)cfg.onChange();}
- g.addEventListener('dblclick',e=>{/* pointer capture sends the event to the table: find the cell under the pointer */const tgt=document.elementFromPoint(e.clientX,e.clientY)||e.target;if(tgt.classList.contains('xl-fh')){const b=blk();
-   let last=b.r1;for(let r=b.r1+1;r<R;r++){const nb=[b.c0-1,b.c1+1].some(c=>c>=0&&c<C&&S.raw[addr(r,c)]!=null);if(nb)last=r;else break;}
-   if(last>b.r1)fill(b,{r0:b.r0,r1:last,c0:b.c0,c1:b.c1,v:1});return;}
-  const cell=(tgt.closest&&tgt.closest('td'))||e.target.closest('td');if(!cell||!g.contains(cell))return;if(editing&&editing.a===cell.dataset.a)return;sel=parseAddr(cell.dataset.a);sel2={...sel};startEdit('',true,'edit');});
+ let dblAt=-1e9;
+ function fillDownAuto(){const b=blk();let last=b.r1;for(let r=b.r1+1;r<R;r++){const nb=[b.c0-1,b.c1+1].some(c=>c>=0&&c<C&&S.raw[addr(r,c)]!=null);if(nb)last=r;else break;}
+  if(last>b.r1)fill(b,{r0:b.r0,r1:last,c0:b.c0,c1:b.c1,v:1});dblAt=performance.now();}
+ g.addEventListener('dblclick',e=>{if(Math.abs(e.timeStamp-dblAt)<700||editing)return;/* pointer capture sends the event to the table: find the cell under the pointer */const tgt=document.elementFromPoint(e.clientX,e.clientY)||e.target;if(tgt.classList&&tgt.classList.contains('xl-fh')){fillDownAuto();return;}
+  const cell=(tgt.closest&&tgt.closest('td'))||e.target.closest('td');if(!cell||!g.contains(cell))return;sel=parseAddr(cell.dataset.a);sel2={...sel};startEdit('',true,'edit');});
  const gKey=e=>{if(editing)return;const k=e.key;
   const mod=e.ctrlKey||e.metaKey;
-  if(mod&&(k==='c'||k==='C'||k==='ג')){e.preventDefault();e.stopPropagation();CLIP={raw:S.raw[addr(sel.r,sel.c)],r:sel.r,c:sel.c,fmt:S.fmt[addr(sel.r,sel.c)]};toastX('הועתק. סמנו תא או טווח, והדביקו ב-Ctrl+V');return;}
-  if(mod&&(k==='v'||k==='V'||k==='ה')){e.preventDefault();e.stopPropagation();if(!CLIP||CLIP.raw==null)return;
-   for(let r=Math.min(sel.r,sel2.r);r<=Math.max(sel.r,sel2.r);r++)for(let c=Math.min(sel.c,sel2.c);c<=Math.max(sel.c,sel2.c);c++){S.set(addr(r,c),shift(CLIP.raw,r-CLIP.r,c-CLIP.c));if(CLIP.fmt)S.fmt[addr(r,c)]=CLIP.fmt;}
+  if(mod&&(k==='c'||k==='C'||k==='ג'||k==='x'||k==='X'||k==='ס')){e.preventDefault();e.stopPropagation();const b=blk(),cut=/[xXס]/.test(k);
+   /* the whole selected block is copied, cell by cell, with its formats */
+   CLIP={r0:b.r0,c0:b.c0,h:b.r1-b.r0+1,w:b.c1-b.c0+1,cells:[]};
+   for(let r=b.r0;r<=b.r1;r++){const row=[];for(let c=b.c0;c<=b.c1;c++){const a=addr(r,c);row.push({raw:S.raw[a],fmt:S.fmt[a]});}CLIP.cells.push(row);}
+   try{navigator.clipboard&&navigator.clipboard.writeText(CLIP.cells.map(row=>row.map(x=>x.raw==null?'':x.raw).join('\t')).join('\n')).catch(()=>{});}catch(_){}
+   if(cut){for(let r=b.r0;r<=b.r1;r++)for(let c=b.c0;c<=b.c1;c++)S.set(addr(r,c),'');render();if(cfg.onChange)cfg.onChange();}
+   toastX((cut?'נגזר':'הועתק')+(CLIP.h*CLIP.w>1?` (${CLIP.h*CLIP.w} תאים)`:'')+'. סמנו תא או טווח, והדביקו ב-Ctrl+V');return;}
+  if(mod&&(k==='v'||k==='V'||k==='ה')){e.preventDefault();e.stopPropagation();if(!CLIP||!CLIP.cells)return;
+   /* one target cell: the block lands from it. A larger target: the block repeats over it, as in Excel */
+   const b=blk(),th=Math.max(CLIP.h,b.r1-b.r0+1),tw=Math.max(CLIP.w,b.c1-b.c0+1);
+   for(let i=0;i<th;i++)for(let j=0;j<tw;j++){const r=b.r0+i,c=b.c0+j;if(r>=R||c>=C)continue;const si=i%CLIP.h,sj=j%CLIP.w,src=CLIP.cells[si][sj],a=addr(r,c);
+    S.set(a,src.raw==null?'':shift(src.raw,r-(CLIP.r0+si),c-(CLIP.c0+sj)));if(src.fmt)S.fmt[a]=src.fmt;}
+   sel={r:b.r0,c:b.c0};sel2={r:Math.min(R-1,b.r0+th-1),c:Math.min(C-1,b.c0+tw-1)};
    render();if(cfg.onChange)cfg.onChange();return;}
   if(mod&&(k==='`'||k===';')){e.preventDefault();e.stopPropagation();toggleF();return;}
   const nav={ArrowDown:[1,0],ArrowUp:[-1,0],ArrowLeft:[0,1],ArrowRight:[0,-1],Enter:[e.shiftKey?-1:1,0],Tab:[0,e.shiftKey?-1:1]};
