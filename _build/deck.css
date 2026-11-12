@@ -438,3 +438,299 @@ code.xl{direction:ltr;unicode-bidi:isolate;display:inline-block;font:700 20px 'M
 .more-in p{font-size:19px;line-height:1.5;margin:0 0 10px;color:#16213a}
 .more-c p{font-size:19px}
 .stmt.ce td.amt,.stmt.ce th:not(:first-child){text-align:center}
+
+/* ---------- ported from the AFM engine, 2026-11-10: the ribbon, the feedback beside the sheet, animated diagrams ---------- */
+/* the Home ribbon of the sheet, as in Excel */
+.xl-rib{display:flex;flex-wrap:wrap;gap:4px;align-items:center;background:#f3f2f1;border:1px solid #c8c8c8;border-bottom:0;border-radius:8px 8px 0 0;padding:3px 6px;direction:rtl}
+.xl-rib+.xl-top{border-radius:0}
+.xl-grp{display:inline-flex;gap:1px;align-items:center;padding-inline-end:5px;margin-inline-end:1px;border-inline-end:1px solid #d6d6d6}
+.xl-grp:last-child{border:0}
+.xl-rib button{min-width:30px;height:30px;padding:0 5px;border:1px solid transparent;border-radius:4px;background:transparent;cursor:pointer;color:#252423;font:600 16.5px/1 'Segoe UI',Arial,sans-serif;display:inline-flex;align-items:center;justify-content:center}
+.xl-rib button svg{width:18px;height:18px}
+.xl-rib button:hover{background:#e1dfdd;border-color:#c8c6c4}
+.xl-rib button.on{background:#c8e6d2;border-color:#217346}
+.xl-rib button:disabled{opacity:.35;cursor:default;background:transparent;border-color:transparent}
+.xl-rib button.xl-dec{font-size:16.5px;letter-spacing:-.5px}
+.xl-rib button.xl-dec sub{font-size:9px;vertical-align:0}
+.xl-rib select{height:30px;border:1px solid #c8c6c4;border-radius:4px;background:#fff;font:16.5px 'Segoe UI',Arial,sans-serif;padding:0 4px;margin-inline-end:3px;color:#252423}
+.xl-g thead th:not(.xl-c0),.xl-g th.xl-rn{cursor:pointer}
+/* animated diagrams: each click step has its own motion; print and the summary show the final state */
+svg.diag{width:100%;height:auto;display:block;font-family:Rubik,Heebo,sans-serif}
+svg .st.an-grow rect.bar{transform:scaleY(0);transform-box:fill-box;transform-origin:50% 100%;transition:transform .7s cubic-bezier(.2,.9,.25,1.15) var(--d,0s)}
+svg .st.an-grow.show rect.bar{transform:scaleY(1)}
+svg .st.an-draw path,svg .st.an-draw line{stroke-dasharray:1 1;stroke-dashoffset:1;transition:stroke-dashoffset .9s ease var(--d,0s)}
+svg .st.an-draw path[stroke-dasharray="6 5"]{stroke-dasharray:6 5;stroke-dashoffset:0;opacity:0;transition:opacity .6s ease var(--d,0s)}
+svg .st.an-draw.show path,svg .st.an-draw.show line{stroke-dashoffset:0}
+svg .st.an-draw.show path[stroke-dasharray="6 5"]{opacity:1}
+svg .st.an-pop{transform:scale(.4);transform-box:fill-box;transform-origin:50% 50%;transition:transform .5s cubic-bezier(.2,.9,.3,1.4) var(--d,0s),opacity .35s ease var(--d,0s)}
+svg .st.an-pop.show{transform:scale(1)}
+svg .st.an-fade{transition:opacity .5s ease var(--d,0s)}
+@media print{svg .st *,svg .st{transform:none!important;stroke-dashoffset:0!important;opacity:1!important}}
+.diagw{padding:10px 12px}
+svg.diag{direction:ltr}
+.xl-rib .xl-dec{direction:ltr}
+/* the step explanations and the feedback beside the sheet */
+.qx .qr .xfbs .xl-fb{margin-top:10px;max-height:300px;overflow:auto;font-size:18px;line-height:1.4}
+.qx .qr .xfbs .xl-fb:empty{display:none}
+.qx .qr .xfbs .xl-step,.qx .qr .xfbs .xl-tip{font-size:18px;line-height:1.4}
+.xl-rib .xl-ar{width:9px;height:8px;margin:0 1px;vertical-align:middle}
+.qx .qr .xfbs .xl-fb{max-height:none}
+svg .ring{transform-box:fill-box;transform-origin:50% 50%}
+svg .st.show .ring{animation:xlring 1.6s ease-out 1s 2}
+@keyframes xlring{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
+@media print{svg .ring{animation:none!important}}
+/* 2026-11-10: a check question beside a sheet reads at the size of every other question */
+.qx .qr .mc .q{font-size:19px;line-height:1.4}
+.qx .qr .mc .o{font-size:18px;padding:5px 12px;margin-top:5px}
+.qx .qr .mc .w{font-size:17.5px}
+.qx .qr .mc{background:#fff;border-radius:14px;padding:9px 14px;box-shadow:0 2px 0 var(--line)}
+/* ---------- 2026-11-12: right-click menu and fill palette of the sheet, as in Excel ---------- */
+.xl-pal,.xl-cm{position:absolute;z-index:40;background:#fff;border:1px solid #c8c6c4;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:6px;direction:rtl;font:16px 'Segoe UI',Rubik,Arial,sans-serif;color:#252423}
+.xl-cm{min-width:236px}
+.xl-cm>button{display:flex;justify-content:space-between;align-items:center;gap:18px;width:100%;border:0;background:transparent;padding:6px 10px;border-radius:5px;font:inherit;color:inherit;cursor:pointer;text-align:right}
+.xl-cm>button:hover{background:#e1dfdd}
+.xl-cm kbd{font:13px 'Segoe UI',Arial,sans-serif;color:#605e5c}
+.xl-cm hr{border:0;border-top:1px solid #e1dfdd;margin:5px 2px}
+.xl-cmh,.xl-palh{font-size:13.5px;font-weight:700;color:#605e5c;padding:2px 8px 4px}
+.xl-sw{display:flex;flex-wrap:wrap;gap:5px;padding:2px 8px 4px;max-width:230px}
+.xl-sw button{width:22px;height:22px;border:1px solid #a19f9d;border-radius:3px;cursor:pointer;padding:0}
+.xl-sw button:hover{outline:2px solid #217346;outline-offset:1px}
+.xl-sw .xl-nofill{background:#fff;color:#c4421f;font-size:13px;line-height:1}
+.xl-cmf{display:flex;flex-wrap:wrap;gap:4px;padding:0 8px 4px}
+.xl-cmf button{border:1px solid #c8c6c4;border-radius:4px;background:#faf9f8;padding:3px 8px;font:14px 'Segoe UI',Rubik,Arial,sans-serif;cursor:pointer}
+.xl-cmf button:hover{background:#e1dfdd}
+.xl-rib .xl-dd{font-size:10px;margin-inline-start:1px;vertical-align:middle}
+.xl-rib button[data-r="row+"],.xl-rib button[data-r="row-"]{font-size:14.5px;font-weight:600;white-space:nowrap}
+/* ===================================================== meeting 2, rebuilt 2026-11-12: animated scenes, one question per slide, the identity table */
+/* reveal motions on top of the shell's .st */
+.st.pop{transform:scale(.55);transition:opacity .45s ease,transform .55s cubic-bezier(.2,.9,.3,1.35)}
+.st.pop.show{transform:none}
+.st.slideR{transform:translateX(70px)}.st.slideL{transform:translateX(-70px)}
+.st.slideR.show,.st.slideL.show{transform:none}
+.st.wipe{opacity:1;transform:none;clip-path:inset(0 0 0 100%);transition:clip-path 1s ease}
+.st.wipe.show{clip-path:inset(0 0 0 0)}
+.row.g55>*:first-child{flex:1.15 1 0;min-width:0}.row.g55>*:last-child{flex:1 1 0;min-width:0}
+.row.g64>*:first-child{flex:1.5 1 0;min-width:0}.row.g64>*:last-child{flex:1 1 0;min-width:0}
+.row.eq3>*{flex:1 1 0;min-width:0}
+table.stmt.mini td{font-size:21px;padding:5px 12px}table.stmt.mini td.amt{text-align:left;white-space:nowrap}
+table.stmt tr.hl td{background:#fff3c4}
+/* recap 1: the activity */
+.sc3{display:grid;grid-template-columns:1fr 250px 1fr;gap:22px;align-items:center;margin-top:6px}
+.scard{position:relative;border-radius:18px;padding:16px 20px;background:#fff;box-shadow:0 2px 0 var(--line),0 12px 28px rgba(22,33,58,.08)}
+.scard.inc{border-top:8px solid #25a65f}.scard.exp{border-top:8px solid #e0454f}
+.sc-h{font-size:27px;font-weight:800;color:var(--navy2)}.scard.inc .sc-h{color:#187a43}.scard.exp .sc-h{color:#b8323b}
+.scard p{font-size:20px;line-height:1.45;margin:6px 0 8px}
+.sc-n{font-size:40px;font-weight:800;text-align:center;color:var(--navy2)}
+.sc-ar{position:absolute;top:50%;width:0;height:0;border-top:16px solid transparent;border-bottom:16px solid transparent;margin-top:-16px}
+.scard.inc .sc-ar{left:-26px;border-right:22px solid #25a65f}
+.scard.exp .sc-ar{right:-26px;border-right:22px solid #e0454f}
+.sc-co{text-align:center}.sc-co svg{width:210px;height:210px}.sc-co b{display:block;font-size:24px;color:var(--navy2)}.sc-co span{font-size:18px;color:#5d6a86}
+.sc3b{margin-top:12px;align-items:center}.sc3b .card{max-width:520px}
+/* recap 2: the year as a film */
+.filmrow{margin-bottom:8px}.filmrow>.st{flex:1}
+.filmh{font-size:21px;font-weight:800;color:var(--navy2);margin-bottom:4px}
+.film{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;background:#16213a;border-radius:8px;padding:8px 10px;position:relative}
+.film::before,.film::after{content:"";position:absolute;left:8px;right:8px;height:5px;background:repeating-linear-gradient(90deg,#fff 0 8px,transparent 8px 18px);opacity:.6}
+.film::before{top:2px}.film::after{bottom:2px}
+.film span{background:#27447f;color:#ffd37a;font-weight:800;font-size:15px;text-align:center;border-radius:4px;padding:6px 0;margin:4px 0}
+table.isr td{font-size:19px;padding:3px 12px}table.isr th{font-size:18px}table.isr td.why{color:#5d6a86;font-size:17.5px}
+/* recap 3 and the apartment: two towers of blocks, equal in height */
+.snap{background:#fff;border-radius:18px;padding:10px 16px 12px;box-shadow:0 2px 0 var(--line),0 14px 30px rgba(22,33,58,.1);border:8px solid #fff;outline:1px solid #d9d2c3}
+.snaph{font-size:21px;font-weight:800;color:var(--navy2);margin-bottom:8px}
+.towers{display:grid;grid-template-columns:1fr 60px 1fr 210px;gap:10px;align-items:stretch}
+.towers.big{grid-template-columns:1fr 60px 1fr;height:420px}
+.towers.sm{grid-template-columns:1fr 34px 1fr;height:190px;gap:6px}
+.tower{display:flex;flex-direction:column;min-width:0}
+.tw-h{font-size:18px;font-weight:800;color:var(--navy2);text-align:center;margin-bottom:4px}
+.tw-b{flex:1;display:flex;flex-direction:column;gap:3px;height:390px}
+.towers.big .tw-b{height:auto}.towers.sm .tw-b{height:auto}
+.blk{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:30px;border-radius:8px;padding:2px 12px;color:#fff;font-size:17.5px;overflow:hidden}
+.blk.st{transform:scaleY(.2);transform-origin:50% 0;transition:opacity .4s ease,transform .6s cubic-bezier(.2,.9,.3,1.15)}
+.blk.st.show{transform:none}
+.blk b{font-weight:700}.blk .n{font-weight:800}
+.blk.ca{background:#0f9d90}.blk.nca{background:#087469}.blk.cl{background:#ff6a4d}.blk.ncl{background:#c4421f}.blk.eqb{background:#27447f}
+.blkart svg{width:120px;height:120px}.blk.nca .blkart{margin:auto}
+.towers.big .blk{flex-direction:column;justify-content:center;font-size:21px;text-align:center}
+.towers.sm .blk{font-size:15px;padding:2px 8px;min-height:26px}
+.eqw{display:flex;align-items:center;justify-content:center}.eqs{font-size:50px;font-weight:800;color:var(--navy2);display:flex;align-items:center;justify-content:center}
+.twleg{display:flex;flex-direction:column;gap:8px;font-size:17px;font-weight:600;color:#2a3858;padding-top:30px}
+.lgd{display:inline-block;width:18px;height:18px;border-radius:4px;margin-inline-end:8px;vertical-align:-3px}
+.lgd.ca{background:#0f9d90}.lgd.nca{background:#087469}.lgd.cl{background:#ff6a4d}.lgd.ncl{background:#c4421f}.lgd.eqb{background:#27447f}
+.twtot{margin-top:14px;font-size:24px;font-weight:800;color:var(--navy2);background:#fff3c4;border-radius:10px;padding:8px 10px;text-align:center;direction:ltr}
+/* recap 4: the one year ruler */
+.ruler{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 64px auto;column-gap:18px;row-gap:6px;margin:4px 0 8px}
+.ruler .rz{display:flex;gap:10px;flex-wrap:wrap;align-content:flex-end;justify-content:center}
+.ruler .rz.low{align-content:flex-start}
+.ruler .rz.z1{grid-column:1}.ruler .rz.z2{grid-column:2}
+.ruler .rl{grid-column:1 / span 2;grid-row:2}
+.ruler .rz.z1:not(.low),.ruler .rz.z2:not(.low){grid-row:1}.ruler .rz.low{grid-row:3}
+.rline{position:relative;height:64px;border-radius:10px;background:linear-gradient(270deg,#dff5f2 0 50%,#e8eefb 50% 100%);border:2px solid #1b2d55}
+.rline span{position:absolute;top:50%;transform:translateY(-50%);font-weight:800;font-size:18px;color:var(--navy2)}
+.rline .t0{right:12px}.rline .t1{right:50%;transform:translate(50%,-50%);background:#1b2d55;color:#fff;border-radius:8px;padding:4px 10px}.rline .t2{left:12px}
+.rchip{border-radius:12px;padding:8px 14px;background:#fff;box-shadow:0 2px 0 var(--line);min-width:220px}
+.rchip b{display:block;font-size:19px}.rchip span{font-size:16.5px;color:#5d6a86}
+.rchip.a{border-right:7px solid #0f9d90}.rchip.l{border-right:7px solid #ff6a4d}
+/* who reads: rings */
+.rings{position:relative;height:430px}
+.rg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%}
+.st.pop .rg{transform:translate(-50%,-50%)}
+.rings>.st{position:absolute;inset:0}
+.rg.r3{width:470px;height:430px;background:#f0f2f6;border:3px dashed #8a93aa}
+.rg.r2{width:330px;height:300px;background:#dff5f2;border:3px solid #0f9d90}
+.rg.r1{width:180px;height:150px;background:#1b2d55;display:flex;align-items:center;justify-content:center}
+.rg-c{color:#fff;font-weight:800;font-size:19px;text-align:center;padding:0 14px}
+.rg-l{position:absolute;left:50%;transform:translateX(-50%);width:80%;text-align:center;font-weight:800;font-size:16px;color:#1b2d55;top:10px}
+.rg.r2 .rg-l{top:12px}.rg.r3 .rg-l{top:12px;color:#5d6a86}
+.rg-a{position:absolute;left:0;right:0;display:flex;justify-content:center;gap:6px}
+.rg.r2 .rg-a{bottom:6px}.rg.r3 .rg-a{bottom:8px}
+.rg-a svg{width:60px;height:60px}
+/* who reads: statement lines with coloured pills */
+.ulook{padding:8px 12px}
+table.ul td{font-size:19px;padding:4px 10px}table.ul tr.sec td{background:#f3f2f1;color:var(--navy2)}
+table.ul td.pills{min-width:200px}
+.pill{display:inline-block;border-radius:99px;padding:2px 12px;margin:1px 3px;color:#fff;font-weight:700;font-size:15.5px}
+.c1.pill,.rdc.c1{--k:#0f9d90}.c2.pill,.rdc.c2{--k:#27447f}.c3.pill,.rdc.c3{--k:#e8960c}.c4.pill,.rdc.c4{--k:#5d6a86}.c5.pill,.rdc.c5{--k:#6d4df2}
+.pill{background:var(--k)}
+.rdcards{display:flex;flex-direction:column;gap:8px}
+.rdc{display:flex;gap:12px;align-items:center;background:#fff;border-radius:14px;padding:6px 12px;box-shadow:0 2px 0 var(--line);border-right:8px solid var(--k)}
+.rdc svg{width:58px;height:58px;flex:none}.rdc b{display:block;font-size:20px;color:var(--k)}.rdc span{font-size:17.5px;color:#2a3858}
+/* single question slides */
+.mc1{display:flex;gap:30px;align-items:center;margin-top:16px}
+.mc1art svg{width:250px;height:250px}
+.mc1q{flex:1;min-width:0}
+.mc1 .mc .q{font-size:30px;line-height:1.35;font-weight:800;color:var(--navy2);margin-bottom:10px}
+.mc1 .mc .o{display:block;width:100%;font-size:25px;padding:12px 20px;margin-top:10px;text-align:right}
+.mc1 .mc .w{font-size:22px;line-height:1.45}
+.mc1s p{font-size:22px;line-height:1.45;margin:0}
+/* Yossi's report */
+.paper{background:#fffdf6;border-radius:6px;padding:14px 20px 10px;box-shadow:0 14px 30px rgba(22,33,58,.14);transform:rotate(-.6deg);border-top:10px solid #e8c27a;position:relative}
+.pp-h{font-size:20px;font-weight:800;color:#5b3a1a;border-bottom:2px dashed #e8c27a;padding-bottom:6px;margin-bottom:6px}
+.paper ol{margin:0;padding-inline-start:24px}
+.paper li{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:19.5px;line-height:1.35;padding:5px 0;border-bottom:1px solid #f1e6cc;font-family:'Segoe Print','Comic Sans MS',Rubik,sans-serif}
+.paper li.st{display:flex}
+.pl{flex:1}
+.stamp{flex:none;border:3px solid;border-radius:8px;padding:2px 10px;text-align:center;transform:rotate(-8deg) scale(2.2);opacity:0;transition:transform .45s cubic-bezier(.3,1.6,.5,1) .45s,opacity .2s ease .45s;font-family:Rubik,sans-serif}
+.st.show .stamp{transform:rotate(-8deg) scale(1);opacity:1}
+.stamp b{display:block;font-size:17px}.stamp small{display:block;font-size:13px;font-weight:600}
+.stamp.f{color:#c4282f;border-color:#c4282f;background:rgba(224,69,79,.07)}.stamp.x{color:#b86a00;border-color:#e8960c;background:rgba(232,150,12,.08)}
+.legc{margin-top:10px}.leg{font-size:19px;line-height:1.4}.leg b{display:block;font-size:21px}.leg.f b{color:#c4282f}.leg.x b{color:#b86a00}
+.qgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.qgrid .def p{font-size:19px;margin:2px 0 6px}.qgrid .dn{font-size:21px}.qgrid .demo{font-size:18px}
+.qgrid .def.fund{border-top:6px solid #e0454f}.qgrid .def:not(.fund){border-top:6px solid #e8960c}
+/* comics */
+.comic{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:4px}
+.cpanel{background:#fff;border-radius:16px;padding:10px 12px;box-shadow:0 2px 0 var(--line),0 10px 24px rgba(22,33,58,.08);border:3px solid #1b2d55;display:flex;flex-direction:column}
+.cm-art svg{width:100%;height:170px}
+.cm-say{position:relative;background:#fff7e0;border:2px solid #1b2d55;border-radius:14px;padding:8px 10px;font-size:18.5px;line-height:1.35;font-weight:600;margin-top:4px}
+.cm-say::before{content:"";position:absolute;top:-12px;right:40%;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:12px solid #1b2d55}
+.cm-cap{font-size:17px;line-height:1.4;color:#2a3858;margin-top:8px}
+.qpanel{background:linear-gradient(140deg,#16213a,#27447f);justify-content:center}
+.bigq{color:#ffd37a;font-size:27px;font-weight:800;line-height:1.35;text-align:center}
+/* private and public; rules; law, standards, checkers */
+.bigart{text-align:center}.bigart svg{width:200px;height:170px}
+.gq p{font-size:21px;margin:0}
+.gaapsc{display:grid;grid-template-columns:1fr 300px 1fr;gap:16px;align-items:center;margin:10px 0}
+.cafe{background:#fff;border-radius:16px;padding:10px 16px;box-shadow:0 2px 0 var(--line)}
+.cafe-h{display:flex;align-items:center;gap:10px}.cafe-h svg{width:70px;height:70px}.cafe-h b{font-size:24px;color:var(--navy2)}
+.cafe p{font-size:19px;margin:4px 0}
+.board{background:#16213a;color:#ffd37a;border-radius:10px;padding:8px 14px;font-size:24px;font-weight:800;display:flex;gap:14px;align-items:center;justify-content:center}
+.board .fix{color:#7fe3d6}
+.rbook{text-align:center}.rbook svg{width:130px;height:130px}.rbook b{display:block;font-size:19px;color:#c4421f;line-height:1.35}
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:6px}
+.pillar{background:#fff;border-radius:18px;padding:12px 18px 14px;box-shadow:0 2px 0 var(--line),0 12px 26px rgba(22,33,58,.08);text-align:center;border-top:8px solid #27447f}
+.pillar:nth-child(2){border-top-color:#0f9d90}.pillar:nth-child(3){border-top-color:#e8960c}
+.pil-art svg{width:150px;height:150px}
+.pillar b{display:block;font-size:26px;color:var(--navy2);margin:4px 0}
+.pillar p{font-size:19.5px;line-height:1.45;text-align:right;margin:0}
+/* uses and sources: three days */
+.minis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:8px}
+.minip{background:#fff;border-radius:14px;padding:8px 10px;box-shadow:0 2px 0 var(--line)}
+.mt-h{font-size:18px;color:var(--navy2);margin-bottom:4px}.mt-h b{background:#1b2d55;color:#fff;border-radius:6px;padding:1px 8px;margin-inline-end:6px}
+.mt-c{font-size:17px;margin:6px 0 0;color:#2a3858;text-align:center;font-weight:600}
+.towers.sm .tw-h{font-size:15px}
+.towers.sm .eqs{font-size:30px}
+/* share certificate */
+.share{border:4px double #a86703;background:#fff8e6;border-radius:12px;padding:16px;text-align:center;margin-top:8px}
+.sh-h{font-size:26px;font-weight:800;color:#a86703}.sh-v{font-size:22px;margin-top:6px}.sh-p{font-size:22px;font-weight:800;color:#c4421f;margin-top:4px}
+.split{display:grid;grid-template-columns:1fr 4fr;gap:6px;margin-top:12px}
+.split .sp{border-radius:10px;color:#fff;padding:8px;text-align:center;font-size:18px}.split .sp b{display:block;font-size:22px}
+.split .sp.a{background:#27447f}.split .sp.b{background:#6d4df2}
+/* what we learned cards */
+.learn{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:8px}
+.lcard{background:#fff;border-radius:18px;padding:14px 20px;box-shadow:0 2px 0 var(--line),0 10px 24px rgba(22,33,58,.07);border-right:8px solid #0f9d90}
+.lcard:nth-child(2){border-right-color:#e8960c}.lcard:nth-child(3){border-right-color:#6d4df2}.lcard:nth-child(4){border-right-color:#c4421f}
+.ln-i{font-size:38px;float:left;margin-right:6px}
+.lcard b{display:block;font-size:25px;color:var(--navy2);margin-bottom:4px}.lcard p{font-size:21px;line-height:1.45;margin:0}
+/* profit flows into retained earnings */
+.plre{display:grid;grid-template-columns:1fr 220px 1fr;gap:12px;align-items:center;margin-bottom:12px}
+.prc{padding:10px 16px}.pr-h{font-size:20px;font-weight:800;color:var(--navy2);margin-bottom:4px}
+.pr-ar{height:70px;background:linear-gradient(270deg,#ffd37a,#e8960c);clip-path:polygon(100% 25%,28% 25%,28% 0,0 50%,28% 100%,28% 75%,100% 75%);display:flex;align-items:center;justify-content:center}
+.pr-ar span{font-size:15px;font-weight:800;color:#1b2d55;padding-left:44px;text-align:center;line-height:1.2}
+/* the table header, before and after */
+.xh-l{font-size:19px;font-weight:700;color:var(--navy2);margin-bottom:4px}
+table.xhead{width:100%;border-collapse:collapse;table-layout:fixed}
+table.xhead th,table.xhead td{border:1px solid #c8c8c8;padding:6px 4px;font-size:16px;text-align:center;line-height:1.2}
+table.xhead th.ga{background:#d7f1ec}table.xhead th.gl{background:#fde2da}table.xhead th.ge{background:#e1e7f8}table.xhead th.gpl{background:#fff0c2}table.xhead th.gt{background:#f3f2f1}table.xhead th.gc{background:#ececec}
+table.xhead th.new{outline:3px solid #e0454f;outline-offset:-3px;font-style:normal}
+table.xhead td{font-weight:700}
+.card.inc{border-top:6px solid #25a65f}.card.exp{border-top:6px solid #e0454f}
+.maps .mp-h{font-size:20px;font-weight:800;margin-bottom:4px}.mp-h.inc{color:#187a43}.mp-h.bs{color:#27447f}
+/* the path from transaction to statements */
+.flow5{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-top:10px;position:relative}
+.flow5::before{content:"";position:absolute;top:58px;right:8%;left:8%;height:6px;border-radius:3px;background:linear-gradient(270deg,#0f9d90,#27447f,#e8960c,#25a65f,#6d4df2)}
+.f5{position:relative;text-align:center;background:#fff;border-radius:16px;padding:10px 12px 14px;box-shadow:0 2px 0 var(--line);border-top:7px solid var(--k,#0f9d90)}
+.f5.k1{--k:#27447f}.f5.k2{--k:#e8960c}.f5.k3{--k:#25a65f}.f5.k4{--k:#6d4df2}
+.f5-i{font-size:46px;width:90px;height:90px;margin:0 auto;border-radius:50%;background:#fff;border:5px solid var(--k,#0f9d90);display:grid;place-items:center}
+.f5 b{display:block;font-size:22px;color:var(--navy2);margin:8px 0 4px}.f5 p{font-size:18px;line-height:1.4;margin:0}
+/* the identity table slide: the story and the effects above, the sheet across the whole slide */
+.qt{display:flex;flex-direction:column;gap:8px}
+.qtop{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:10px;align-items:start}
+.qt .qstem{font-size:18.5px;line-height:1.38;padding:9px 14px}.qt .qstem p{margin:0 0 4px}
+.qnotes{display:flex;flex-direction:column;gap:5px}
+.qnotes .band{font-size:17px;padding:7px 12px;margin:0;line-height:1.35}
+.fxc{border-radius:10px;padding:5px 12px;font-size:17.5px;line-height:1.35;background:#fff;box-shadow:0 1px 0 var(--line)}
+.fxc b{margin-inline-end:4px}
+.fxc.a{border-right:7px solid #0f9d90;background:#effaf8}.fxc.l{border-right:7px solid #ff6a4d;background:#fff4f0}.fxc.e{border-right:7px solid #27447f;background:#f1f4fc}
+.qt .tasktxt.sm{font-size:15.5px;margin-bottom:3px}
+.qt .xfb .xl-fb{max-height:70px;overflow:auto;font-size:16.5px;margin-top:4px}
+.qt .xl-g td.hd{white-space:normal;line-height:1.15;font-size:14px;text-align:center;height:auto;padding:3px 4px}
+.qt .morebtn{margin-top:4px}
+.omerq{padding:10px 16px}.oq2{columns:2;column-gap:28px}.oq2 p{font-size:18.5px;line-height:1.38;margin:0 0 6px;break-inside:avoid}
+.omerq .req{font-size:20px;margin:8px 0 0;border-top:2px dashed #d9d2c3;padding-top:8px}
+table.sumt td{font-size:17.5px;padding:4px 10px}.up{color:#187a43;font-weight:800}.dn2{color:#c4282f;font-weight:800}
+/* the identity table slides: more rows of the sheet on screen (Shay: use the whole slide) */
+.qtslide h2{font-size:27px;margin-bottom:6px}.qtslide .kick{margin-bottom:0}
+.qt{gap:6px}.qt .qstem{font-size:17.5px;line-height:1.33;padding:7px 12px}
+.qt .fxc{font-size:16.5px;padding:4px 10px}.qnotes{gap:4px}.qnotes .band{font-size:16.5px;padding:5px 10px}
+.qt .tasktxt.sm{display:none}
+.qt .sheet.xl{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:6px}
+.qt .sheet.xl>.xl-rib,.qt .sheet.xl>.xl-wrap,.qt .sheet.xl>.xl-fb{grid-column:1 / -1}
+.qt .sheet.xl>.xl-top{grid-column:1;grid-row:2}.qt .sheet.xl>.xl-tools{grid-column:2;grid-row:2;margin:0;align-self:center}
+.qt .xl-rib{padding:2px 6px}.qt .xl-rib button{height:27px;min-width:27px;font-size:15px}.qt .xl-rib select{height:27px;font-size:15px}
+.qt .xl-tools button{padding:3px 9px;font-size:15px}
+.qt .xl-g td{height:27px;font-size:14.5px}
+.qt.multi .qtop{grid-template-columns:minmax(0,1.75fr) minmax(0,1fr)}
+.qt.multi .qstem{columns:2;column-gap:22px;font-size:16.5px}.qt.multi .qstem p{break-inside:avoid}
+.twtot{white-space:nowrap;font-size:21px}
+.den{white-space:nowrap}
+.sorter.o6:not(.cmp) .stbl td:last-child{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.sorter.o6 .so{font-size:15.5px;padding:4px 6px}
+.sorter.o6 .stbl td:first-child{font-size:18px}
+/* minimum reading size 16.5px outside the sheets */
+.film span{font-size:16.5px}.rg-l{font-size:16.5px}.pill{font-size:16.5px}
+.stamp b{font-size:18px}.stamp small{font-size:16.5px}
+.towers.sm .blk{font-size:16.5px}.towers.sm .tw-h{font-size:16.5px}
+.pr-ar span{font-size:16.5px}
+table.xhead th,table.xhead td{font-size:16.5px}
+.qt.multi .qstem{font-size:16.5px}
+#s-eqsrc .def p{font-size:20px;margin:2px 0 6px}#s-eqsrc .demo{font-size:19px}#s-eqsrc .card.def{padding:10px 16px}#s-eqsrc .col{gap:8px}
+/* many events: the story spreads across the slide in columns, the notes go under it */
+.qt.multi .qtop{grid-template-columns:1fr}
+.qt.multi .qstem{columns:4;column-gap:18px;font-size:16.5px;line-height:1.3;padding:6px 12px}
+.qt.multi .qstem p{margin:0 0 3px}
+.qt.multi .qstem .morebtn{margin-top:2px}
+.sorter.o6 .stbl{border-spacing:0 2px}.sorter.o6 .so{padding:2px 6px;margin:0}.sorter.o6 .stbl td{padding:2px 8px}
+/* the feedback under a full width sheet has a fixed two-line slot, so a message never pushes the sheet past the slide */
+.qt .xfb{height:48px;overflow:hidden}.qt .xfb .xl-fb{max-height:48px!important;overflow:auto;margin-top:2px;font-size:16.5px;line-height:1.35}
+.sorter.o6 .so{line-height:1.2;padding:2px 6px;font-size:16.5px}.sorter.o6 .stbl td:last-child{gap:3px}.sorter.o6 .stbl{border-spacing:0 1px}
+.sorter.o6 .tasktxt{font-size:17px;padding:5px 12px;margin-bottom:3px}.sorter.o6 .fbbar{min-height:30px;padding:4px 12px;margin-top:3px}

@@ -65,7 +65,7 @@ const FIN=(function(){
  return {PV,FV,PMT,NPER,RATE,NPV,IRR,XNPV,XIRR,DATE,ROUND};})();
 
 /* ---------- a sheet ---------- */
-function Sheet(rows,cols){this.rows=rows;this.cols=cols;this.raw={};this.fmt={};this.val={};}
+function Sheet(rows,cols){this.rows=rows;this.cols=cols;this.raw={};this.fmt={};this.sty={};this.val={};}
 Sheet.prototype.set=function(a,raw){if(raw===''||raw==null)delete this.raw[a];else this.raw[a]=String(raw);};
 Sheet.prototype.recalc=function(){const S=this,memo={},busy={};
  function cellv(a){if(a in memo)return memo[a];const pa=parseAddr(a);if(!pa||pa.r>=S.rows||pa.c>=S.cols&&pa.c>25)return ERR('#REF!');
@@ -122,7 +122,7 @@ function shift(raw,dr,dc){if(!raw||raw[0]!=='=')return raw;
  return '='+raw.slice(1).replace(/("[^"]*")|(\$?)([A-Za-z]{1,2})(\$?)(\d+)(?![\d(A-Za-z])/g,(m,str,d1,L,d2,R)=>{if(str)return str;
   let c=colIdx(L.toUpperCase()),r=+R-1;if(!d1)c+=dc;if(!d2)r+=dr;if(c<0||r<0)return '#REF!';return d1+colName(c)+d2+(r+1);});}
 
-const fmtNum=(v,f)=>{if(f==='gen')f='';const fd=/^(pct|num)(\d)$/.exec(f||'');if(fd){const d=+fd[2];const x=fd[1]==='pct'?v*100:v;const t=x.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}).replace('-','−');return fd[1]==='pct'?t+'%':t;}
+const fmtNum=(v,f)=>{if(f==='gen')f='';const ac=/^acc(\d)$/.exec(f||'');if(ac){const t=Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:+ac[1],maximumFractionDigits:+ac[1]});return Math.abs(v)<1e-9?'-':(v<0?'('+t+')':t);}const cu=/^cur(\d)$/.exec(f||'');if(cu){const t=Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:+cu[1],maximumFractionDigits:+cu[1]});return (v<0?'−':'')+'₪'+t;}const fd=/^(pct|num)(\d)$/.exec(f||'');if(fd){const d=+fd[2];const x=fd[1]==='pct'?v*100:v;const t=x.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}).replace('-','−');return fd[1]==='pct'?t+'%':t;}
  if(f==='pct'){const x=Math.round(v*100*100)/100;return x+'%';}
  if(Math.abs(v)>=1e11)return v.toExponential(4);const x=Math.round(v*1e6)/1e6;
  return x.toLocaleString('en-US',{maximumFractionDigits:2}).replace('-','−');};
@@ -138,11 +138,11 @@ function mount(host,cfg){
  const BL=cfg.build||[];let bk=0;
  const baseNow=()=>{const d={...cfg.data};BL.slice(0,bk).forEach(st=>st.cells.forEach(a=>{d[a]=cfg.bdata[a];}));return d;};
  let base=baseNow();
- const load=()=>{base=baseNow();S.raw={};S.fmt={...(cfg.fmt||{})};Object.entries(base).forEach(([a,v])=>S.set(a,v));S.recalc();};load();
+ const load=()=>{base=baseNow();S.raw={};S.sty=JSON.parse(JSON.stringify(cfg.sty||{}));S.fmt={...(cfg.fmt||{})};Object.entries(base).forEach(([a,v])=>S.set(a,v));S.recalc();};load();
  const W=cfg.widths||[];
  host.classList.add('xl');
- host.innerHTML=`<div class="xl-top"><div class="xl-name" title="תיבת השם">A1</div><div class="xl-fx">fx</div><input class="xl-bar" dir="ltr" spellcheck="false" autocomplete="off"></div>
-  <div class="xl-tools">${cfg.tools===false?'':`<button data-x="formulas" title="הצגת נוסחאות">נוסחאות</button>`}${cfg.targets?`<button data-x="check" class="xl-go">✔ בדיקה</button>${cfg.steps?'<button data-x="step" class="xl-st">▶ צעד אחר צעד</button>':''}${cfg.hints?'<button data-x="hint">💡 רמז</button>':''}${cfg.remind?'<button data-x="remind">📐 תזכורת נוסחה</button>':''}${cfg.partial?'<button data-x="part">פתרון חלקי</button>':''}<button data-x="solve">פתרון מלא</button>`:''}<button data-x="reset">איפוס</button><span class="xl-msg"></span></div>
+ host.innerHTML=`<div class="xl-rib" role="toolbar" aria-label="רצועת הכלים: בית"><span class="xl-grp"><button data-r="undo" title="ביטול (Ctrl+Z)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 3.5 2.5 6.5l3 3M3 6.5h6.5a4 4 0 0 1 0 8H7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button><button data-r="redo" title="ביצוע חוזר (Ctrl+Y)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10.5 3.5l3 3-3 3M13 6.5H6.5a4 4 0 0 0 0 8H9" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button></span><span class="xl-grp"><button data-r="b" title="מודגש (Ctrl+B)"><b>B</b></button><button data-r="i" title="נטוי (Ctrl+I)"><i>I</i></button><button data-r="u" title="קו תחתון (Ctrl+U)"><u>U</u></button><button data-r="fill" title="צבע מילוי"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 9l5-5 4 4-5 5z" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M12.5 10.5c0 1.2.9 2 .9 2.6a.9.9 0 0 1-1.8 0c0-.6.9-1.4.9-2.6z" fill="currentColor"/><rect x="1.5" y="14" width="13" height="2" fill="#ffd34d"/></svg><span class="xl-dd">▾</span></button></span><span class="xl-grp"><button data-r="row+" title="הוספת שורה מעל התא">⊕ שורה</button><button data-r="row-" title="מחיקת השורה">⊖ שורה</button></span><span class="xl-grp"><button data-r="al-right" title="יישור לימין"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12M6 6.5h8M2 10h12M6 13.5h8" stroke="currentColor" stroke-width="1.6"/></svg></button><button data-r="al-center" title="מרכז"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12M4 6.5h8M2 10h12M4 13.5h8" stroke="currentColor" stroke-width="1.6"/></svg></button><button data-r="al-left" title="יישור לשמאל"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12M2 6.5h8M2 10h12M2 13.5h8" stroke="currentColor" stroke-width="1.6"/></svg></button></span><span class="xl-grp"><select data-r="nf" title="תבנית מספר"><option value="gen">כללי</option><option value="num">מספר</option><option value="cur">מטבע</option><option value="pct">אחוזים</option><option value="acc">חשבונאי ( )</option></select><button data-r="cur" title="תבנית מטבע">₪</button><button data-r="pct" title="סגנון אחוזים (Ctrl+Shift+%)">%</button><button data-r="comma" title="סגנון פסיק">,</button><button data-r="dec+" title="הגדלת מקומות עשרוניים" class="xl-dec"><span dir="ltr">.0<svg class="xl-ar" viewBox="0 0 10 8" aria-hidden="true"><path d="M1 4h7M5.5 1.5 8 4 5.5 6.5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>.00</span></button><button data-r="dec-" title="הקטנת מקומות עשרוניים" class="xl-dec"><span dir="ltr">.00<svg class="xl-ar" viewBox="0 0 10 8" aria-hidden="true"><path d="M1 4h7M5.5 1.5 8 4 5.5 6.5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>.0</span></button></span></div><div class="xl-top"><div class="xl-name" title="תיבת השם">A1</div><div class="xl-fx">fx</div><input class="xl-bar" dir="ltr" spellcheck="false" autocomplete="off"></div>
+  <div class="xl-tools">${cfg.tools===false?'':`<button data-x="formulas" title="הצגת נוסחאות">נוסחאות</button>`}${cfg.targets?`<button data-x="check" class="xl-go">✔ בדיקה</button>${cfg.steps?'<button data-x="step" class="xl-st">▶ הצעד הבא</button>':''}${cfg.hints?'<button data-x="hint">💡 רמז</button>':''}${cfg.remind?'<button data-x="remind">📐 תזכורת נוסחה</button>':''}${cfg.partial?'<button data-x="part">פתרון חלקי</button>':''}<button data-x="solve">פתרון מלא</button>`:''}<button data-x="reset">איפוס</button><span class="xl-msg"></span></div>
   <div class="xl-wrap"${cfg.maxh?` style="max-height:${cfg.maxh}px"`:''}><table class="xl-g" tabindex="0"><thead><tr><th class="xl-c0"></th>${Array.from({length:C},(_,c)=>`<th style="width:${W[c]||92}px">${colName(c)}</th>`).join('')}</tr></thead><tbody>${Array.from({length:R-R0},(_,k)=>k+R0).map(r=>`<tr><th class="xl-rn">${r+1}</th>${Array.from({length:C},(_,c)=>`<td data-a="${addr(r,c)}"></td>`).join('')}</tr>`).join('')}</tbody></table></div>
   ${cfg.targets?'<div class="xl-fb"></div>':''}`;
  const g=host.querySelector('.xl-g'),bar=host.querySelector('.xl-bar'),nameB=host.querySelector('.xl-name'),msg=host.querySelector('.xl-msg'),fb=host.querySelector('.xl-fb');
@@ -153,18 +153,55 @@ function mount(host,cfg){
  const td=a=>g.querySelector(`td[data-a="${a}"]`);
  const setFb=h=>{if(!fb)return;fb.innerHTML=h;if(cfg.onFb)cfg.onFb();};
  let sel={r:R0,c:0},sel2={r:R0,c:0},editing=null,showF=false,marks={},hintN=0;
+ /* a sheet can open on a given cell (the row of the current transaction), scrolled into view */
+ if(cfg.start){const p=parseAddr(cfg.start);if(p){sel={...p};sel2={...p};}}
+ /* ---------- the Home ribbon, as in Excel: undo, font, fill, alignment and number format ---------- */
+ const UNDO=[],REDO=[];let lastSt=null,undoing=false;
+ const LAY=['data','bdata','solution','targets','zone','inputs','headRows','steps','traps','partial','vin','soft','fmt','need','build','sty'];
+ const lay=()=>{const o={};LAY.forEach(k=>{if(cfg[k]!==undefined)o[k]=cfg[k];});return o;};const ORIG=JSON.stringify(lay());
+ const state=()=>JSON.stringify([S.raw,S.fmt,S.sty,lay()]);
+ function snap(){const st=state();if(st===lastSt)return;if(lastSt!==null&&!undoing){UNDO.push(lastSt);if(UNDO.length>100)UNDO.shift();REDO.length=0;}lastSt=st;undoing=false;}
+ function restore(st){const [r,f,y,l]=JSON.parse(st);S.raw=r;S.fmt=f;S.sty=y;if(l)Object.assign(cfg,l);undoing=true;render();if(cfg.onChange)cfg.onChange();}
+ function undo(){if(!UNDO.length)return;REDO.push(lastSt);const st=UNDO.pop();lastSt=st;restore(st);}
+ function redo(){if(!REDO.length)return;UNDO.push(lastSt);const st=REDO.pop();lastSt=st;restore(st);}
+ const eachSel=fn=>{for(let r=Math.min(sel.r,sel2.r);r<=Math.max(sel.r,sel2.r);r++)for(let c=Math.min(sel.c,sel2.c);c<=Math.max(sel.c,sel2.c);c++)fn(addr(r,c));};
+ const sty=a=>S.sty[a]||(S.sty[a]={});
+ function toggleSty(k,v){const a0=addr(sel.r,sel.c),on=(S.sty[a0]||{})[k]===v;eachSel(a=>{const y=sty(a);if(on)delete y[k];else y[k]=v;if(!Object.keys(y).length)delete S.sty[a];});render();}
+ /* the decimals a cell shows now, read from its format or, in General, from what it displays */
+ function kindDec(a){const f=S.fmt[a]||'';const m=/^(pct|num|cur|acc)(\d)$/.exec(f);if(m)return [m[1],+m[2]];
+  const raw=S.raw[a]||'';const t=display(S,a).t||'';const k=(f==='pct'||(!f&&raw[0]!=='='&&raw.includes('%')))?'pct':'num';const dm=/\.(\d+)/.exec(t);return [k,dm?dm[1].length:0];}
+ function numFmt(x){eachSel(a=>{const [k,d]=kindDec(a);
+   if(x==='pct')S.fmt[a]='pct0';else if(x==='comma')S.fmt[a]='num2';else if(x==='cur')S.fmt[a]='cur2';
+   else if(x==='dec+')S.fmt[a]=k+Math.min(6,d+1);else if(x==='dec-')S.fmt[a]=k+Math.max(0,d-1);
+   else if(x==='gen')delete S.fmt[a];else if(x==='num')S.fmt[a]='num2';else if(x==='acc')S.fmt[a]='acc0';else if(x==='num0')S.fmt[a]='num0';});render();}
+ function ribState(){const rb=host.querySelector('.xl-rib');if(!rb)return;const a=addr(sel.r,sel.c),y=S.sty[a]||{};
+  ['b','i','u'].forEach(k=>rb.querySelector(`[data-r="${k}"]`).classList.toggle('on',!!y[k]));
+  ['right','center','left'].forEach(k=>rb.querySelector(`[data-r="al-${k}"]`).classList.toggle('on',y.al===k));
+  rb.querySelector('[data-r="fill"]').classList.toggle('on',!!y.fill);
+  const f=S.fmt[a]||'',nf=rb.querySelector('[data-r="nf"]');nf.value=/^pct/.test(f)?'pct':/^cur/.test(f)?'cur':/^acc/.test(f)?'acc':/^num/.test(f)?'num':'gen';
+  rb.querySelector('[data-r="undo"]').disabled=!UNDO.length;rb.querySelector('[data-r="redo"]').disabled=!REDO.length;}
+ function ribDo(x){if(editing)commit(0,0);
+  if(x==='undo')return undo();if(x==='redo')return redo();
+  if(x==='b'||x==='i'||x==='u')return toggleSty(x,true);
+  if(x==='fill')return pal(host.querySelector('[data-r="fill"]'));if(x==='row+')return rowOp(Math.min(sel.r,sel2.r),1);if(x==='row-')return rowOp(Math.min(sel.r,sel2.r),-1);
+  if(x.startsWith('al-'))return toggleSty('al',x.slice(3));
+  numFmt(x);}
  const inSel=(r,c)=>r>=Math.min(sel.r,sel2.r)&&r<=Math.max(sel.r,sel2.r)&&c>=Math.min(sel.c,sel2.c)&&c<=Math.max(sel.c,sel2.c);
  const selName=()=>sel.r===sel2.r&&sel.c===sel2.c?addr(sel.r,sel.c):addr(Math.min(sel.r,sel2.r),Math.min(sel.c,sel2.c))+':'+addr(Math.max(sel.r,sel2.r),Math.max(sel.c,sel2.c));
+ /* the header rows at the top of the table stay frozen together, like Freeze Panes on two rows */
+ function frzTop(row){const hs=(cfg.headRows||[]).slice().sort((a,b)=>a-b);let top=g.tHead.offsetHeight;for(let i=0;i<hs.length;i++){if(hs[i]!==hs[0]+i)return null;if(hs[i]===row)return top;const c=td(addr(hs[i]-1,0));top+=c?c.offsetHeight:0;}return null;}
  function render(){S.recalc();
   g.querySelectorAll('td').forEach(el=>{const a=el.dataset.a;if(editing&&editing.a===a)return;const p=parseAddr(a);if(el.dataset.rf){el.style.boxShadow='';el.style.backgroundColor='';delete el.dataset.rf;}
    const raw=S.raw[a];let d=display(S,a);if(showF&&raw&&raw[0]==='=')d={t:raw,n:false,f:true};
    el.className=(d.n?'n':'')+(d.f?' f':'')+(d.e?' e':'')+(inSel(p.r,p.c)?' sel':'')+(p.r===sel.r&&p.c===sel.c?' act':'')+(cfg.inputs&&cfg.inputs.includes(a)?' in':'')+((cfg.targets&&cfg.targets.includes(a))||(cfg.zone&&cfg.zone.includes(a))?' tg':'')+(marks[a]?' '+marks[a]:'')+(cfg.headRows&&cfg.headRows.includes(p.r+1)?' hd':'');
    /* freeze the table's header row in a scrolling sheet, like Freeze Panes */
-   if(cfg.maxh&&cfg.headRows&&cfg.headRows.length&&p.r+1===cfg.headRows[0]){el.classList.add('frz');el.style.top=g.tHead.offsetHeight+'px';const rn=el.parentElement.firstElementChild;rn.classList.add('frz');rn.style.top=el.style.top;}
+   if(cfg.maxh&&cfg.headRows&&cfg.headRows.length&&frzTop(p.r+1)!==null){el.classList.add('frz');el.style.top=frzTop(p.r+1)+'px';const rn=el.parentElement.firstElementChild;rn.classList.add('frz');rn.style.top=el.style.top;}
+   const sy=S.sty[a]||{};el.style.fontWeight=sy.b?'700':'';el.style.fontStyle=sy.i?'italic':'';el.style.textDecoration=sy.u?'underline':'';el.style.textAlign=sy.al||'';el.style.backgroundImage=sy.fill?`linear-gradient(${sy.fill},${sy.fill})`:'';
    el.innerHTML=(d.n||d.f?`<span dir="ltr">${esc(d.t)}</span>`:esc(d.t))+(p.r===Math.max(sel.r,sel2.r)&&p.c===Math.max(sel.c,sel2.c)&&!editing?'<i class="xl-fh"></i>':'');});
   const ae=td(addr(sel.r,sel.c));if(ae&&cfg.maxh)keepVisible(ae);
   g.querySelectorAll('th.hs').forEach(x=>x.classList.remove('hs'));const hr=g.tHead.rows[0].cells;for(let c=Math.min(sel.c,sel2.c);c<=Math.max(sel.c,sel2.c);c++)hr[c+1].classList.add('hs');
   g.querySelectorAll('tbody th.xl-rn').forEach(th=>{const r=+th.textContent-1;if(r>=Math.min(sel.r,sel2.r)&&r<=Math.max(sel.r,sel2.r))th.classList.add('hs');});
+  snap();ribState();
   nameB.textContent=selName();if(!editing||editing.where!=='bar')bar.value=S.raw[addr(sel.r,sel.c)]||'';barDir();
   if(cfg.onSelect)cfg.onSelect(selName());}
  /* ---------- editing, as in Excel: Enter mode (typing) and Edit mode (F2 or double click); references are coloured while a formula is written ---------- */
@@ -187,7 +224,8 @@ function mount(host,cfg){
  function colourise(inp,ov){const v=inp.value,fs=refsOf(v);
   if(!fs.length||inp.scrollWidth>inp.clientWidth+1){ov.innerHTML='';inp.classList.remove('xl-clr');return;}
   let h='',k=0;fs.forEach(f=>{h+=esc(v.slice(k,f.i))+`<span style="color:${f.c}">${esc(f.t)}</span>`;k=f.i+f.t.length;});h+=esc(v.slice(k));
-  ov.innerHTML=h;ov.style.direction=getComputedStyle(inp).direction;inp.classList.add('xl-clr');}
+  /* the coloured copy must lie exactly over the typed text: same font, size, spacing and padding, or a click lands on another character */
+  const cs=getComputedStyle(inp);ov.innerHTML=h;Object.assign(ov.style,{direction:cs.direction,font:cs.font,letterSpacing:cs.letterSpacing,paddingLeft:cs.paddingLeft,paddingRight:cs.paddingRight,textAlign:cs.textAlign,justifyContent:cs.textAlign==='right'||cs.textAlign==='end'&&cs.direction==='ltr'?'flex-end':'flex-start'});inp.classList.add('xl-clr');}
  const barOv=document.createElement('div');barOv.className='xl-ov xl-bov';bar.parentNode.insertBefore(barOv,bar);
  /* a formula, a number or an empty box reads left to right; only Hebrew text reads right to left */
  function barDir(){const v=bar.value,d=/[\u0590-\u05FF]/.test(v)&&!/^\s*[=+\-]/.test(v)?'rtl':'ltr';if(bar.dir!==d)bar.dir=d;}
@@ -197,13 +235,15 @@ function mount(host,cfg){
  function fitEditor(inp){meas.font=getComputedStyle(inp).font;const w=Math.ceil(meas.measureText(inp.value).width)+18;const box=inp.parentNode;box.style.width=Math.max(box.parentNode.clientWidth,w)+'px';}
  /* scroll the sheet so the cell is below the frozen headers and above the bottom edge; positions are measured against the scroll area (the stage is scaled) */
  function keepVisible(el){const w=host.querySelector('.xl-wrap'),wr=w.getBoundingClientRect(),k=wr.height/w.offsetHeight||1,r=el.getBoundingClientRect();
-  const fr=g.querySelector('td.frz'),hb=g.tHead.offsetHeight+(fr&&fr!==el&&!fr.parentElement.contains(el)?fr.offsetHeight:0);
+  const frs=[...new Set([...g.querySelectorAll('td.frz')].map(x=>x.parentElement))].filter(tr=>!tr.contains(el)),hb=g.tHead.offsetHeight+frs.reduce((t,tr)=>t+tr.offsetHeight,0);
   const top=(r.top-wr.top)/k+w.scrollTop,bot=(r.bottom-wr.top)/k+w.scrollTop;
   if(top<w.scrollTop+hb)w.scrollTop=Math.max(0,top-hb);else if(bot>w.scrollTop+w.clientHeight)w.scrollTop=bot-w.clientHeight;}
  function startEdit(initial,keep,mode){const a=addr(sel.r,sel.c);sel2={...sel};editing={a,where:'cell',orig:S.raw[a]||'',mode:mode||(keep?'edit':'enter'),ptr:null};const el=td(a);
   el.className+=' ed';el.innerHTML=`<div class="xl-ed"><div class="xl-ov" aria-hidden="true"></div><input class="xl-in" dir="auto" spellcheck="false" autocomplete="off"></div>`;const inp=el.querySelector('input');inp.value=keep?(S.raw[a]||''):initial;
   inp.focus({preventScroll:true});inp.setSelectionRange(inp.value.length,inp.value.length);
-  inp.oninput=()=>{if(editing){editing.ptr=null;}sync();suggest();};inp.onkeydown=keyEdit;inp.onkeyup=inp.onclick=()=>sync();sync();modeTip();suggest();}
+  inp.oninput=()=>{if(editing){editing.ptr=null;}sync();suggest();};inp.onkeydown=keyEdit;inp.onkeyup=inp.onclick=()=>sync();
+  /* a click inside the cell being typed switches to Edit mode, as in Excel: the arrows then move the caret, and the click places it */
+  inp.addEventListener('pointerdown',e=>{e.stopPropagation();if(editing&&editing.mode!=='edit'){editing.mode='edit';editing.ptr=null;modeTip();}});sync();modeTip();suggest();}
 
  /* function suggestions, as in Excel: letters typed after = or an operator open a list; Tab (or a click) writes the name and its opening bracket, so cells can be selected next */
  const FNS=['ABS','AVERAGE','COUNT','COUNTA','EFFECT','FV','IF','IRR','MAX','MIN','NOMINAL','NPER','NPV','PMT','POWER','PV','RATE','ROUND','SQRT','SUM','SUMPRODUCT'];
@@ -220,7 +260,6 @@ function mount(host,cfg){
   box.style.top=top+'px';box.style.left=Math.max(0,(er.left-hr.left)/k)+'px';}
  function acceptSug(f){const inp=curInput(),t=editing&&editing.sug;if(!inp||!t)return false;f=f||t.list[0];inp.value=inp.value.slice(0,t.start)+f+'('+inp.value.slice(t.end);
   const p=t.start+f.length+1;inp.setSelectionRange(p,p);inp.focus({preventScroll:true});hideSug();editing.ptr=null;sync();toastX(`נכתב \u2066${f}(\u2069. עכשיו מסמנים את התאים`);return true;}
-
  function modeTip(){if(editing)toastX(editing.mode==='edit'?'מצב עריכה (F2): החצים מזיזים את הסמן':'מצב הזנה: אחרי אופרטור, החצים בוחרים תא');}
  function curInput(){return editing?(editing.where==='bar'?bar:td(editing.a).querySelector('input')):null;}
  function endEdit(){const sb=host.querySelector('.xl-sug');if(sb)sb.remove();editing=null;barOv.innerHTML='';bar.classList.remove('xl-clr');g.querySelectorAll('td[data-rf]').forEach(el=>{el.style.boxShadow='';el.style.backgroundColor='';el.classList.remove('ptr');delete el.dataset.rf;});}
@@ -257,8 +296,9 @@ function mount(host,cfg){
  /* pointer: select, drag a range, insert a reference while writing a formula, or drag the fill handle */
  let drag=null;
  let lastDown=null;
+ /* typing between two presses means they are two separate clicks, not a double click */
+ host.addEventListener('keydown',()=>{lastDown=null;},true);
  g.addEventListener('pointerdown',e=>{const cell=e.target.closest('td');
-  /* the first press redraws the grid, so the browser's own dblclick may never arrive: two presses on the same cell count as one */
   const twice=k=>{const now=e.timeStamp,hit=lastDown&&lastDown.k===k&&now-lastDown.t<450&&Math.abs(e.clientX-lastDown.x)<8&&Math.abs(e.clientY-lastDown.y)<8;lastDown=hit?null:{k,t:now,x:e.clientX,y:e.clientY};return hit;};
   if(e.target.classList.contains('xl-fh')){e.preventDefault();if(twice('fh')){fillDownAuto();return;}drag={k:'fill',b:blk(),to:null};try{g.setPointerCapture(e.pointerId);}catch(_){}return;}
   if(!cell)return;const p=parseAddr(cell.dataset.a);
@@ -299,14 +339,16 @@ function mount(host,cfg){
   const cell=(tgt.closest&&tgt.closest('td'))||e.target.closest('td');if(!cell||!g.contains(cell))return;sel=parseAddr(cell.dataset.a);sel2={...sel};startEdit('',true,'edit');});
  const gKey=e=>{if(editing)return;const k=e.key;
   const mod=e.ctrlKey||e.metaKey;
-  if(mod&&(k==='c'||k==='C'||k==='ג'||k==='x'||k==='X'||k==='ס')){e.preventDefault();e.stopPropagation();const b=blk(),cut=/[xXס]/.test(k);
+  /* by the physical key (e.code), so it works in any keyboard layout: in Hebrew the C key types ב and the V key types ה */
+  const kc0=e.code||'',isC=kc0==='KeyC'||(!kc0&&/^[cCב]$/.test(k)),isX=kc0==='KeyX'||(!kc0&&/^[xXס]$/.test(k)),isV=kc0==='KeyV'||(!kc0&&/^[vVה]$/.test(k));
+  if(mod&&!e.shiftKey&&(isC||isX)){e.preventDefault();e.stopPropagation();const b=blk(),cut=isX;
    /* the whole selected block is copied, cell by cell, with its formats */
    CLIP={r0:b.r0,c0:b.c0,h:b.r1-b.r0+1,w:b.c1-b.c0+1,cells:[]};
    for(let r=b.r0;r<=b.r1;r++){const row=[];for(let c=b.c0;c<=b.c1;c++){const a=addr(r,c);row.push({raw:S.raw[a],fmt:S.fmt[a]});}CLIP.cells.push(row);}
    try{navigator.clipboard&&navigator.clipboard.writeText(CLIP.cells.map(row=>row.map(x=>x.raw==null?'':x.raw).join('\t')).join('\n')).catch(()=>{});}catch(_){}
-   if(cut){for(let r=b.r0;r<=b.r1;r++)for(let c=b.c0;c<=b.c1;c++)S.set(addr(r,c),'');render();if(cfg.onChange)cfg.onChange();}
+   if(cut){eachSel(a=>S.set(a,''));render();if(cfg.onChange)cfg.onChange();}
    toastX((cut?'נגזר':'הועתק')+(CLIP.h*CLIP.w>1?` (${CLIP.h*CLIP.w} תאים)`:'')+'. סמנו תא או טווח, והדביקו ב-Ctrl+V');return;}
-  if(mod&&(k==='v'||k==='V'||k==='ה')){e.preventDefault();e.stopPropagation();if(!CLIP||!CLIP.cells)return;
+  if(mod&&!e.shiftKey&&isV){e.preventDefault();e.stopPropagation();if(!CLIP||!CLIP.cells)return;
    /* one target cell: the block lands from it. A larger target: the block repeats over it, as in Excel */
    const b=blk(),th=Math.max(CLIP.h,b.r1-b.r0+1),tw=Math.max(CLIP.w,b.c1-b.c0+1);
    for(let i=0;i<th;i++)for(let j=0;j<tw;j++){const r=b.r0+i,c=b.c0+j;if(r>=R||c>=C)continue;const si=i%CLIP.h,sj=j%CLIP.w,src=CLIP.cells[si][sj],a=addr(r,c);
@@ -314,6 +356,18 @@ function mount(host,cfg){
    sel={r:b.r0,c:b.c0};sel2={r:Math.min(R-1,b.r0+th-1),c:Math.min(C-1,b.c0+tw-1)};
    render();if(cfg.onChange)cfg.onChange();return;}
   if(mod&&(k==='`'||k===';')){e.preventDefault();e.stopPropagation();toggleF();return;}
+  const kc=e.code||'';
+  if(mod&&!e.shiftKey&&(kc==='KeyZ'||kc==='KeyY'||kc==='KeyB'||kc==='KeyI'||kc==='KeyU'||kc==='KeyA')){e.preventDefault();e.stopPropagation();
+   if(kc==='KeyZ')undo();else if(kc==='KeyY')redo();else if(kc==='KeyA'){sel={r:R0,c:0};sel2={r:R-1,c:C-1};render();}else ribDo(kc[3].toLowerCase());return;}
+  if(mod&&e.shiftKey&&(kc==='Digit5'||kc==='Digit1'||kc==='Digit4')){e.preventDefault();e.stopPropagation();ribDo(kc==='Digit5'?'pct':kc==='Digit1'?'comma':'cur');return;}
+  if(mod&&e.shiftKey&&kc==='KeyZ'){e.preventDefault();e.stopPropagation();redo();return;}
+  /* Ctrl + arrow jumps to the edge of the data block, as in Excel */
+  const jmp={ArrowDown:[1,0],ArrowUp:[-1,0],ArrowLeft:[0,1],ArrowRight:[0,-1]}[k];
+  if(mod&&jmp){e.preventDefault();e.stopPropagation();const has=(r,c)=>S.raw[addr(r,c)]!=null;let r=sel.r,c=sel.c;const ok=(r,c)=>r>=R0&&r<R&&c>=0&&c<C;
+   const nr=r+jmp[0],nc=c+jmp[1];if(ok(nr,nc)){if(has(r,c)&&has(nr,nc)){while(ok(r+jmp[0],c+jmp[1])&&has(r+jmp[0],c+jmp[1])){r+=jmp[0];c+=jmp[1];}}
+    else{r=nr;c=nc;while(!has(r,c)&&ok(r+jmp[0],c+jmp[1])){r+=jmp[0];c+=jmp[1];}}}
+   if(e.shiftKey)sel2={r,c};else{sel={r,c};sel2={r,c};}render();return;}
+  if(k==='Home'&&!e.shiftKey){e.preventDefault();e.stopPropagation();sel={r:mod?R0:sel.r,c:0};sel2={...sel};render();return;}
   const nav={ArrowDown:[1,0],ArrowUp:[-1,0],ArrowLeft:[0,1],ArrowRight:[0,-1],Enter:[e.shiftKey?-1:1,0],Tab:[0,e.shiftKey?-1:1]};
   if(nav[k]){e.preventDefault();e.stopPropagation();if(e.shiftKey&&k.startsWith('Arrow')){sel2={r:Math.max(R0,Math.min(R-1,sel2.r+nav[k][0])),c:Math.max(0,Math.min(C-1,sel2.c+nav[k][1]))};}else move(...nav[k]);render();return;}
   if(k==='F2'){e.preventDefault();e.stopPropagation();startEdit('',true,'edit');return;}
@@ -326,13 +380,22 @@ function mount(host,cfg){
  bar.addEventListener('keydown',keyEdit);
  bar.addEventListener('blur',()=>{if(editing&&editing.where==='bar')setTimeout(()=>{if(editing&&editing.where==='bar'&&document.activeElement!==bar)commit(0,0);},120);});
  function toggleF(){showF=!showF;host.querySelector('[data-x="formulas"]')&&host.querySelector('[data-x="formulas"]').classList.toggle('on',showF);render();}
+ {const rb=host.querySelector('.xl-rib');
+  rb.addEventListener('pointerdown',e=>{if(e.target.closest('button'))e.preventDefault();});
+  rb.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;ribDo(b.dataset.r);focusG();});
+  rb.querySelector('select').addEventListener('change',e=>{ribDo(e.target.value);focusG();});}
+ /* a click on a column letter or a row number selects the whole column or row */
+ g.tHead.addEventListener('pointerdown',e=>{const th=e.target.closest('th');if(!th||th.classList.contains('xl-c0'))return;const c=th.cellIndex-1;if(c<0)return;e.preventDefault();if(editing)commit(0,0);
+  if(e.shiftKey){sel2={r:R-1,c};}else{sel={r:R0,c};sel2={r:R-1,c};}render();focusG();});
+ g.tBodies[0].addEventListener('pointerdown',e=>{const th=e.target.closest('th.xl-rn');if(!th)return;e.preventDefault();e.stopPropagation();if(editing)commit(0,0);const r=+th.textContent-1;
+  if(e.shiftKey){sel2={r,c:C-1};}else{sel={r,c:0};sel2={r,c:C-1};}render();focusG();},true);
  host.querySelector('.xl-tools').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const x=b.dataset.x;
   if(x==='pct'){for(let r=Math.min(sel.r,sel2.r);r<=Math.max(sel.r,sel2.r);r++)for(let c=Math.min(sel.c,sel2.c);c<=Math.max(sel.c,sel2.c);c++){const a=addr(r,c);S.fmt[a]=/^pct/.test(S.fmt[a]||'')?'':'pct';}render();}
   if(x==='formulas')toggleF();
   if(x==='hint'&&fb){const i=hintN%cfg.hints.length;hintN++;setFb(`<div class="xl-tip"><b>רמז ${i+1} מתוך ${cfg.hints.length}:</b> ${cfg.hints[i]}</div>`);}
   if(x==='remind'&&fb){setFb(`<div class="xl-tip">${cfg.remind}</div>`);}
   if(x==='part'){cfg.partial.forEach(a=>{S.set(a,cfg.solution[a]);});render();if(fb)setFb('<div class="xl-tip">השורה הראשונה מולאה. המשיכו מכאן: גררו את ידית המילוי או כתבו לבד.</div>');if(cfg.onChange)cfg.onChange();}
-  if(x==='reset'){load();marks={};hintN=0;stepK=0;{const b=host.querySelector('[data-x="step"]');if(b)b.textContent='▶ צעד אחר צעד';}if(fb)setFb('');sel={r:R0,c:0};sel2={...sel};render();if(cfg.onChange)cfg.onChange();}
+  if(x==='reset'){Object.assign(cfg,JSON.parse(ORIG));load();marks={};hintN=0;stepK=0;{const b=host.querySelector('[data-x="step"]');if(b)b.textContent='▶ הצעד הבא';}if(fb)setFb('');sel={r:R0,c:0};sel2={...sel};render();if(cfg.onChange)cfg.onChange();}
   if(x==='solve'){Object.entries(cfg.solution).forEach(([a,v])=>S.set(a,v));Object.assign(S.fmt,cfg.solFmt||{});render();check(true);if(cfg.onChange)cfg.onChange();}
   if(x==='check')check(false);
   if(x==='step')stepNext();});
@@ -355,6 +418,8 @@ function mount(host,cfg){
    const lits=s=>(s.replace(/\$?[A-Za-z]{1,2}\$?\d+/g,' ').match(/\d+(\.\d+)?/g)||[]).map(Number);
    const allowed=new Set([...lits(sf),...(cfg.allow||[0,1])]);let why='';
    const tol=w=>cfg.tol!=null?cfg.tol:Math.max(1e-6,1e-9*Math.abs(w));const near=(x,w)=>typeof x==='number'&&typeof w==='number'&&Math.abs(x-w)<=tol(w);
+   /* the period column is a label (0, 1, 2 or the payment date): whatever is written there, it is never an error, and it counts as done */
+   if(cfg.soft&&cfg.soft.includes(a)){marks[a]=raw?'ok':'';ok++;return;}
    if(cfg.vin&&cfg.vin.includes(a)){const pc=/^pct/.test(cfg.fmt&&cfg.fmt[a]||'');let w='';
     if(!raw)w='ריק: הזינו את הנתון מהשאלה';else if(isErr(got))w=`שגיאה ${got.err}`;
     else if(!near(got,want))w=pc&&near(got/100,want)?'זה אחוז: כתבו אותו עם סימן האחוז, למשל 5%':pc&&near(got*100,want)?'האחוז קטן פי 100 מהנדרש. כתבו את האחוז כפי שהוא בשאלה, למשל 5%':'הערך אינו תואם את הנתון בשאלה. קראו שוב את השאלה';
@@ -375,6 +440,56 @@ function mount(host,cfg){
   if(fb)setFb(all?`<div class="xl-ok">✔ כל ${ok} התאים נכונים${silent?' (פתרון לדוגמה)':''}.${cfg.done?' '+cfg.done:''}</div>`:`<div class="xl-no">נכונים ${ok} מתוך ${cfg.targets.length}.</div><div class="xl-notes">${notes.slice(0,2).join('<br>')}${notes.length>2?' ועוד '+(notes.length-2)+' תאים.':''}</div>`);
   if(all&&!silent)host.dataset.solved='1';if(cfg.onChange)cfg.onChange();}
  render();
+
+ /* ---------- right-click menu, fill colours, inserting and deleting rows (Shay, 2026-11-12) ---------- */
+ const FILLS=[['#fff2cc','צהוב'],['#ffd966','זהב'],['#c6efce','ירוק'],['#ddebf7','תכלת'],['#bdd7ee','כחול'],['#fce4d6','אפרסק'],['#f8cbad','כתום'],['#e4dfec','סגול'],['#d9d9d9','אפור']];
+ function setFill(c){eachSel(a=>{const y=sty(a);if(c)y.fill=c;else delete y.fill;if(!Object.keys(y).length)delete S.sty[a];});render();focusG();}
+ const swatches=()=>'<div class="xl-sw">'+FILLS.map(([c,n])=>`<button data-fill="${c}" title="${n}" style="background:${c}"></button>`).join('')+'<button data-fill="" class="xl-nofill" title="ללא מילוי">✕</button></div>';
+ let POPS=[];function closePop(){POPS.forEach(x=>x.remove());POPS=[];}
+ /* menus live on the slide itself, so the edge of the sheet never clips them; they stay inside the slide */
+ function placePop(el,x,y){const L=host.closest('.slide')||host;if(getComputedStyle(L).position==='static')L.style.position='relative';L.appendChild(el);POPS.push(el);el.addEventListener('click',popClick);el.addEventListener('pointerdown',e=>{e.stopPropagation();e.preventDefault();});
+  const hr=L.getBoundingClientRect(),k=hr.width/L.offsetWidth||1;let left=(x-hr.left)/k,top=(y-hr.top)/k;const w=el.offsetWidth,h=el.offsetHeight,W=L.offsetWidth,H=L.offsetHeight;
+  if(left+w>W-6)left=Math.max(6,left-w);if(top+h>H-6)top=Math.max(6,H-6-h);el.style.left=left+'px';el.style.top=top+'px';}
+ function pal(btn){closePop();const p=document.createElement('div');p.className='xl-pal';p.innerHTML='<div class="xl-palh">צבע מילוי</div>'+swatches();const r=btn.getBoundingClientRect();placePop(p,r.left,r.bottom);}
+ /* a row inserted at index i moves every row from i down by one; a row deleted at i moves the rows below it up. Formulas, the
+    solution, the checked cells and every explanation step move with the cells, as in Excel. */
+ function mapRow(r,i,d){if(d>0)return r>=i?r+1:r;if(r===i)return null;return r>i?r-1:r;}
+ function mapA(a,i,d){const p=parseAddr(a);if(!p)return a;const r=mapRow(p.r,i,d);return r===null?null:addr(r,p.c);}
+ function mapF(raw,i,d){if(typeof raw!=='string'||raw[0]!=='=')return raw;
+  return '='+raw.slice(1).replace(/("[^"]*")|(\$?)([A-Za-z]{1,2})(\$?)(\d+)(?::(\$?)([A-Za-z]{1,2})(\$?)(\d+))?(?![\d(A-Za-z])/g,(m,str,d1,L,d2,R1,e1,L2,e2,R2)=>{if(str)return str;
+   const r1=+R1-1;if(R2===undefined){const r=mapRow(r1,i,d);return r===null?'#REF!':d1+L+d2+(r+1);}
+   let a=r1,b=+R2-1;if(d>0){if(a>=i)a++;if(b>=i)b++;}else{if(a===i&&b===i)return '#REF!';if(a>i)a--;if(b>=i)b--;}
+   return d1+L+d2+(a+1)+':'+e1+L2+e2+(b+1);});}
+ const mapObj=(o,i,d,vf)=>{if(!o||typeof o!=='object'||Array.isArray(o))return o;const n={};Object.entries(o).forEach(([a,v])=>{const k=mapA(a,i,d);if(k)n[k]=vf?vf(v):v;});return n;};
+ const mapArr=(L,i,d)=>Array.isArray(L)?L.map(a=>mapA(a,i,d)).filter(Boolean):L;
+ function rowOp(i,d){if(editing)commit(0,0);closePop();
+  if(d>0){for(let c=0;c<C;c++)if(S.raw[addr(R-1,c)]!=null){toastX('אין מקום: השורה האחרונה של הגיליון אינה ריקה');return;}}
+  const f=v=>mapF(v,i,d);
+  S.raw=mapObj(S.raw,i,d,f);S.fmt=mapObj(S.fmt,i,d);S.sty=mapObj(S.sty,i,d);if(cfg.sty)cfg.sty=mapObj(cfg.sty,i,d);
+  ['data','bdata','solution'].forEach(k=>{if(cfg[k])cfg[k]=mapObj(cfg[k],i,d,f);});cfg.fmt=mapObj(cfg.fmt,i,d);
+  ['targets','zone','inputs','partial','vin','soft'].forEach(k=>{if(cfg[k])cfg[k]=mapArr(cfg[k],i,d);});
+  if(cfg.need&&typeof cfg.need==='object')cfg.need=mapObj(cfg.need,i,d);
+  if(cfg.traps)cfg.traps=mapObj(cfg.traps,i,d,L=>L.map(([x,m])=>[f(x),m]));
+  if(cfg.headRows)cfg.headRows=cfg.headRows.map(h=>{const r=mapRow(h-1,i,d);return r===null?null:r+1;}).filter(x=>x!==null);
+  if(cfg.steps)cfg.steps=cfg.steps.map(st=>({...st,cells:mapObj(st.cells,i,d,f),...(st.sel?{sel:mapA(st.sel,i,d)||st.sel}:{}),...(st.sel2?{sel2:mapA(st.sel2,i,d)||st.sel2}:{})}));
+  if(cfg.build)cfg.build=cfg.build.map(st=>({...st,cells:mapArr(st.cells,i,d)}));
+  marks={};render();toastX(d>0?'נוספה שורה. הנוסחאות שמתחת עודכנו':'השורה נמחקה. הנוסחאות עודכנו');if(cfg.onChange)cfg.onChange();focusG();}
+ function clearSel(){if(editing)commit(0,0);eachSel(a=>S.set(a,''));render();if(cfg.onChange)cfg.onChange();focusG();}
+ function keyTo(code,shift){gKey(new KeyboardEvent('keydown',{key:code.slice(-1).toLowerCase(),code,ctrlKey:true,metaKey:false,shiftKey:!!shift,bubbles:true}));}
+ function ctxMenu(x,y){closePop();const m=document.createElement('div');m.className='xl-cm';m.setAttribute('role','menu');
+  const it=(k,t,kb)=>`<button data-cm="${k}" role="menuitem"><span>${t}</span>${kb?`<kbd dir="ltr">${kb}</kbd>`:''}</button>`;
+  m.innerHTML=it('cut','גזירה','Ctrl+X')+it('copy','העתקה','Ctrl+C')+it('paste','הדבקה','Ctrl+V')+'<hr>'+it('ins','הוספת שורה מעל')+it('insb','הוספת שורה מתחת')+it('del','מחיקת השורה')+it('clr','ניקוי תוכן','Delete')
+   +'<hr>'+it('b','מודגש','Ctrl+B')+'<div class="xl-cmh">צבע מילוי</div>'+swatches()+'<hr><div class="xl-cmh">עיצוב תאים</div><div class="xl-cmf">'
+   +[['gen','כללי'],['num0','מספר 1,000'],['acc','חשבונאי (1,000)'],['pct','אחוזים'],['cur','₪']].map(([k,t])=>`<button data-cmf="${k}">${t}</button>`).join('')+'</div><hr>'+it('undo','ביטול','Ctrl+Z');
+  placePop(m,x,y);}
+ function popClick(e){e.stopPropagation();const sw=e.target.closest('[data-fill]');if(sw){setFill(sw.dataset.fill);closePop();return;}
+  const f=e.target.closest('[data-cmf]');if(f){closePop();if(editing)commit(0,0);numFmt(f.dataset.cmf);focusG();return;}
+  const b=e.target.closest('[data-cm]');if(b){const k=b.dataset.cm;closePop();
+   if(k==='cut')keyTo('KeyX');else if(k==='copy')keyTo('KeyC');else if(k==='paste')keyTo('KeyV');else if(k==='ins')rowOp(Math.min(sel.r,sel2.r),1);
+   else if(k==='insb')rowOp(Math.max(sel.r,sel2.r)+1,1);else if(k==='del')rowOp(Math.min(sel.r,sel2.r),-1);else if(k==='clr')clearSel();else if(k==='b')ribDo('b');else if(k==='undo')undo();focusG();return;}}
+ document.addEventListener('pointerdown',e=>{if(POPS.length&&!e.target.closest('.xl-pal,.xl-cm,[data-r="fill"]'))closePop();},true);
+ g.addEventListener('contextmenu',e=>{const cell=e.target.closest('td');if(!cell)return;e.preventDefault();e.stopPropagation();if(editing)commit(0,0);const p=parseAddr(cell.dataset.a);
+  if(!inSel(p.r,p.c)){sel={...p};sel2={...p};render();}ctxMenu(e.clientX,e.clientY);});
  return {sheet:S,render,select:(a)=>{sel=parseAddr(a);sel2={...sel};render();},put:(a,v)=>{S.set(a,v);render();if(cfg.onChange)cfg.onChange();},stepNext:()=>stepNext(),buildPending:()=>bk<BL.length,buildNext:()=>buildTo(bk+1,true),buildBack:()=>buildTo(bk-1,true),buildAll:()=>{if(bk<BL.length)buildTo(BL.length,false);},buildBackAll:()=>buildTo(0,false),buildCount:()=>BL.length,built:()=>bk,stepActive:()=>!!cfg.steps&&stepK>0&&stepK<cfg.steps.length,stepCount:()=>stepK,putMany:o=>{Object.entries(o).forEach(([a,v])=>S.set(a,v));render();if(cfg.onChange)cfg.onChange();},get:a=>S.val[a],raw:a=>S.raw[a],check,reset:()=>host.querySelector('[data-x="reset"]').click(),showFormulas:v=>{if(showF!==!!v)toggleF();},
   fmtSel:fn=>{for(let r=Math.min(sel.r,sel2.r);r<=Math.max(sel.r,sel2.r);r++)for(let c=Math.min(sel.c,sel2.c);c<=Math.max(sel.c,sel2.c);c++){const a=addr(r,c),f=fn(S.fmt[a]||'',S.val[a],display(S,a).t);if(f)S.fmt[a]=f;else delete S.fmt[a];}render();},
   fmtAt:a=>S.fmt[a]||'',active:()=>addr(sel.r,sel.c),onSel:fn=>{cfg.onSelect=fn;}};}

@@ -107,3 +107,27 @@ def LADDER(levels, W=760):
         p.append(f'<g{_st(s)}>{g}</g>')
     H = 6 + len(levels) * (h + 8)
     return f'<svg class="ladder" dir="ltr" viewBox="0 0 {W} {H}" role="img" style="direction:ltr">' + ''.join(p) + '</svg>'
+
+
+# ---------------------------------------------------------------- meeting 2 (2026-11-12): larger illustrations for the recap, the intro and the case
+TOONS.update({
+ 'book': '<rect x="22" y="14" width="70" height="92" rx="6" fill="#27447f"/><rect x="30" y="14" width="6" height="92" fill="#1b2d55"/><rect x="44" y="30" width="38" height="24" rx="4" fill="#ffd37a"/>'
+         '<text x="63" y="49" text-anchor="middle" font-size="20" font-weight="800" fill="#1b2d55">§</text><path d="M44 66h38M44 76h30M44 86h34" stroke="#c9d6ee" stroke-width="3"/><path d="M92 20q14 4 10 22" fill="none" stroke="#ff6a4d" stroke-width="4"/>',
+ 'box': '<path d="M18 52h84v54H18z" fill="#c8945a" stroke="#8a5a2b" stroke-width="3"/><path d="M18 52l10-16h64l10 16z" fill="#deb07a" stroke="#8a5a2b" stroke-width="3"/>'
+        '<g fill="#fff" stroke="#8a93aa" stroke-width="1.5"><rect x="30" y="20" width="20" height="34" rx="2" transform="rotate(-14 40 37)"/><rect x="50" y="12" width="20" height="40" rx="2"/><rect x="70" y="20" width="20" height="34" rx="2" transform="rotate(12 80 37)"/></g>'
+        '<path d="M54 22h12M54 28h12M54 34h8" stroke="#8a93aa" stroke-width="2"/><text x="60" y="88" text-anchor="middle" font-size="20" font-weight="800" fill="#5b3a1a">?!</text>',
+ 'family': '<ellipse cx="60" cy="86" rx="52" ry="14" fill="#8a5a2b"/><rect x="14" y="80" width="92" height="8" fill="#a8743f"/>'
+           + ''.join(f'<circle cx="{x}" cy="{y}" r="13" fill="{c}"/>' + _face(x, y, 13) for x, y, c in [(26, 58, '#ffd37a'), (60, 50, '#ffcf9e'), (94, 58, '#f5c28c')])
+           + '<path d="M44 78q16-12 32 0" fill="#fff" stroke="#e8960c" stroke-width="2"/><circle cx="60" cy="74" r="5" fill="#ff6a4d"/>',
+ 'shop': '<rect x="10" y="30" width="100" height="76" fill="#e8eefb" stroke="#1b2d55" stroke-width="3"/><path d="M6 30h108l-8-16H14z" fill="#ff6a4d"/>'
+         '<path d="M14 30q8 10 16 0q8 10 16 0q8 10 16 0q8 10 16 0q8 10 16 0q8 10 16 0" fill="#ffb199"/><rect x="20" y="46" width="80" height="44" fill="#fff" stroke="#27447f" stroke-width="3"/>'
+         '<rect x="34" y="58" width="12" height="20" fill="#0f9d90"/><rect x="52" y="52" width="12" height="26" fill="#25a65f"/><rect x="70" y="62" width="12" height="16" fill="#e8960c"/>'
+         + ''.join(f'<circle cx="{x}" cy="108" r="7" fill="#ffd37a" stroke="#a86703" stroke-width="1.5"/>' for x in (18, 34, 50, 66, 82, 98)),
+ 'barista': '<path d="M30 116q0-40 30-40t30 40z" fill="#0f9d90"/><rect x="46" y="84" width="28" height="32" rx="4" fill="#fff"/><circle cx="60" cy="48" r="24" fill="#ffcf9e"/>'
+            + _face(60, 50, 24) + '<path d="M36 44q2-26 24-26t24 26q-6-14-24-14t-24 14z" fill="#5b3a1a"/><path d="M84 40q10 10 4 26" fill="none" stroke="#5b3a1a" stroke-width="7" stroke-linecap="round"/>',
+ 'banker': '<path d="M28 116q0-42 32-42t32 42z" fill="#1b2d55"/><path d="M60 76l-7 12 7 26 7-26z" fill="#e0454f"/><circle cx="60" cy="46" r="24" fill="#f5c28c"/>' + _face(60, 48, 24)
+           + '<path d="M38 36q4-18 22-18t22 18q-10-8-22-8t-22 8z" fill="#3a3a3a"/><rect x="86" y="86" width="26" height="22" rx="3" fill="#ffd37a" stroke="#a86703" stroke-width="2"/><text x="99" y="102" text-anchor="middle" font-size="14" font-weight="800" fill="#a86703">₪</text>',
+ 'apt': '<rect x="22" y="18" width="76" height="92" fill="#e8eefb" stroke="#1b2d55" stroke-width="3"/><path d="M16 20h88" stroke="#1b2d55" stroke-width="5"/>'
+        + ''.join(f'<rect x="{x}" y="{y}" width="14" height="12" fill="#7fe3d6" stroke="#0f9d90" stroke-width="1.5"/>' for y in (28, 48, 68) for x in (32, 53, 74))
+        + '<rect x="52" y="88" width="16" height="22" fill="#8a5a2b"/><circle cx="96" cy="16" r="10" fill="#ffd37a"/>',
+})

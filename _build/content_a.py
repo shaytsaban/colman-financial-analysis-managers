@@ -6,17 +6,22 @@ COURSE = 'מימון וניתוח פיננסי למנהלים'
 INST = 'המסלול האקדמי של המכללה למנהל · בית הספר לתקשורת וניהול'
 SEM = 'סמסטר א׳ תשפ״ז'
 LESSON = globals().get('LESSON', 1)
-TOTAL_PARTS = {1: 4, 2: 7}[LESSON]
+TOTAL_PARTS = {1: 4, 2: 7, 3: 5}[LESSON]
 # per lesson: deck title, subtitle, chips, cover line and the next meeting. The meeting dates are not in the syllabus.
 LMETA = {
  1: dict(date='5.11.2026', h1=('חשבונאות פיננסית', 'ומידע לקבלת החלטות'), title='מבוא לחשבונאות פיננסית',
          sub='מה חשבונאות פיננסית מודדת, למה היא נועדה, מי משתמש בדוחות הכספיים, מי מחייב לפרסם אותם, ואיך כל עסקה שומרת על מאזן מאוזן.', chip='כל שאלה נפתרת ב-Excel',
          cover='מה צריך לדעת על חברה: הכנסה, הוצאה ורווח; חשבונאות פיננסית מול ניהולית; דוח רווח והפסד, שורה אחר שורה, וסיווג הוצאות; בסיס מצטבר; הדוח על המצב הכספי: נכסים והתחייבויות שוטפים ולא שוטפים, והון עצמי כמקור מימון; תרגול סיווג ובניית דוחות.',
          next_h='מי משתמש בדוחות, ומשוואת המאזן', next_t='ממשיכים מהמקום שבו עצרנו: מי משתמש בדוחות ולמה, מי מחייב לדווח (חברה פרטית וציבורית, חוק, תקינה וביקורת), ומשוואת המאזן, עסקה אחר עסקה.'),
- # meeting 2: a draft that opens with the parts meeting 1 did not reach. Not published until Shay approves it.
- 2: dict(date='', draft=True, h1=('ארבעת הדוחות', 'והקשרים ביניהם'), title='ארבעת הדוחות והקשרים ביניהם',
-         sub='מי קורא את הדוחות ומי מחייב לפרסם אותם, משוואת המאזן, הדוח על השינויים בהון, הדוח על תזרימי המזומנים, והגשרים ביניהם.', chip='כל שאלה נפתרת ב-Excel',
-         cover='מטרת הדוחות ומעגלי המשתמשים; מאפייני המידע; חברה פרטית וציבורית, כללים, חוקים וביקורת; משוואת המאזן, עסקה אחר עסקה; הדוח על השינויים בהון ודיבידנד; הדוח על תזרימי המזומנים בשלוש פעילויות, ולמה מזומן אינו רווח; שלושת הגשרים בין הדוחות; דוחות אמיתיים במאי״ה.',
+ # meeting 2, rebuilt 2026-11-12 after Shay's review: a short recap and intro, then the expanded accounting identity and full statements
+ 2: dict(date='12.11.2026', h1=('הזהות החשבונאית:', 'מעסקאות לדוחות כספיים'), title='מעסקאות לדוחות כספיים',
+         sub='רענון קצר, בשביל מה הדוחות ומי מחייב אותם, ואז העיקר: לכל נכס יש מקור מימון, תיעוד עסקאות בטבלת הזהות החשבונאית, ועריכת מאזן ודוח רווח והפסד מלאים מתוך התיעוד.', chip='כל שאלה נפתרת ב-Excel',
+         cover='רענון של מפגש 1; מטרת הדוחות ומי קורא אותם; מה הופך מידע לשימושי; חוק, תקינה ובודק; לכל נכס יש מקור מימון; טבלת הזהות החשבונאית, עמודה לכל חשבון; הכנסות והוצאות בתוך ההון העצמי; מהטבלה למאזן ולדוח רווח והפסד; תרגיל מלא נוסף בשלבים.',
+         next_h='הדוח על השינויים בהון ותזרימי המזומנים', next_t='שני הדוחות הנוספים: מה קרה לחלק של הבעלים, ומאיפה בא הכסף ולאן הלך; ואיך ארבעת הדוחות מתחברים.'),
+ # meeting 3: a draft of everything the new meeting 2 left out. Not final until Shay reviews it.
+ 3: dict(date='', draft=True, h1=('ארבעת הדוחות', 'והקשרים ביניהם'), title='ארבעת הדוחות והקשרים ביניהם',
+         sub='מי כותב את הכללים ומי בודק אותם, הדוח על השינויים בהון, הדוח על תזרימי המזומנים, והגשרים בין ארבעת הדוחות.', chip='כל שאלה נפתרת ב-Excel',
+         cover='IFRS, חוקים, מאי״ה וביקורת; הדוח על השינויים בהון ודיבידנד; הדוח על תזרימי המזומנים בשלוש פעילויות, ולמה מזומן אינו רווח; שלושת הגשרים בין הדוחות; דוחות אמיתיים במאי״ה.',
          next_h='ניתוח דוחות באמצעות יחסים פיננסיים', next_t='נזילות, איתנות, יעילות ורווחיות: איך הופכים את המספרים בדוחות לתשובות על החברה.')}[LESSON]
 XSPECS = []        # every live sheet, in deck order: the practice workbooks are built from these
 SL = []            # every slide, in order
@@ -43,7 +48,7 @@ def DEF(name, text, demo, n=0, trm=None, cls=''):
 
 
 def BAND(kind, text, n=0):
-    lab = {'dg': 'דגש', 'trap': 'המלכודת', 'note': 'הערה'}.get(kind, '')
+    lab = {'dg': 'דגש', 'trap': 'המלכודת'}.get(kind, '')   # Shay, 2026-11-12: no 'הערה' label, it adds nothing
     inner = (f'<b>{lab}:</b> ' if lab else '') + TX(text)
     return ST(n, inner, cls='band ' + kind) if n else f'<div class="band {kind}">{inner}</div>'
 
@@ -159,7 +164,7 @@ def SORTER(aid, title, h, task, options, rows):
     for a, b, c in rows:
         bs = ''.join(f'<button class="so" data-i="{i}">{o}</button>' for i, o in enumerate(options))
         r += f'<tr class="srow" data-a="{b}" data-w="{_html.escape(TX(c), quote=True)}"><td>{TX(a)}</td><td>{bs}</td></tr>'
-    body = (f'<div class="act sorter{" cmp" if len(rows) > 6 else ""}" id="{aid}-w"><div class="tasktxt"><b>המשימה:</b> {TX(task)}</div><table class="stbl">{r}</table>'
+    body = (f'<div class="act sorter o{len(options)}{" cmp" if len(rows) > 6 else ""}" id="{aid}-w"><div class="tasktxt"><b>המשימה:</b> {TX(task)}</div><table class="stbl">{r}</table>'
             f'<div class="fbbar">בחרו תשובה בכל שורה.</div><div class="actbar">{RST}<span class="score">0 / {len(rows)}</span></div></div>')
     S(aid, title, h, body, kick=f'חלק {CUR[0]} · פעילות')
 
@@ -290,6 +295,10 @@ def _fmtx(v, f=''):
     """A cell value as the sheet shows it. f: pct0..pct6, num0..num6 or '' (up to 2 decimals)."""
     if isinstance(v, str): return v
     if v is None: return ''
+    ac = re.fullmatch(r'acc(\d)', f or '')
+    if ac:
+        t = f'{abs(v):,.{int(ac.group(1))}f}'
+        return '-' if abs(v) < 1e-9 else (f'({t})' if v < 0 else t)
     m = re.fullmatch(r'(pct|num)(\d)', f or '')
     if m:
         d = int(m.group(2)); x = v * 100 if m.group(1) == 'pct' else v
@@ -352,7 +361,7 @@ def _argnames(data, sol, head):
 
 
 def _xsheet(sid, task, data, sol, widths, head, rows=None, cols=None, hints=None, remind=None, partial=None, chart=None, values=False, done='', extra='',
-            fmt=None, traps=None, allow=None, r0=1, maxh=None, tol=None, need=None, needMsg=None, xname=None, xtitle=None, steps=None, side=False, title='', signMsg=None, qtext=None, build=None, zone=None):
+            fmt=None, traps=None, allow=None, r0=1, maxh=None, tol=None, need=None, needMsg=None, xname=None, xtitle=None, steps=None, side=False, title='', signMsg=None, qtext=None, build=None, zone=None, given=None, area=None, sty=None, start=None, pdf_rows=None):
     """The live sheet itself. side=True: the sheet sits beside a question, and its feedback goes under the question (an element .xfb)."""
     fmt = fmt or {}
     # Shay, 2026-11-03: the sheet holds no number of the solution. Every number of the question (and every period number) is typed by the student,
@@ -368,6 +377,8 @@ def _xsheet(sid, task, data, sol, widths, head, rows=None, cols=None, hints=None
             r = inputs[a]; back = float(r[:-1]) / 100 if r.endswith('%') else float(r)
             assert abs(back - v) <= 1e-12 * max(1, abs(v)), (sid, a, v, r)
     data = {a: v for a, v in data.items() if a not in inputs and a not in given_f}
+    # cells that stay as they are in the sheet: earlier rows of a growing table, and its control formulas (Shay, 2026-11-12)
+    data.update(given or {})
     sol = {**inputs, **given_f, **sol}
     data = _argnames(dict(data), sol, head)
     if steps:
@@ -386,6 +397,7 @@ def _xsheet(sid, task, data, sol, widths, head, rows=None, cols=None, hints=None
         L = [chr(65 + i) for i in range(cs)]
         t = ''
         for r in range(r0, rs + 1):
+            if pdf_rows and r not in pdf_rows: continue   # the summary prints only the rows that matter (the transaction's own row)
             cells = []
             for c in L:
                 a = f'{c}{r}'
@@ -401,7 +413,12 @@ def _xsheet(sid, task, data, sol, widths, head, rows=None, cols=None, hints=None
             fm = '<p class="fml">' + ' '.join(f'<span class="fx"><b>{a}</b> ' + XL(sol[a].replace('$', '¤')) + '</span>' for a in _repr_targets(sol)) + '</p>'
         return f'<p class="qstem">{TX(task)}</p><table class="tbl2 xlp">{hdr}{t}</table>{fm}'
     NACT[0] += 1
-    cfgd = dict(rows=rs, cols=cs, widths=widths, data={k: str(v) for k, v in data.items()}, targets=targets, solution=sol, headRows=head, inputs=[], fmt=fmt, solFmt=fmt,
+    # Shay, 2026-11-10/12: use the screen. The live sheet shows spare empty rows and columns, as a full Excel window does; the slide fit
+    # caps its height to the free space, and scrolling reaches the spare rows. The spec (and the workbooks) keep the real size.
+    real_w = sum(widths) + max(0, cs - len(widths)) * 92
+    pad_c = max(0, int(((area or (560 if side else 1100)) - real_w - 50) // 80))
+    widths = list(widths) + [92] * max(0, cs - len(widths)) + [80] * pad_c
+    cfgd = dict(rows=rs + 14, cols=cs + pad_c, widths=widths, data={k: str(v) for k, v in data.items()}, targets=targets, solution=sol, headRows=head, inputs=[], fmt=fmt, solFmt=fmt,
                 hints=[TX(FXW(x)) for x in (hints or ['קראו שוב את כותרת העמודה, וכתבו את החישוב במילים לפני הנוסחה.'])], remind=TX(FXW(remind or '')), partial=partial or targets[:1], values=values, done=TX(FXW(done)))
     if not remind: cfgd.pop('remind')
     if traps: cfgd['traps'] = {a: [[f, TX(FXW(m))] for f, m in L] for a, L in traps.items()}
@@ -418,6 +435,8 @@ def _xsheet(sid, task, data, sol, widths, head, rows=None, cols=None, hints=None
         cfgd['bdata'] = {a: data[a] for a in bc}
         cfgd['data'] = {k: v for k, v in cfgd['data'].items() if k not in bc}
         cfgd['build'] = [dict(cells=cells, note=TX(FXW(note))) for cells, note in build]
+    if sty: cfgd['sty'] = sty
+    if start: cfgd['start'] = start
     if zone: cfgd['zone'] = zone   # the whole answer area is yellow, so the colour does not give away which cells change
     if need: cfgd['need'] = need; cfgd['needMsg'] = needMsg or ''
     if steps: cfgd['steps'] = [dict(cells=st['cells'], note=TX(FXW(st['note'])), **({'sel': st['sel']} if st.get('sel') else {}), **({'sel2': st['sel2']} if st.get('sel2') else {})) for st in steps]
@@ -513,5 +532,5 @@ def RL(items, start=1):
 exec(R('content_g.py'))
 exec(R('content_v.py'))
 exec(R('content_h.py'))
-for _f in {1: ['content_l1a.py', 'content_l1d.py', 'content_l1e.py'], 2: ['content_l2a.py', 'content_l2b.py', 'content_l2c.py']}[LESSON]:
+for _f in {1: ['content_l1a.py', 'content_l1d.py', 'content_l1e.py'], 2: ['content_l2a.py', 'content_l2b.py', 'content_l2c.py'], 3: ['content_l3a.py', 'content_l3b.py', 'content_l3c.py']}[LESSON]:
     exec(R(_f))
