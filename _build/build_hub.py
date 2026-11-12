@@ -3,7 +3,7 @@ import os, re
 H = os.path.dirname(os.path.abspath(__file__))
 n = lambda s: f'<span class="n">{s}</span>'
 # the recordings of each meeting: (YouTube id or '' until it is uploaded, label)
-REC = {1: [('esIJkot7pak', 'חלק א׳: עד ההפסקה'), ('c-G8rGVlHvk', 'חלק ב׳: אחרי ההפסקה')]}
+REC = {1: [('esIJkot7pak', 'חלק א׳: עד ההפסקה'), ('c-G8rGVlHvk', 'חלק ב׳: אחרי ההפסקה')], 2: [('xTjCtHV8bIE', 'השיעור המלא')]}
 
 
 def rec(k, date='5.11.2026'):
@@ -36,6 +36,16 @@ MEET, MEET_T = _ns['MEET'], _ns['MEET_T']
 MAPNOTE = ' · '.join(f'אחרי מפגש {n(m)}: ' + ', '.join(n(i) for i in ids) for m, ids in MEET.items())
 
 
+# what to solve after meeting 2, in order (Shay, 2026-11-12: a compact table under the meeting that says exactly what and why)
+_S2 = [('1', 'גלידריית תמר: 13 עסקאות בטבלת הזהות', 'מצגת מפגש 2, חלק 5 (שקפים 48 עד 55), או קובץ התרגול של מפגש 2, הגיליונות ״שלב 1״ עד ״שלב 3״', 'שנה שלמה של עסק, לבד: מאזן בלבד, הכנסות והוצאות, ואז גבייה, קרן וריבית ומס', '״הצעד הבא״ בשקף, או קובץ הפתרונות של מפגש 2'),
+       ('2', 'קפה נועה: עסקאות 1 עד 14 שפתרנו בכיתה', 'קובץ התרגול של מפגש 2, הגיליונות ״עסקה 1״ עד ״עסקה 14״', 'חזרה: לפתור שוב בלי להסתכל, עד שהבקרה 0 בכל שורה', 'קובץ הפתרונות של מפגש 2'),
+       ('3', 'חוברת: תרגיל 1-2', 'קובץ התרגילים של מפגש 2 (למטה בכרטיס)', 'משוואת המאזן לאורך שנה: הרווח נצבר בהון העצמי', 'הפתרונות של מפגש 2 בחוברת'),
+       ('4', 'חוברת: תרגילים 1-3 ו-1-4', 'קובץ התרגילים של מפגש 2', 'בשביל מי הדוחות ומה הופך מידע לשימושי: משקיע קורא רווח, ושני משרדים אחרי תיאום', 'הפתרונות של מפגש 2 בחוברת')]
+SOLVE2 = ('<div class="todo solve"><h4>📝 מה לפתור אחרי מפגש 2, ובאיזה סדר</h4><table class="slv"><tr><th></th><th>מה</th><th>איפה</th><th>על מה זה מתרגל</th><th>בודקים ב</th></tr>'
+          + ''.join(f'<tr><td class="k">{n(k)}</td><td><b>{a}</b></td><td>{b}</td><td>{c}</td><td>{d}</td></tr>' for k, a, b, c, d in _S2)
+          + '</table><p class="slvn"><b>עוד לא:</b> סיכום העמודות, דוח רווח והפסד ומאזן מתוך הטבלה, ותרגיל עומר. נלמד אותם בתחילת מפגש 3, ואז נפתח גם את התרגול שלהם.</p></div>')
+
+
 def bk(m):
     """The part of the exercise booklet that belongs to meeting m: only exercises on what that meeting taught."""
     ids = MEET[m]
@@ -53,6 +63,12 @@ css += '''
 .cgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
 .cnote{font-size:15px;color:var(--mut);margin-top:8px}
 .bkm .bkl{font-size:15.5px;color:var(--ink2);margin:-2px 0 8px}
+.slv{width:100%;border-collapse:collapse;font-size:15.5px;line-height:1.4;background:#fff;border-radius:10px;overflow:hidden}
+.slv th{background:#1b2d55;color:#fff;text-align:right;padding:6px 10px;font-weight:700}
+.slv td{border-bottom:1px solid #f0e2b4;padding:7px 10px;vertical-align:top}
+.slv td.k{font-weight:800;color:#c4421f;font-size:18px;text-align:center;width:28px}
+.slvn{font-size:15.5px;margin-top:10px;color:#4a4130}
+@media (max-width:760px){.slv,.slv tbody,.slv tr,.slv td{display:block;width:100%}.slv tr:first-child{display:none}.slv tr{border-bottom:2px solid #f0b429;padding:6px 0}.slv td{border:0;padding:2px 8px}.slv td.k{text-align:right}}
 .grp{margin-bottom:14px}.grp h5{font-size:15.5px;font-weight:800;color:var(--navy2);margin:0 0 8px}
 @media (max-width:760px){.cgrid{grid-template-columns:1fr}}
 .contact{margin-top:14px;background:#fff7e0;border:2px solid #f0b429;border-radius:18px;padding:16px 24px;display:flex;gap:16px;align-items:center}
@@ -173,7 +189,7 @@ page = f'''<!doctype html>
 <li>טבלת הזהות: עמודה לכל חשבון, והכנסות והוצאות בתוך ההון העצמי</li>
 <li>עסקאות שנוגעות רק במאזן, ועסקאות של הכנסות והוצאות</li>
 <li>תרגול עצמי: גלידריית תמר, שנה שלמה בטבלת הזהות, בשלושה שלבים עם פתרון מלא</li>
-</ul>{rec_wait(2, "12.11.2026")}</div>
+</ul>{rec(2, "12.11.2026")}</div>
 <div><h4>חומרי השיעור</h4>
 <div class="grp"><h5>1. בשיעור</h5><div class="links">
 <a class="lk p" href="lectures/lecture-2/presentation.html"><span class="e">🖥️</span><span><b>מצגת השיעור</b><span class="d">{n(NS2)} שקפים, וגיליון Excel חי ליד כל שאלה ({n(NX2)} גיליונות), עם בדיקה, רמזים ופתרון צעד אחר צעד.</span></span></a>
@@ -188,11 +204,7 @@ page = f'''<!doctype html>
 {bk(2)}
 </div>
 </div>
-<div class="todo"><h4>📝 מה עושים בשיעור {n(2)}</h4><ol>
-<li><b>בשיעור:</b> רושמים כל עסקה בטבלת הזהות שבתוך השקף. הגענו עד סוף חלק 4, שקף 47.</li>
-<li><b>אחרי השיעור:</b> קוראים את הסיכום, ופותרים לבד את התרגיל של גלידריית תמר (חלק 5 במצגת, ובקובץ התרגול). אחר כך בודקים בקובץ הפתרונות.</li>
-<li><b>מהחוברת:</b> התרגילים של מפגש 2 ({', '.join(n(i) for i in MEET[2])}), בקובץ הנפרד שלמעלה. מהטבלה לדוחות ממשיכים במפגש 3.</li>
-</ol></div>
+{SOLVE2}
 </article>
 <article class="lec" id="lesson-3">
 <div class="lec-head"><div class="lec-n">3</div><div><h3>מהזהות לדוחות, וארבעת הדוחות <span class="draft">טיוטה</span></h3><div class="sub">מפגש {n(3)}</div></div></div>
