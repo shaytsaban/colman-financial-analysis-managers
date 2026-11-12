@@ -16,6 +16,13 @@ LESSONS = {
 
 EX = []
 
+# Which exercises can be solved after which meeting: only material that meeting taught (Shay, 2026-11-12).
+# The other exercises wait for the meetings of their topics; they are added here when those meetings are built.
+MEET = {1: ['1-1', '1-6', '1-7', '2-1', '2-2'],
+        2: ['1-2', '1-3', '1-4'],
+        3: ['1-5', '2-3', '2-4', '2-5']}
+MEET_T = {1: 'מבוא: דוח רווח והפסד והמאזן', 2: 'הזהות החשבונאית, וקוראי הדוחות', 3: 'מהזהות לדוחות, וארבעת הדוחות'}
+
 
 def E(i, t, q, data, ask, cols=None, table=None, note=None):
     EX.append(dict(id=i, t=t, q=q, data=data, ask=ask, cols=cols, table=table, note=note))

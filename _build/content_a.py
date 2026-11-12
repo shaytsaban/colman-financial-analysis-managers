@@ -6,22 +6,22 @@ COURSE = 'מימון וניתוח פיננסי למנהלים'
 INST = 'המסלול האקדמי של המכללה למנהל · בית הספר לתקשורת וניהול'
 SEM = 'סמסטר א׳ תשפ״ז'
 LESSON = globals().get('LESSON', 1)
-TOTAL_PARTS = {1: 4, 2: 7, 3: 5}[LESSON]
+TOTAL_PARTS = {1: 4, 2: 5, 3: 9}[LESSON]
 # per lesson: deck title, subtitle, chips, cover line and the next meeting. The meeting dates are not in the syllabus.
 LMETA = {
  1: dict(date='5.11.2026', h1=('חשבונאות פיננסית', 'ומידע לקבלת החלטות'), title='מבוא לחשבונאות פיננסית',
          sub='מה חשבונאות פיננסית מודדת, למה היא נועדה, מי משתמש בדוחות הכספיים, מי מחייב לפרסם אותם, ואיך כל עסקה שומרת על מאזן מאוזן.', chip='כל שאלה נפתרת ב-Excel',
          cover='מה צריך לדעת על חברה: הכנסה, הוצאה ורווח; חשבונאות פיננסית מול ניהולית; דוח רווח והפסד, שורה אחר שורה, וסיווג הוצאות; בסיס מצטבר; הדוח על המצב הכספי: נכסים והתחייבויות שוטפים ולא שוטפים, והון עצמי כמקור מימון; תרגול סיווג ובניית דוחות.',
          next_h='מי משתמש בדוחות, ומשוואת המאזן', next_t='ממשיכים מהמקום שבו עצרנו: מי משתמש בדוחות ולמה, מי מחייב לדווח (חברה פרטית וציבורית, חוק, תקינה וביקורת), ומשוואת המאזן, עסקה אחר עסקה.'),
- # meeting 2, rebuilt 2026-11-12 after Shay's review: a short recap and intro, then the expanded accounting identity and full statements
- 2: dict(date='12.11.2026', h1=('הזהות החשבונאית:', 'מעסקאות לדוחות כספיים'), title='מעסקאות לדוחות כספיים',
-         sub='רענון קצר, בשביל מה הדוחות ומי מחייב אותם, ואז העיקר: לכל נכס יש מקור מימון, תיעוד עסקאות בטבלת הזהות החשבונאית, ועריכת מאזן ודוח רווח והפסד מלאים מתוך התיעוד.', chip='כל שאלה נפתרת ב-Excel',
-         cover='רענון של מפגש 1; מטרת הדוחות ומי קורא אותם; מה הופך מידע לשימושי; חוק, תקינה ובודק; לכל נכס יש מקור מימון; טבלת הזהות החשבונאית, עמודה לכל חשבון; הכנסות והוצאות בתוך ההון העצמי; מהטבלה למאזן ולדוח רווח והפסד; תרגיל מלא נוסף בשלבים.',
-         next_h='הדוח על השינויים בהון ותזרימי המזומנים', next_t='שני הדוחות הנוספים: מה קרה לחלק של הבעלים, ומאיפה בא הכסף ולאן הלך; ואיך ארבעת הדוחות מתחברים.'),
- # meeting 3: a draft of everything the new meeting 2 left out. Not final until Shay reviews it.
- 3: dict(date='', draft=True, h1=('ארבעת הדוחות', 'והקשרים ביניהם'), title='ארבעת הדוחות והקשרים ביניהם',
-         sub='מי כותב את הכללים ומי בודק אותם, הדוח על השינויים בהון, הדוח על תזרימי המזומנים, והגשרים בין ארבעת הדוחות.', chip='כל שאלה נפתרת ב-Excel',
-         cover='IFRS, חוקים, מאי״ה וביקורת; הדוח על השינויים בהון ודיבידנד; הדוח על תזרימי המזומנים בשלוש פעילויות, ולמה מזומן אינו רווח; שלושת הגשרים בין הדוחות; דוחות אמיתיים במאי״ה.',
+ # meeting 2 as taught on 12.11.2026: the class reached slide 47 (end of part 4), so the deck ends there, with one self-practice exercise
+ 2: dict(date='12.11.2026', h1=('הזהות החשבונאית:', 'כל עסקה בטבלה אחת'), title='הזהות החשבונאית ותיעוד עסקאות',
+         sub='רענון קצר, בשביל מה הדוחות ומי מחייב אותם, ואז העיקר: לכל נכס יש מקור מימון, ותיעוד עסקאות בטבלת הזהות החשבונאית, עמודה לכל חשבון, כולל הכנסות והוצאות.', chip='כל שאלה נפתרת ב-Excel',
+         cover='רענון של מפגש 1; מטרת הדוחות ומי קורא אותם; מה הופך מידע לשימושי; חוק, תקינה ובודק; לכל נכס יש מקור מימון; טבלת הזהות החשבונאית, עמודה לכל חשבון; הכנסות והוצאות בתוך ההון העצמי; תרגול עצמי: גלידריית תמר.',
+         next_h='מהטבלה לדוחות, וארבעת הדוחות', next_t='רענון קצר, ואז מסכמים את טבלת הזהות ועורכים ממנה מאזן ודוח רווח והפסד, פותרים תרגיל מלא מהעסקאות ועד הדוחות, וממשיכים לדוח על השינויים בהון ולדוח על תזרימי המזומנים.'),
+ # meeting 3 (draft): a recap of meeting 2, the parts of meeting 2 the class did not reach, then the old meeting 3 draft
+ 3: dict(date='', draft=True, h1=('מהזהות לדוחות,', 'וארבעת הדוחות'), title='מהזהות החשבונאית לארבעת הדוחות',
+         sub='רענון של מפגש 2, מטבלת הזהות למאזן ולדוח רווח והפסד, תרגיל מלא מהעסקאות ועד הדוחות, ואז מי כותב את הכללים, הדוח על השינויים בהון, הדוח על תזרימי המזומנים והגשרים ביניהם.', chip='כל שאלה נפתרת ב-Excel',
+         cover='רענון של מפגש 2; סיכום טבלת הזהות, דוח רווח והפסד ומאזן מתוך הטבלה; תרגיל מלא, מעבדת התיקונים של עומר; IFRS, חוקים, מאי״ה וביקורת; הדוח על השינויים בהון ודיבידנד; הדוח על תזרימי המזומנים בשלוש פעילויות; הגשרים בין הדוחות.',
          next_h='ניתוח דוחות באמצעות יחסים פיננסיים', next_t='נזילות, איתנות, יעילות ורווחיות: איך הופכים את המספרים בדוחות לתשובות על החברה.')}[LESSON]
 XSPECS = []        # every live sheet, in deck order: the practice workbooks are built from these
 SL = []            # every slide, in order
@@ -30,6 +30,7 @@ NACT = [0]
 
 
 def S(sid, title, h, body, kick=None, cls='', kind='slide'):
+    if kick and CUR[0]: kick = re.sub(r'^חלק \d+', f'חלק {CUR[0]}', kick)   # slides moved between meetings keep the part they are in
     SL.append(dict(id=sid, title=title, h=h, body=link_terms(body), kick=kick, cls=cls, kind=kind, part=CUR[0]))
 
 
@@ -532,5 +533,6 @@ def RL(items, start=1):
 exec(R('content_g.py'))
 exec(R('content_v.py'))
 exec(R('content_h.py'))
-for _f in {1: ['content_l1a.py', 'content_l1d.py', 'content_l1e.py'], 2: ['content_l2a.py', 'content_l2b.py', 'content_l2c.py'], 3: ['content_l3a.py', 'content_l3b.py', 'content_l3c.py']}[LESSON]:
+for _f in {1: ['content_l1a.py', 'content_l1d.py', 'content_l1e.py'], 2: ['content_l2a.py', 'content_noa.py', 'content_l2b.py', 'content_l2d.py'],
+           3: ['content_l3o.py', 'content_noa.py', 'content_l3r.py', 'content_l3s.py', 'content_l3m.py', 'content_l3a.py', 'content_l3b.py', 'content_l3t.py', 'content_l3c.py']}[LESSON]:
     exec(R(_f))

@@ -29,12 +29,30 @@ NS3, NX3 = D3.count('<section class="slide'), D3.count('act xlq')
 NS2, NX2 = D2.count('<section class="slide'), D2.count('act xlq')
 NS, NX, NM = D.count('<section class="slide'), D.count('act xlq'), D.count('class="mc"')
 NB = len(re.findall(r"^E\('", open(os.path.join(H, 'booklet.py'), encoding='utf8').read(), re.M))
+_ns = {}
+exec(open(os.path.join(H, 'booklet.py'), encoding='utf8').read(), _ns)
+MEET, MEET_T = _ns['MEET'], _ns['MEET_T']
+
+MAPNOTE = ' · '.join(f'אחרי מפגש {n(m)}: ' + ', '.join(n(i) for i in ids) for m, ids in MEET.items())
+
+
+def bk(m):
+    """The part of the exercise booklet that belongs to meeting m: only exercises on what that meeting taught."""
+    ids = MEET[m]
+    lst = ', '.join(n(i) for i in ids)
+    return (f'<div class="grp bkm"><h5>{"4" if m < 3 else "2"}. חוברת התרגילים: רק מה שנלמד במפגש {m}</h5><p class="bkl">תרגילים {lst} מהחוברת. אלה כל התרגילים שאפשר לפתור עכשיו; כל השאר מחכים למפגשים הבאים.</p><div class="links">'
+            f'<a class="lk s" href="materials/booklet-m{m}.pdf" target="_blank" rel="noopener"><span class="e">📘</span><span><b>התרגילים של מפגש {m} (PDF)</b><span class="d">{n(len(ids))} תרגילים, השאלה המלאה של כל אחד.</span></span></a>'
+            f'<a class="lk x" href="materials/booklet-m{m}-practice.xlsx" download><span class="e">📊</span><span><b>קובץ התרגול שלהם (Excel)</b><span class="d">גיליון לכל תרגיל, תאים צהובים ריקים לנוסחאות.</span></span></a>'
+            f'<a class="lk r" href="materials/booklet-m{m}-solutions.pdf" target="_blank" rel="noopener"><span class="e">✅</span><span><b>הפתרונות שלהם (PDF)</b><span class="d">הנוסחה בכל תא, התוצאה והמסקנה.</span></span></a>'
+            f'<a class="lk r" href="materials/booklet-m{m}-solutions.xlsx" download><span class="e">✅</span><span><b>קובץ הפתרונות שלהם (Excel)</b><span class="d">אותם גיליונות, עם נוסחאות חיות.</span></span></a>'
+            '</div></div>')
 ups = ''.join(f'<li><span class="un">{n(i if isinstance(i, int) else i.replace(" ו-", "-").replace(" עד ", "-"))}</span><span>{t}</span><em>בקרוב</em></li>' for i, t in UP)
 src = open(os.path.join(H, '..', '..', 'finance-for-managers', 'index.html'), encoding='utf8').read()
 css = re.search(r'<style>(.*?)</style>', src, re.S).group(1)
 css += '''
 .cgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
 .cnote{font-size:15px;color:var(--mut);margin-top:8px}
+.bkm .bkl{font-size:15.5px;color:var(--ink2);margin:-2px 0 8px}
 .grp{margin-bottom:14px}.grp h5{font-size:15.5px;font-weight:800;color:var(--navy2);margin:0 0 8px}
 @media (max-width:760px){.cgrid{grid-template-columns:1fr}}
 .contact{margin-top:14px;background:#fff7e0;border:2px solid #f0b429;border-radius:18px;padding:16px 24px;display:flex;gap:16px;align-items:center}
@@ -105,12 +123,13 @@ page = f'''<!doctype html>
 <h2 class="sec">קובצי הקורס</h2>
 <div class="cgrid">
 <a class="lk s" href="materials/syllabus.pdf" target="_blank" rel="noopener"><span class="e">📋</span><span><b>סילבוס הקורס (PDF)</b><span class="d">שבעת נושאי הקורס, שנלמדים ב-13 מפגשים, קריאה, מדיניות הקורס, והציון: מבחן מסכם, {n('100%')}.</span></span></a>
-<a class="lk s" href="materials/booklet.pdf" target="_blank" rel="noopener"><span class="e">📘</span><span><b>חוברת תרגילים (PDF)</b><span class="d">{n(NB)} תרגילים, מסודרים לפי שבעת נושאי הקורס.</span></span></a>
+<a class="lk s" href="materials/booklet.pdf" target="_blank" rel="noopener"><span class="e">📘</span><span><b>חוברת תרגילים (PDF)</b><span class="d">{n(NB)} תרגילים לכל הקורס, מסודרים לפי שבעת הנושאים. ליד כל מפגש למטה: רק התרגילים שלו, בקובץ נפרד.</span></span></a>
 <a class="lk x" href="materials/booklet-practice.xlsx" download><span class="e">📊</span><span><b>קובץ התרגול של החוברת (Excel)</b><span class="d">גיליון לכל תרגיל: הנתונים בתאים כחולים, ותאים צהובים ריקים לנוסחאות שלכם.</span></span></a>
 <a class="lk r" href="materials/booklet-solutions.pdf" target="_blank" rel="noopener"><span class="e">✅</span><span><b>פתרונות החוברת (PDF)</b><span class="d">לכל תרגיל: הנוסחה בכל תא, התוצאה והמסקנה. פותחים רק אחרי שפותרים.</span></span></a>
 <a class="lk r" href="materials/booklet-solutions.xlsx" download><span class="e">✅</span><span><b>קובץ הפתרונות של החוברת (Excel)</b><span class="d">אותם גיליונות, עם נוסחאות חיות.</span></span></a>
 </div>
 <p class="cnote">מדיניות בינה מלאכותית: היתר מלא. חובה לבדוק את אמינות התוצרים, לציין את השימוש, ולמלא טופס הצהרה באתר הקורס. פתרונות החוברת מתפרסמים לצד התרגילים. כדאי לפתור קודם לבד.</p>
+<p class="cnote"><b>מה מתרגלים אחרי כל מפגש?</b> {MAPNOTE}. התרגילים האחרים בחוברת מחכים למפגשים הבאים.</p>
 </section>
 <section class="block">
 <h2 class="sec">המפגשים</h2>
@@ -134,26 +153,26 @@ page = f'''<!doctype html>
 <div class="grp"><h5>3. תרגול</h5><div class="links">
 <a class="lk x" href="materials/practice-1.xlsx" download><span class="e">📊</span><span><b>קובץ התרגול של מפגש 1 (Excel)</b><span class="d">כל {n(NX)} השאלות של המצגת, באותן כתובות תאים. התאים הצהובים ריקים: כותבים בהם את הנוסחאות.</span></span></a>
 <a class="lk r" href="materials/practice-1-solutions.xlsx" download><span class="e">✅</span><span><b>קובץ הפתרונות של מפגש 1 (Excel)</b><span class="d">אותם גיליונות עם נוסחאות חיות. פותחים רק אחרי שפותרים.</span></span></a>
-<a class="lk s" href="materials/booklet.pdf" target="_blank" rel="noopener"><span class="e">📘</span><span><b>חוברת התרגילים: נושא 1</b><span class="d">תרגילים 1-1, 1-6 ו-1-7 בחוברת, וגיליונות באותם מספרים בקובץ התרגול של החוברת. תרגילים 1-2 עד 1-5 אחרי מפגש 2. הפתרונות בקובצי הקורס.</span></span></a>
 </div></div>
+{bk(1)}
 </div>
 </div>
 <div class="todo"><h4>📝 מה עושים בשיעור {n(1)}</h4><ol>
 <li><b>בשיעור:</b> עובדים במצגת, בגיליונות שבתוך השקפים.</li>
 <li><b>אחרי השיעור:</b> קוראים את הסיכום, ופותרים בקובץ התרגול את כל השאלות של המצגת. אחר כך בודקים בקובץ הפתרונות.</li>
-<li><b>לקראת מפגש 2:</b> תרגילים 1-1, 1-6 ו-1-7 בחוברת, ובדיקה מול הפתרונות.</li>
+<li><b>מהחוברת:</b> התרגילים של מפגש 1 ({', '.join(n(i) for i in MEET[1])}), בקובץ הנפרד שלמעלה, ובדיקה מול הפתרונות שלהם.</li>
 </ol></div>
 </article>
 <article class="lec" id="lesson-2">
-<div class="lec-head"><div class="lec-n">2</div><div><h3>הזהות החשבונאית: מעסקאות לדוחות כספיים</h3><div class="sub">מפגש {n(2)} · {n("12.11.2026")}</div></div></div>
+<div class="lec-head"><div class="lec-n">2</div><div><h3>הזהות החשבונאית: כל עסקה בטבלה אחת</h3><div class="sub">מפגש {n(2)} · {n("12.11.2026")}</div></div></div>
 <div class="lec-body">
 <div><h4>מה לומדים בשיעור</h4><ul class="learn">
 <li>רענון של מפגש 1: פעילות, רווח והפסד, ומאזן</li>
 <li>בשביל מי הדוחות, מה הופך מידע לשימושי, ומי מחייב לערוך אותם</li>
 <li>לכל נכס יש מקור מימון: הזהות החשבונאית</li>
 <li>טבלת הזהות: עמודה לכל חשבון, והכנסות והוצאות בתוך ההון העצמי</li>
-<li>מהטבלה לדוחות: מאזן ודוח רווח והפסד מלאים</li>
-<li>תרגיל מלא נוסף בשלבים, ותרגול עצמי: שמונה תרגולים עם גיליון וכפתור ״הסבר נוסף״</li>
+<li>עסקאות שנוגעות רק במאזן, ועסקאות של הכנסות והוצאות</li>
+<li>תרגול עצמי: גלידריית תמר, שנה שלמה בטבלת הזהות, בשלושה שלבים עם פתרון מלא</li>
 </ul>{rec_wait(2, "12.11.2026")}</div>
 <div><h4>חומרי השיעור</h4>
 <div class="grp"><h5>1. בשיעור</h5><div class="links">
@@ -165,21 +184,23 @@ page = f'''<!doctype html>
 <div class="grp"><h5>3. תרגול</h5><div class="links">
 <a class="lk x" href="materials/practice-2.xlsx" download><span class="e">📊</span><span><b>קובץ התרגול של מפגש 2 (Excel)</b><span class="d">כל {n(NX2)} השאלות של המצגת, באותן כתובות תאים. התאים הצהובים ריקים.</span></span></a>
 <a class="lk r" href="materials/practice-2-solutions.xlsx" download><span class="e">✅</span><span><b>קובץ הפתרונות של מפגש 2 (Excel)</b><span class="d">אותם גיליונות עם נוסחאות חיות. פותחים רק אחרי שפותרים.</span></span></a>
-<a class="lk s" href="materials/booklet.pdf" target="_blank" rel="noopener"><span class="e">📘</span><span><b>חוברת התרגילים</b><span class="d">תרגילים 1-2, 2-1 ו-2-2 בחוברת, וגיליונות באותם מספרים בקובץ התרגול של החוברת. הפתרונות בקובצי הקורס.</span></span></a>
 </div></div>
+{bk(2)}
 </div>
 </div>
 <div class="todo"><h4>📝 מה עושים בשיעור {n(2)}</h4><ol>
-<li><b>בשיעור:</b> רושמים כל עסקה בטבלת הזהות שבתוך השקף, ובונים ממנה את שני הדוחות.</li>
-<li><b>אחרי השיעור:</b> קוראים את הסיכום, ופותרים בקובץ התרגול את טבלאות הזהות ואת שמונת תרגולי העצמי. אחר כך בודקים בקובץ הפתרונות.</li>
-<li><b>לקראת מפגש 3:</b> תרגילים 1-2, 2-1 ו-2-2 בחוברת, ובדיקה מול הפתרונות.</li>
+<li><b>בשיעור:</b> רושמים כל עסקה בטבלת הזהות שבתוך השקף. הגענו עד סוף חלק 4, שקף 47.</li>
+<li><b>אחרי השיעור:</b> קוראים את הסיכום, ופותרים לבד את התרגיל של גלידריית תמר (חלק 5 במצגת, ובקובץ התרגול). אחר כך בודקים בקובץ הפתרונות.</li>
+<li><b>מהחוברת:</b> התרגילים של מפגש 2 ({', '.join(n(i) for i in MEET[2])}), בקובץ הנפרד שלמעלה. מהטבלה לדוחות ממשיכים במפגש 3.</li>
 </ol></div>
 </article>
 <article class="lec" id="lesson-3">
-<div class="lec-head"><div class="lec-n">3</div><div><h3>ארבעת הדוחות והקשרים ביניהם <span class="draft">טיוטה</span></h3><div class="sub">מפגש {n(3)}</div></div></div>
+<div class="lec-head"><div class="lec-n">3</div><div><h3>מהזהות לדוחות, וארבעת הדוחות <span class="draft">טיוטה</span></h3><div class="sub">מפגש {n(3)}</div></div></div>
 <div class="lec-body">
 <div><h4>מה לומדים בשיעור</h4><ul class="learn">
-<li>מי כותב את הכללים ומי בודק: IFRS, חוקים, מאי״ה וביקורת</li>
+<li>רענון של מפגש 2, ומהטבלה לדוחות: סיכום העמודות, דוח רווח והפסד ומאזן</li>
+<li>תרגיל מלא, מהזהות ועד הדוחות: מעבדת התיקונים של עומר</li>
+<li>מי כותב את הכללים ומי בודק: תקני דיווח, חוקים, מאי״ה וביקורת</li>
 <li>הדוח על השינויים בהון, ודיבידנד</li>
 <li>הדוח על תזרימי המזומנים: שוטפת, השקעה ומימון, ולמה מזומן אינו רווח</li>
 <li>שלושה גשרים בין הדוחות, ודוחות אמיתיים במאי״ה</li>
@@ -191,6 +212,7 @@ page = f'''<!doctype html>
 <a class="lk x" href="materials/practice-3.xlsx" download><span class="e">📊</span><span><b>קובץ התרגול של מפגש 3 (Excel, טיוטה)</b><span class="d">השאלות של המצגת, באותן כתובות תאים.</span></span></a>
 <a class="lk r" href="materials/practice-3-solutions.xlsx" download><span class="e">✅</span><span><b>קובץ הפתרונות של מפגש 3 (Excel, טיוטה)</b><span class="d">אותם גיליונות עם נוסחאות חיות.</span></span></a>
 </div></div>
+{bk(3)}
 </div>
 </div>
 </article>
