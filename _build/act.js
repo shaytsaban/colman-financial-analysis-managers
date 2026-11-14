@@ -98,3 +98,20 @@ window.__fitSheets=function(slide){const st=document.getElementById('stage'),sr=
  /* once the height is capped, the active cell (the row of the current transaction) is scrolled into view */
  slide.querySelectorAll('.sheet').forEach(h=>{if(h.__api&&h.__api.render)h.__api.render();});};
 })();
+
+/* ---------- every live sheet is fitted to the free height of its slide, whatever way the slide was opened ---------- */
+(function(){
+const stage=document.getElementById('stage');
+const fit=s=>{if(s&&window.__fitSheets&&s.querySelector('.xl-wrap'))window.__fitSheets(s);};
+const refit=()=>fit(document.querySelector('.slide.on'));
+/* the deck shows its first slide before the fit above is defined: fit again now, once all is loaded, and after the fonts */
+refit();addEventListener('load',()=>{refit();setTimeout(refit,400);});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(refit);
+/* each time a slide becomes the current one */
+new MutationObserver(ms=>ms.forEach(m=>{const t=m.target;if(!t.classList||!t.classList.contains('slide')||!t.classList.contains('on'))return;
+ if((m.oldValue||'').split(/\s+/).includes('on'))return;requestAnimationFrame(()=>fit(t));setTimeout(()=>fit(t),520);}))
+ .observe(stage,{subtree:true,attributes:true,attributeFilter:['class'],attributeOldValue:true});
+/* and whenever the question area above a sheet changes height */
+if(window.ResizeObserver){const ro=new ResizeObserver(es=>{const s=es[0]&&es[0].target.closest('.slide');if(s&&s.classList.contains('on'))fit(s);});
+ document.querySelectorAll('.qtop,.qr').forEach(e=>ro.observe(e));}
+})();
