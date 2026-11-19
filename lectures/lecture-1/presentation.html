@@ -897,6 +897,73 @@ tr.tot .morebtn.drill{font-weight:800}
 .seg.c0,.vleg i.c0{background:#5d6a86}.seg.c1,.vleg i.c1{background:#e8960c}.seg.c2,.vleg i.c2{background:#6d4df2}.seg.c3,.vleg i.c3{background:#c4421f}.seg.c4,.vleg i.c4{background:#8a5a2b}.seg.c5,.vleg i.c5{background:#0f9d90}
 .vleg{display:flex;flex-wrap:wrap;gap:16px;margin-top:8px;font-size:16.5px}.vleg i{display:inline-block;width:16px;height:16px;border-radius:4px;margin-left:6px;vertical-align:-2px}
 .towers.an4{grid-template-columns:repeat(4,1fr);height:440px}
+
+/* fly slides, round 2 (Shay, 2026-11-19): amounts beside their labels, one colour per category, the amount flies in an arc */
+.fdst .flyt{width:auto;min-width:0;margin-inline-start:0}
+.flyt td:first-child{padding-left:22px;white-space:nowrap}
+.flyt td.amt{min-width:0;width:130px;text-align:left}
+.flyt tr.fl td:first-child{border-right:6px solid transparent}
+.fs.grev,.flypill.grev{border-right-color:#187a43;background:#e3f6ea}.flyt tr.fl.grev td:first-child{border-right-color:#187a43}
+.fs.gcogs,.flypill.gcogs{border-right-color:#e8960c;background:#fff1d6}.flyt tr.fl.gcogs td:first-child{border-right-color:#e8960c}
+.fs.gsell,.flypill.gsell{border-right-color:#6d4df2;background:#efebff}.flyt tr.fl.gsell td:first-child{border-right-color:#6d4df2}
+.fs.ggna,.flypill.ggna{border-right-color:#2f6fd6;background:#e6efff}.flyt tr.fl.ggna td:first-child{border-right-color:#2f6fd6}
+.fs.gfin,.flypill.gfin{border-right-color:#c4421f;background:#fde9e3}.flyt tr.fl.gfin td:first-child{border-right-color:#c4421f}
+.fs.gtax,.flypill.gtax{border-right-color:#8a5a2b;background:#f4ebe1}.flyt tr.fl.gtax td:first-child{border-right-color:#8a5a2b}
+.flyt tr.fl.ga td:first-child{border-right-color:#0f9d90}.flyt tr.fl.gl td:first-child{border-right-color:#e0603f}.flyt tr.fl.ge td:first-child{border-right-color:#3b5bdb}.flyt tr.fl.gpl td:first-child{border-right-color:#e8960c}
+.flyt tr.fl.gtot td:first-child{border-right-color:#1b2d55}
+.flyt tr.fl.grev .fa.show{background:#e3f6ea}.flyt tr.fl.gcogs .fa.show{background:#fff1d6}.flyt tr.fl.gsell .fa.show{background:#efebff}.flyt tr.fl.ggna .fa.show{background:#e6efff}
+.flyt tr.fl.gfin .fa.show{background:#fde9e3}.flyt tr.fl.gtax .fa.show{background:#f4ebe1}.flyt tr.fl.gtot .fa.show{background:#e1e7f8}
+.flyt tr.fl.ga .fa.show{background:#e9f7f4}.flyt tr.fl.gl .fa.show{background:#fdeee9}.flyt tr.fl.ge .fa.show{background:#edf1fd}.flyt tr.fl.gpl .fa.show{background:#fff6dd}
+.flyt .fa{display:inline-block;border-radius:7px;padding:1px 8px}
+.flypill{position:absolute;z-index:60;margin:0;border-right:6px solid #8a93a8;border-radius:9px;padding:4px 12px;font-weight:800;font-size:18px;color:#16213a;box-shadow:0 12px 26px rgba(0,0,0,.28);white-space:nowrap;direction:ltr}
+.flyt tr.fl.gtot.landing td{animation:sumflash 1s ease}
+@keyframes sumflash{30%{background:#dfe6fb}100%{background:transparent}}
+/* one amount per click; a line fed by several sources shows its running total */
+.flyt .fa.st:not(.show){display:none}
+.flyt .fa.show:has(~ .fa.show){display:none}
+.flyt .fa.show{animation:fain .35s ease .8s both}
+@keyframes fain{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
+.fly.two{grid-template-columns:290px minmax(0,1fr)}
+.fly.two .fs{font-size:16.5px;padding:3px 10px}
+.fcols{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+.fch{font-size:18.5px;font-weight:800;color:#fff;background:#1b2d55;border-radius:8px;padding:3px 12px;margin-bottom:4px;text-align:center}
+.fcols .flyt{width:100%}
+.fcols .flyt td{font-size:17px;padding:3px 8px}
+.fcols .flyt td.amt{width:105px}
+.flyt tr.sh td{font-weight:800;color:#1b2d55;font-size:16.5px;padding:6px 8px 2px;border-bottom:2px solid #c8d0e6;text-decoration:none}
+/* horizontal analysis, round 2: numbers centred under their headings, one number per click, each opens its calculation */
+.hor th{text-align:center}.hor th:first-child{text-align:right}
+.hor td.c{text-align:center;font-variant-numeric:tabular-nums}
+.hor .hc{display:inline-block}
+.hor .hc:not(.show){pointer-events:none}
+.morebtn.calc{border:0;background:none;margin:0;padding:1px 8px;font:inherit;font-size:18px;font-weight:800;border-radius:7px;cursor:pointer;text-decoration:underline dotted 2px;text-underline-offset:4px}
+.morebtn.calc.up{color:#087469;background:#e3f6ea}.morebtn.calc.dn2{color:#c4421f;background:#fde9e3}
+.hrd td.st{opacity:1!important;transition:background .45s}
+.hrd td.st.show.k1{background:#e3f6ea;font-weight:800}.hrd td.st.show.k2{background:#d3dcfa;font-weight:800}.hrd td.st.show.k3{background:#fff0c2;font-weight:800}
+.rdc{margin-bottom:8px;padding:8px 14px}.rdc.k1{border-right:6px solid #187a43}.rdc.k2{border-right:6px solid #3b5bdb}.rdc.k3{border-right:6px solid #e8960c}.rdc.warn{border-right:6px solid #c4421f;background:#fff4f1}
+.rdc .ct{font-size:18px}.rdc .lg{font-size:17px;margin:2px 0 0}
+/* analysis sheets: a larger font, Excel-like column widths (no stretching) */
+.qt.big .xl-g td{font-size:19px;height:36px}
+.qt.big .xl-g td.hd{font-size:17px}
+/* one question beside the data it asks about */
+.mc1.wd{align-items:flex-start;gap:22px}
+.mc1d{flex:0 0 520px}
+.mc1d .tbl2 td,.mc1d .tbl2 th{font-size:17.5px;padding:5px 8px}
+.mc1d .tbl2 th{text-align:center}.mc1d .tbl2 th:first-child{text-align:right}.mc1d .tbl2 td.c{text-align:center;font-variant-numeric:tabular-nums}
+.hrd td.st.show.k4{background:#fde9e3;font-weight:800}.rdc.k4{border-right:6px solid #c4421f}
+.mdt td.st{opacity:1!important}.mdt td.st.k1{background:#e3f6ea;font-weight:800}.mdt td.st.k2{background:#d3dcfa;font-weight:800}.mdt td.st.k3{background:#fff0c2;font-weight:800}
+.mcfoot{font-size:16.5px;line-height:1.35;color:#5d6a86;margin:10px 4px 0}
+.lcard .lex{font-size:16.5px;color:#087469;font-weight:700;margin-top:4px}
+.anrow{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:20px;align-items:start}
+.anx td,.anx th{font-size:19.5px;padding:8px 12px}
+.anx .morebtn.calc{font-size:19.5px}
+.mcfoot{margin-top:6px}
+.mc1.wd .mc .q{font-size:20px}
+.mc1.wd .mc .o{font-size:18.5px;padding:6px 12px;margin-top:5px}
+.mc1.wd .mc .w{font-size:17.5px}
+.mc1d{flex:0 0 470px}
+.qt.big .xl-g td{font-size:18px;height:32px}
+.rdc .ct{font-size:19px}.rdc .lg{font-size:18px}
 </style>
 </head>
 <body>
@@ -1634,7 +1701,7 @@ window.__fitSheets=function(slide){const st=document.getElementById('stage'),sr=
  slide.querySelectorAll('.xl-wrap').forEach(w=>{
   /* columns widen to the width of the sheet's area (the row-number column stays) */
   const tb=w.querySelector('table'),ths=[...tb.tHead.rows[0].cells].slice(1);ths.forEach(th=>{if(!th.dataset.w0)th.dataset.w0=parseFloat(th.style.width)||92;th.style.width=th.dataset.w0+'px';});
-  const base=ths.reduce((t,th)=>t+ +th.dataset.w0,0),wroom=w.clientWidth-36-2-(w.scrollHeight>w.clientHeight+1?0:16);/* room for a vertical scrollbar that may appear once the height is capped: on a right to left sheet it sits on the left, over the last column and its fill handle */if(wroom>base+8){const f=Math.min(1.8,wroom/base);ths.forEach(th=>{th.style.width=Math.floor(th.dataset.w0*f)+'px';});}
+  const base=ths.reduce((t,th)=>t+ +th.dataset.w0,0),wroom=w.clientWidth-36-2-(w.scrollHeight>w.clientHeight+1?0:16);/* room for a vertical scrollbar that may appear once the height is capped: on a right to left sheet it sits on the left, over the last column and its fill handle */const wc=w.closest('[data-wcap]'),cap=wc?+wc.dataset.wcap:1.8;if(wroom>base+8&&cap>1){const f=Math.min(cap,wroom/base);ths.forEach(th=>{th.style.width=Math.floor(th.dataset.w0*f)+'px';});}
   w.style.maxHeight='none';const top=(w.getBoundingClientRect().top-sr.top)/k,need=w.scrollHeight;const xf=w.closest('.xw')&&w.closest('.xw').querySelector('.xfb'),fbr=xf?(xf.getBoundingClientRect().height/k+(xf.textContent.trim()?6:0)):0;const room=Math.floor(limit-top-fbr);
   w.style.maxHeight=Math.max(150,Math.min(need,room))+'px';});
  /* the explanations beside the sheet use the height left in the question column, and scroll inside it */
@@ -1664,11 +1731,14 @@ if(window.ResizeObserver){const ro=new ResizeObserver(es=>{const s=es[0]&&es[0].
 (function(){
  function fly(t){const sl=t.closest('.slide');if(!sl||!sl.classList.contains('on'))return;if(getComputedStyle(sl).position==='static')sl.style.position='relative';
   const sr=sl.getBoundingClientRect(),k=sr.width/sl.offsetWidth||1,tr=t.getBoundingClientRect();
-  t.dataset.from.split(' ').forEach((key,i)=>{const s=sl.querySelector('[data-src="'+key+'"]');if(!s)return;const r=s.getBoundingClientRect(),c=s.cloneNode(true);c.classList.add('flying');c.removeAttribute('data-src');
-   c.style.cssText='position:absolute;margin:0;z-index:60;left:'+(r.left-sr.left)/k+'px;top:'+(r.top-sr.top)/k+'px;width:'+r.width/k+'px';sl.appendChild(c);
-   const dx=(tr.right-r.right)/k,dy=(tr.top+tr.height/2-(r.top+r.height/2))/k;
-   const a=c.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+dx+'px,'+dy+'px) scale(.7)',opacity:.35}],{duration:750,delay:i*140,easing:'cubic-bezier(.45,.05,.25,1)',fill:'forwards'});
+  const row=t.closest('tr');
+  t.dataset.from.split(' ').forEach((key,i)=>{const s=sl.querySelector('[data-src="'+key+'"]');if(!s)return;const num=s.querySelector('b')||s,r=num.getBoundingClientRect(),c=document.createElement('div');
+   c.className='flypill '+[...s.classList].filter(x=>/^g/.test(x)).join(' ');c.textContent=num.textContent;sl.appendChild(c);
+   const x0=(r.left-sr.left)/k,y0=(r.top-sr.top)/k-4;c.style.left=x0+'px';c.style.top=y0+'px';
+   const dx=(tr.left-r.left)/k-12,dy=(tr.top-r.top)/k,lift=-60-Math.abs(dx)*.12;
+   const a=c.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+dx*.5+'px,'+(dy*.5+lift)+'px) scale(1.15)',opacity:1,offset:.5},{transform:'translate('+dx+'px,'+dy+'px) scale(.95)',opacity:.9}],{duration:950,delay:i*220,easing:'cubic-bezier(.45,.05,.3,1)',fill:'forwards'});
    a.onfinish=()=>c.remove();s.classList.add('used');});
+  if(row){row.classList.add('landing');setTimeout(()=>row.classList.remove('landing'),1100);}
   t.classList.add('landing');setTimeout(()=>t.classList.remove('landing'),1000);}
  function watch(){document.querySelectorAll('.fa[data-from]').forEach(t=>{new MutationObserver(()=>{const on=t.classList.contains('show');
    if(on&&!t.__f){t.__f=1;fly(t);}else if(!on&&t.__f){t.__f=0;const sl=t.closest('.slide');t.dataset.from.split(' ').forEach(key=>{const s=sl&&sl.querySelector('[data-src="'+key+'"]');if(s)s.classList.remove('used');});}

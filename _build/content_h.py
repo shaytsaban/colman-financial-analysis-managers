@@ -56,14 +56,15 @@ def POP(n, html, cls=''):
     return ST(n, html, cls='pop ' + cls)
 
 
-def MC1(sid, title, q, opts, a, why, art=None, story=None):
+def MC1(sid, title, q, opts, a, why, art=None, story=None, side=None, foot=None):
     """One multiple choice question on its own slide, in large type, with an illustration beside it."""
     item = mc(sid + '-q', q, opts, a, why)
     if MODE == 'pdf':
-        S(sid, title, title, (f'<p>{TX(story)}</p>' if story else '') + item); return
-    side = f'<div class="mc1art">{_svg(TOONS.get(art, art))}</div>' if art else ''
+        S(sid, title, title, (side or '') + (f'<p>{TX(story)}</p>' if story else '') + item + (f'<p class="mcfoot">* {TX(foot)}</p>' if foot else '')); return
+    sideh = side
+    side = f'<div class="mc1d">{sideh}</div>' if sideh else (f'<div class="mc1art">{_svg(TOONS.get(art, art))}</div>' if art else '')
     st = f'<div class="card qstem mc1s"><p>{TX(story)}</p></div>' if story else ''
-    S(sid, title, title, f'<div class="mc1">{side}<div class="mc1q">{st}{item}</div></div>', kick=f'חלק {CUR[0]} · שאלה אחת')
+    S(sid, title, title, f'<div class="mc1{" wd" if sideh else ""}">{side}<div class="mc1q">{st}{item}' + (f'<p class="mcfoot">* {TX(foot)}</p>' if foot else '') + '</div></div>', kick=f'חלק {CUR[0]} · שאלה אחת')
 
 
 GFILL = {'a': '#d7f1ec', 'l': '#fde2da', 'e': '#e1e7f8', 'pl': '#fff0c2', 'c': '#ececec', 't': '#f3f2f1'}
@@ -152,7 +153,7 @@ def IDSHEET(accts, rows, cur, total=None, profit=False, lab_w=150, w=80, given_t
     return dict(data=data, given=given, sol=sol, sty=sty, steps=steps, zone=zone or None, fmt=fmt, widths=widths, head=[1, 2], start=start, L=L, ctl=ctl, tr=tr)
 
 
-def QT(sid, tag, title, stem, task, sp, chips=None, note=None, done='', xtitle='', hints=None, remind=None, more='', one=False, **kw):
+def QT(sid, tag, title, stem, task, sp, chips=None, note=None, done='', xtitle='', hints=None, remind=None, more='', one=False, big=False, **kw):
     """A transaction (or a stage of an exercise) above a full width identity table: the story, then the effect on each part of the
     identity revealed click by click, then the sheet where the row is written."""
     head_t = f'{tag}: {title}' if tag else title
@@ -171,7 +172,7 @@ def QT(sid, tag, title, stem, task, sp, chips=None, note=None, done='', xtitle='
     cfgd, inner = r
     if one:
         # Shay, 2026-11-19: one line with the transaction, and the sheet takes the rest of the slide
-        S(sid, head_t, head_t, f'<div class="act xlq qt qt1" id="{sid}-x" data-cfg="{_cfg(cfgd)}"><div class="card qstem q1line"><div class="q1t">{stem_html}</div>{more}</div><div class="xw">{inner}<div class="xfb"></div></div></div>',
+        S(sid, head_t, head_t, f'<div class="act xlq qt qt1{" big" if big else ""}"{" data-wcap=\"1\"" if big else ""} id="{sid}-x" data-cfg="{_cfg(cfgd)}"><div class="card qstem q1line"><div class="q1t">{stem_html}</div>{more}</div><div class="xw">{inner}<div class="xfb"></div></div></div>',
           kick=f'חלק {CUR[0]} · {tag.split(":")[0] if tag else "טבלת הזהות"}', cls='qslide qtslide')
         return
     multi = ' multi' if len(stem) > 2 else ''
@@ -183,30 +184,56 @@ def _famt(x):
     return x if isinstance(x, str) else (f'({abs(x):,})' if x < 0 else f'{x:,}')
 
 
-def FLY(sid, title, src, lines, stmt_title, side_title='ריכוז הנתונים מהטבלה', note=None, tag='מהטבלה לדוח'):
-    """The data summary beside an empty statement; each click flies the amounts into their line (Shay, 2026-11-19).
-    src: [(key, label, amount, group)]; lines: [(label, amount, [keys], step, total, [(part, amount)] composition)].
-    A line with a composition opens it as a sub-table when clicked."""
-    srcs = ''.join(f'<div class="fs g{g}" data-src="{sid}-{k}"><span>{TX(lab)}</span><b class="n">{_famt(v)}</b></div>' for k, lab, v, g in src)
-    rows, comps = '', ''
-    for lab, v, keys, n, tot, comp in lines:
-        sub = ('<table class="tbl2 stmt sub">' + ''.join(f'<tr><td>{TX(a)}</td><td class="amt"><span class="n">{_famt(b)}</span></td></tr>' for a, b in comp)
-               + f'<tr class="tot"><td><b>סה״כ</b></td><td class="amt"><b class="n">{_famt(v)}</b></td></tr></table>') if comp else ''
-        if MODE == 'pdf':
-            rows += f'<tr class="{"tot" if tot else ""}"><td>{"<b>" + lab + "</b>" if tot else lab}</td><td class="amt"><span class="n">{_famt(v)}</span></td></tr>'
-            if comp: comps += f'<div class="card"><b>{TX(lab)}: מה נכנס לשורה הזו</b>{sub}</div>'
-            continue
-        labh = (f'<button class="morebtn drill" type="button">{lab} <span class="dz">🔍</span></button><div class="more-c" hidden><div class="more-h">{TX(lab)}: מה נכנס לשורה הזו</div>{sub}</div>' if comp
-                else (f'<b>{lab}</b>' if tot else lab))
-        fr = ' '.join(f'{sid}-{k}' for k in keys)
-        rows += f'<tr class="{"tot" if tot else ""}"><td>{labh}</td><td class="amt"><span class="n st fa" data-n="{n * 10}" data-from="{fr}">{_famt(v)}</span></td></tr>'
+def FLY(sid, title, src, cols, stmt_title, side_title='ריכוז הנתונים מהטבלה', note=None, tag='מהטבלה לדוח', heads=None):
+    """The data summary beside an empty statement; each click flies ONE amount into its line (Shay, 2026-11-19).
+    src: [(key, label, amount, group)]. cols: one list of lines per statement column (two for a balance sheet: assets on the right,
+    liabilities and equity on the left). A line: ('h', heading) or (label, amount, [keys], step or [one step per key], total, composition).
+    A line fed by several keys fills in several clicks, its amount growing as each one lands. A line with a composition opens it as a sub-table."""
+    gof = {k: g for k, lab, v, g in src}
+    vof = {k: v for k, lab, v, g in src}
+    comps = ''
+
+    def table(lines):
+        nonlocal comps
+        rows = ''
+        for ln in lines:
+            if ln[0] == 'h':
+                rows += f'<tr class="sh"><td colspan="2">{TX(ln[1])}</td></tr>'; continue
+            lab, v, keys, n, tot, comp = ln
+            sub = ('<table class="tbl2 stmt sub">' + ''.join(f'<tr><td>{TX(x)}</td><td class="amt"><span class="n">{_famt(y)}</span></td></tr>' for x, y in comp)
+                   + f'<tr class="tot"><td><b>סה״כ</b></td><td class="amt"><b class="n">{_famt(v)}</b></td></tr></table>') if comp else ''
+            if MODE == 'pdf':
+                rows += f'<tr class="{"tot" if tot else ""}"><td>{"<b>" + lab + "</b>" if tot else lab}</td><td class="amt"><span class="n">{_famt(v)}</span></td></tr>'
+                if comp: comps += f'<div class="card"><b>{TX(lab)}: מה נכנס לשורה הזו</b>{sub}</div>'
+                continue
+            labh = (f'<button class="morebtn drill" type="button">{lab} <span class="dz">🔍</span></button><div class="more-c" hidden><div class="more-h">{TX(lab)}: מה נכנס לשורה הזו</div>{sub}</div>' if comp
+                    else (f'<b>{lab}</b>' if tot else lab))
+            steps = n if isinstance(n, list) else [n] * max(1, len(keys))
+            if keys:
+                acc, spans = 0, ''
+                for k, st in zip(keys, steps):
+                    acc += vof[k]
+                    spans += f'<span class="n st fa" data-n="{st * 10}" data-from="{sid}-{k}">{_famt(acc)}</span>'
+                assert acc == v, (lab, acc, v)
+            else:
+                spans = f'<span class="n st fa" data-n="{steps[0] * 10}" data-from="">{_famt(v)}</span>'
+            gc = ('g' + gof[keys[0]]) if keys else 'gtot'
+            rows += f'<tr class="fl {gc} {"tot" if tot else ""}"><td>{labh}</td><td class="amt">{spans}</td></tr>'
+        return f'<table class="tbl2 stmt flyt">{rows}</table>'
+
+    tabs = [table(c) for c in cols]
     if MODE == 'pdf':
         S(sid, title, title, '<div class="row eq2 top"><div class="card">' + f'<b>{TX(side_title)}</b>' + TABLE(['פריט', 'ש״ח'], [[TX(lab), _famt(v)] for k, lab, v, g in src], cls='tight')
-          + f'</div><div class="card"><b>{TX(stmt_title)}</b><table class="tbl2 stmt">{rows}</table></div></div>' + comps + (BAND('dg', note[0]) if note else ''), kick=f'חלק {CUR[0]} · {tag}')
+          + f'</div><div class="card"><b>{TX(stmt_title)}</b>' + ''.join(tabs) + '</div></div>' + comps + (BAND('dg', note[0]) if note else ''), kick=f'חלק {CUR[0]} · {tag}')
         return
-    body = (f'<div class="fly"><div class="card fsrc"><div class="fh">{TX(side_title)}</div>{srcs}</div>'
-            f'<div class="card fdst"><div class="fh">{TX(stmt_title)}</div><table class="tbl2 stmt flyt">{rows}</table>'
-            '<p class="fhint">' + TX('לחצו על שורה עם 🔍 כדי לראות ממה היא מורכבת.') + '</p></div></div>')
+    srcs = ''.join(f'<div class="fs g{g}" data-src="{sid}-{k}"><span>{TX(lab)}</span><b class="n">{_famt(v)}</b></div>' for k, lab, v, g in src)
+    if len(tabs) > 1:
+        dst = '<div class="fcols">' + ''.join(f'<div class="fcol"><div class="fch">{TX(heads[i])}</div>{t}</div>' for i, t in enumerate(tabs)) + '</div>'
+    else:
+        dst = tabs[0]
+    body = (f'<div class="fly{" two" if len(tabs) > 1 else ""}"><div class="card fsrc"><div class="fh">{TX(side_title)}</div>{srcs}</div>'
+            f'<div class="card fdst"><div class="fh">{TX(stmt_title)}</div>{dst}'
+            '<p class="fhint">' + TX('בכל לחיצה עובר נתון אחד. לחצו על שורה עם 🔍 כדי לראות מה נכנס אליה.') + '</p></div></div>')
     if note: body += BAND('dg', note[0], note[1])
     S(sid, title, title, body, kick=f'חלק {CUR[0]} · {tag}')
 

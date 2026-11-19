@@ -90,7 +90,7 @@ window.__fitSheets=function(slide){const st=document.getElementById('stage'),sr=
  slide.querySelectorAll('.xl-wrap').forEach(w=>{
   /* columns widen to the width of the sheet's area (the row-number column stays) */
   const tb=w.querySelector('table'),ths=[...tb.tHead.rows[0].cells].slice(1);ths.forEach(th=>{if(!th.dataset.w0)th.dataset.w0=parseFloat(th.style.width)||92;th.style.width=th.dataset.w0+'px';});
-  const base=ths.reduce((t,th)=>t+ +th.dataset.w0,0),wroom=w.clientWidth-36-2-(w.scrollHeight>w.clientHeight+1?0:16);/* room for a vertical scrollbar that may appear once the height is capped: on a right to left sheet it sits on the left, over the last column and its fill handle */if(wroom>base+8){const f=Math.min(1.8,wroom/base);ths.forEach(th=>{th.style.width=Math.floor(th.dataset.w0*f)+'px';});}
+  const base=ths.reduce((t,th)=>t+ +th.dataset.w0,0),wroom=w.clientWidth-36-2-(w.scrollHeight>w.clientHeight+1?0:16);/* room for a vertical scrollbar that may appear once the height is capped: on a right to left sheet it sits on the left, over the last column and its fill handle */const wc=w.closest('[data-wcap]'),cap=wc?+wc.dataset.wcap:1.8;if(wroom>base+8&&cap>1){const f=Math.min(cap,wroom/base);ths.forEach(th=>{th.style.width=Math.floor(th.dataset.w0*f)+'px';});}
   w.style.maxHeight='none';const top=(w.getBoundingClientRect().top-sr.top)/k,need=w.scrollHeight;const xf=w.closest('.xw')&&w.closest('.xw').querySelector('.xfb'),fbr=xf?(xf.getBoundingClientRect().height/k+(xf.textContent.trim()?6:0)):0;const room=Math.floor(limit-top-fbr);
   w.style.maxHeight=Math.max(150,Math.min(need,room))+'px';});
  /* the explanations beside the sheet use the height left in the question column, and scroll inside it */
@@ -120,11 +120,14 @@ if(window.ResizeObserver){const ro=new ResizeObserver(es=>{const s=es[0]&&es[0].
 (function(){
  function fly(t){const sl=t.closest('.slide');if(!sl||!sl.classList.contains('on'))return;if(getComputedStyle(sl).position==='static')sl.style.position='relative';
   const sr=sl.getBoundingClientRect(),k=sr.width/sl.offsetWidth||1,tr=t.getBoundingClientRect();
-  t.dataset.from.split(' ').forEach((key,i)=>{const s=sl.querySelector('[data-src="'+key+'"]');if(!s)return;const r=s.getBoundingClientRect(),c=s.cloneNode(true);c.classList.add('flying');c.removeAttribute('data-src');
-   c.style.cssText='position:absolute;margin:0;z-index:60;left:'+(r.left-sr.left)/k+'px;top:'+(r.top-sr.top)/k+'px;width:'+r.width/k+'px';sl.appendChild(c);
-   const dx=(tr.right-r.right)/k,dy=(tr.top+tr.height/2-(r.top+r.height/2))/k;
-   const a=c.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+dx+'px,'+dy+'px) scale(.7)',opacity:.35}],{duration:750,delay:i*140,easing:'cubic-bezier(.45,.05,.25,1)',fill:'forwards'});
+  const row=t.closest('tr');
+  t.dataset.from.split(' ').forEach((key,i)=>{const s=sl.querySelector('[data-src="'+key+'"]');if(!s)return;const num=s.querySelector('b')||s,r=num.getBoundingClientRect(),c=document.createElement('div');
+   c.className='flypill '+[...s.classList].filter(x=>/^g/.test(x)).join(' ');c.textContent=num.textContent;sl.appendChild(c);
+   const x0=(r.left-sr.left)/k,y0=(r.top-sr.top)/k-4;c.style.left=x0+'px';c.style.top=y0+'px';
+   const dx=(tr.left-r.left)/k-12,dy=(tr.top-r.top)/k,lift=-60-Math.abs(dx)*.12;
+   const a=c.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+dx*.5+'px,'+(dy*.5+lift)+'px) scale(1.15)',opacity:1,offset:.5},{transform:'translate('+dx+'px,'+dy+'px) scale(.95)',opacity:.9}],{duration:950,delay:i*220,easing:'cubic-bezier(.45,.05,.3,1)',fill:'forwards'});
    a.onfinish=()=>c.remove();s.classList.add('used');});
+  if(row){row.classList.add('landing');setTimeout(()=>row.classList.remove('landing'),1100);}
   t.classList.add('landing');setTimeout(()=>t.classList.remove('landing'),1000);}
  function watch(){document.querySelectorAll('.fa[data-from]').forEach(t=>{new MutationObserver(()=>{const on=t.classList.contains('show');
    if(on&&!t.__f){t.__f=1;fly(t);}else if(!on&&t.__f){t.__f=0;const sl=t.closest('.slide');t.dataset.from.split(' ').forEach(key=>{const s=sl&&sl.querySelector('[data-src="'+key+'"]');if(s)s.classList.remove('used');});}
