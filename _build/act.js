@@ -115,3 +115,19 @@ new MutationObserver(ms=>ms.forEach(m=>{const t=m.target;if(!t.classList||!t.cla
 if(window.ResizeObserver){const ro=new ResizeObserver(es=>{const s=es[0]&&es[0].target.closest('.slide');if(s&&s.classList.contains('on'))fit(s);});
  document.querySelectorAll('.qtop,.qr').forEach(e=>ro.observe(e));}
 })();
+
+/* ---------- amounts fly from the data summary into the statement (Shay, 2026-11-19) ---------- */
+(function(){
+ function fly(t){const sl=t.closest('.slide');if(!sl||!sl.classList.contains('on'))return;if(getComputedStyle(sl).position==='static')sl.style.position='relative';
+  const sr=sl.getBoundingClientRect(),k=sr.width/sl.offsetWidth||1,tr=t.getBoundingClientRect();
+  t.dataset.from.split(' ').forEach((key,i)=>{const s=sl.querySelector('[data-src="'+key+'"]');if(!s)return;const r=s.getBoundingClientRect(),c=s.cloneNode(true);c.classList.add('flying');c.removeAttribute('data-src');
+   c.style.cssText='position:absolute;margin:0;z-index:60;left:'+(r.left-sr.left)/k+'px;top:'+(r.top-sr.top)/k+'px;width:'+r.width/k+'px';sl.appendChild(c);
+   const dx=(tr.right-r.right)/k,dy=(tr.top+tr.height/2-(r.top+r.height/2))/k;
+   const a=c.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+dx+'px,'+dy+'px) scale(.7)',opacity:.35}],{duration:750,delay:i*140,easing:'cubic-bezier(.45,.05,.25,1)',fill:'forwards'});
+   a.onfinish=()=>c.remove();s.classList.add('used');});
+  t.classList.add('landing');setTimeout(()=>t.classList.remove('landing'),1000);}
+ function watch(){document.querySelectorAll('.fa[data-from]').forEach(t=>{new MutationObserver(()=>{const on=t.classList.contains('show');
+   if(on&&!t.__f){t.__f=1;fly(t);}else if(!on&&t.__f){t.__f=0;const sl=t.closest('.slide');t.dataset.from.split(' ').forEach(key=>{const s=sl&&sl.querySelector('[data-src="'+key+'"]');if(s)s.classList.remove('used');});}
+  }).observe(t,{attributes:true,attributeFilter:['class']});});}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watch);else watch();
+})();

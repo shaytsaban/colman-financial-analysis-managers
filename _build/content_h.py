@@ -152,7 +152,7 @@ def IDSHEET(accts, rows, cur, total=None, profit=False, lab_w=150, w=80, given_t
     return dict(data=data, given=given, sol=sol, sty=sty, steps=steps, zone=zone or None, fmt=fmt, widths=widths, head=[1, 2], start=start, L=L, ctl=ctl, tr=tr)
 
 
-def QT(sid, tag, title, stem, task, sp, chips=None, note=None, done='', xtitle='', hints=None, remind=None, more='', **kw):
+def QT(sid, tag, title, stem, task, sp, chips=None, note=None, done='', xtitle='', hints=None, remind=None, more='', one=False, **kw):
     """A transaction (or a stage of an exercise) above a full width identity table: the story, then the effect on each part of the
     identity revealed click by click, then the sheet where the row is written."""
     head_t = f'{tag}: {title}' if tag else title
@@ -169,6 +169,107 @@ def QT(sid, tag, title, stem, task, sp, chips=None, note=None, done='', xtitle='
     if MODE == 'pdf':
         S(sid, head_t, head_t, f'<div class="qstem">{stem_html}</div>{chip_html}{notes}{more}{r}', kind='q'); return
     cfgd, inner = r
+    if one:
+        # Shay, 2026-11-19: one line with the transaction, and the sheet takes the rest of the slide
+        S(sid, head_t, head_t, f'<div class="act xlq qt qt1" id="{sid}-x" data-cfg="{_cfg(cfgd)}"><div class="card qstem q1line"><div class="q1t">{stem_html}</div>{more}</div><div class="xw">{inner}<div class="xfb"></div></div></div>',
+          kick=f'חלק {CUR[0]} · {tag.split(":")[0] if tag else "טבלת הזהות"}', cls='qslide qtslide')
+        return
     multi = ' multi' if len(stem) > 2 else ''
     S(sid, head_t, head_t, f'<div class="act xlq qt{multi}" id="{sid}-x" data-cfg="{_cfg(cfgd)}"><div class="qtop"><div class="card qstem">{stem_html}{more}</div><div class="qnotes">{chip_html}{notes}</div></div><div class="xw">{inner}<div class="xfb"></div></div></div>',
       kick=f'חלק {CUR[0]} · {tag.split(":")[0] if tag else "טבלת הזהות"}', cls='qslide qtslide')
+
+
+def _famt(x):
+    return x if isinstance(x, str) else (f'({abs(x):,})' if x < 0 else f'{x:,}')
+
+
+def FLY(sid, title, src, lines, stmt_title, side_title='ריכוז הנתונים מהטבלה', note=None, tag='מהטבלה לדוח'):
+    """The data summary beside an empty statement; each click flies the amounts into their line (Shay, 2026-11-19).
+    src: [(key, label, amount, group)]; lines: [(label, amount, [keys], step, total, [(part, amount)] composition)].
+    A line with a composition opens it as a sub-table when clicked."""
+    srcs = ''.join(f'<div class="fs g{g}" data-src="{sid}-{k}"><span>{TX(lab)}</span><b class="n">{_famt(v)}</b></div>' for k, lab, v, g in src)
+    rows, comps = '', ''
+    for lab, v, keys, n, tot, comp in lines:
+        sub = ('<table class="tbl2 stmt sub">' + ''.join(f'<tr><td>{TX(a)}</td><td class="amt"><span class="n">{_famt(b)}</span></td></tr>' for a, b in comp)
+               + f'<tr class="tot"><td><b>סה״כ</b></td><td class="amt"><b class="n">{_famt(v)}</b></td></tr></table>') if comp else ''
+        if MODE == 'pdf':
+            rows += f'<tr class="{"tot" if tot else ""}"><td>{"<b>" + lab + "</b>" if tot else lab}</td><td class="amt"><span class="n">{_famt(v)}</span></td></tr>'
+            if comp: comps += f'<div class="card"><b>{TX(lab)}: מה נכנס לשורה הזו</b>{sub}</div>'
+            continue
+        labh = (f'<button class="morebtn drill" type="button">{lab} <span class="dz">🔍</span></button><div class="more-c" hidden><div class="more-h">{TX(lab)}: מה נכנס לשורה הזו</div>{sub}</div>' if comp
+                else (f'<b>{lab}</b>' if tot else lab))
+        fr = ' '.join(f'{sid}-{k}' for k in keys)
+        rows += f'<tr class="{"tot" if tot else ""}"><td>{labh}</td><td class="amt"><span class="n st fa" data-n="{n * 10}" data-from="{fr}">{_famt(v)}</span></td></tr>'
+    if MODE == 'pdf':
+        S(sid, title, title, '<div class="row eq2 top"><div class="card">' + f'<b>{TX(side_title)}</b>' + TABLE(['פריט', 'ש״ח'], [[TX(lab), _famt(v)] for k, lab, v, g in src], cls='tight')
+          + f'</div><div class="card"><b>{TX(stmt_title)}</b><table class="tbl2 stmt">{rows}</table></div></div>' + comps + (BAND('dg', note[0]) if note else ''), kick=f'חלק {CUR[0]} · {tag}')
+        return
+    body = (f'<div class="fly"><div class="card fsrc"><div class="fh">{TX(side_title)}</div>{srcs}</div>'
+            f'<div class="card fdst"><div class="fh">{TX(stmt_title)}</div><table class="tbl2 stmt flyt">{rows}</table>'
+            '<p class="fhint">' + TX('לחצו על שורה עם 🔍 כדי לראות ממה היא מורכבת.') + '</p></div></div>')
+    if note: body += BAND('dg', note[0], note[1])
+    S(sid, title, title, body, kick=f'חלק {CUR[0]} · {tag}')
+
+
+def MAPT(sid, title, accts, totals, groups, note=None):
+    """The summed identity table; each click lights a group of columns and names the report it goes to.
+    totals: {key: amount}; groups: [(step, [keys], css, destination)]."""
+    if MODE == 'pdf':
+        S(sid, title, title, TABLE(['חשבון', 'יתרה', 'לאן הוא הולך'], [[n, _famt(totals[k]), next(d for _, ks, _, d in groups if k in ks)] for k, n, g in accts], cls='tight')
+          + (BAND('dg', note[0]) if note else ''), kick=f'חלק {CUR[0]} · מהטבלה לדוחות')
+        return
+    gk = {k: (st, css) for st, ks, css, d in groups for k in ks}
+    cell = lambda k, inner, tag='td': f'<{tag} class="st mg {gk[k][1]}" data-n="{gk[k][0] * 10}">{inner}</{tag}>'
+    head = '<tr>' + ''.join(cell(k, n, 'th') for k, n, g in accts) + '</tr>'
+    vals = '<tr>' + ''.join(cell(k, f'<span class="n">{_famt(totals[k])}</span>') for k, n, g in accts) + '</tr>'
+    dest = '<tr class="dst">'
+    i = 0
+    while i < len(accts):
+        k = accts[i][0]; st, css = gk[k]; span = 1
+        while i + span < len(accts) and gk[accts[i + span][0]] == (st, css): span += 1
+        d = next(d for s_, ks, c_, d in groups if k in ks)
+        dest += f'<td colspan="{span}"><div class="st dtag {css}" data-n="{st * 10}">{TX(d)}</div></td>'
+        i += span
+    dest += '</tr>'
+    body = f'<div class="card"><table class="mapt">{head}{vals}{dest}</table></div>'
+    if note: body += BAND('dg', note[0], note[1])
+    S(sid, title, title, body, kick=f'חלק {CUR[0]} · מהטבלה לדוחות')
+
+
+def STSHEET(data, given, sol, steps, widths, fmt, sty=None, zone=None):
+    return dict(data=data, given=given, sol=sol, steps=steps, widths=widths, head=[1], fmt=fmt, sty=sty or {}, zone=zone, start=next(iter(sol)))
+
+
+def ISSHEET(entries, lines, title, widths=None):
+    """An income statement built from the revenue and expense entries of the table (given, A:B) into the statement (D:E)."""
+    d, g, sol, steps, fmt, sty = {'A1': 'מהטבלה: הכנסות והוצאות', 'B1': 'ש״ח', 'D1': title, 'E1': 'ש״ח'}, {}, {}, [], {}, {}
+    for c in 'ABDE': sty[f'{c}1'] = {'fill': GFILL['pl'] if c in 'AB' else GFILL['e'], 'b': True}
+    for i, (lab, v) in enumerate(entries):
+        d[f'A{2 + i}'] = lab; g[f'B{2 + i}'] = v; fmt[f'B{2 + i}'] = 'acc0'
+    for i, (lab, f, note, tot) in enumerate(lines):
+        r = 2 + i; d[f'D{r}'] = lab; sol[f'E{r}'] = f; fmt[f'E{r}'] = 'acc0'
+        if tot: sty[f'D{r}'] = sty[f'E{r}'] = {'b': True, 'fill': '#f3f2f1'}
+        steps.append(dict(cells={f'E{r}': f}, note=f'<b>{lab}:</b> {XL(f)}. {note}', sel=f'E{r}'))
+    return STSHEET(d, g, sol, steps, widths or [270, 95, 22, 250, 100], fmt, sty)
+
+
+def BSSHEET(bal, title):
+    """A balance sheet built from the closing balances (given, A:B): assets in D:E, liabilities and equity in F:G."""
+    d, g, fmt, sty = {'A1': 'יתרות מהטבלה, 31.12', 'B1': 'ש״ח', 'D1': 'נכסים', 'E1': 'ש״ח', 'F1': 'התחייבויות והון עצמי', 'G1': 'ש״ח'}, {}, {}, {}
+    for c in 'AB': sty[f'{c}1'] = {'fill': GFILL['t'], 'b': True}
+    for c in 'DE': sty[f'{c}1'] = {'fill': GFILL['a'], 'b': True}
+    for c in 'FG': sty[f'{c}1'] = {'fill': GFILL['l'], 'b': True}
+    for i, (lab, v) in enumerate(bal):
+        d[f'A{2 + i}'] = lab; g[f'B{2 + i}'] = v; fmt[f'B{2 + i}'] = 'acc0'
+    return d, g, fmt, sty
+
+
+def ARROWS(eff, accts):
+    """The accounts a transaction moves, in table order, with an arrow: 'מזומן ↑, לקוחות ↓, הכנסות ↑'."""
+    out = []
+    for k, n, g in accts:
+        if k not in eff: continue
+        v = _amt(eff[k])
+        if k == 'exp': out.append('הוצאות ↑'); continue
+        out.append(re.sub(r'\s*\(.*\)$', '', n) + (' ↑' if v > 0 else ' ↓'))
+    return ', '.join(out)

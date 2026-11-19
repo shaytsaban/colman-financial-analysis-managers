@@ -740,3 +740,48 @@ table.xhead th,table.xhead td{font-size:16.5px}
 .rtab td:first-child{text-align:right;white-space:nowrap}
 .rtab td.ok{color:#087469;font-size:20px}
 .rtab th[colspan]{font-size:16.5px}
+/* one transaction per slide: a single line on top, the sheet below takes the slide (2026-11-19) */
+.qt1 .q1line{display:flex;align-items:center;gap:14px;padding:8px 16px;font-size:19.5px;line-height:1.35}
+.qt1 .q1line .q1t{flex:1}.qt1 .q1line .q1t p{margin:0}
+.qt1 .q1line .morebtn{margin:0;flex:none;font-size:16.5px}
+/* the data summary beside the statement; amounts fly into their lines */
+.fly{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:16px;align-items:start}
+.fly .fh{font-size:18.5px;font-weight:800;color:#1b2d55;margin-bottom:8px}
+.fsrc{display:flex;flex-direction:column;gap:5px}
+.fs{display:flex;justify-content:space-between;gap:10px;align-items:center;border-radius:9px;padding:5px 12px;font-size:17px;border-right:6px solid #8a93a8;background:#f6f7fb;transition:opacity .4s}
+.fs.ga{border-right-color:#0f9d90;background:#e9f7f4}.fs.gl{border-right-color:#e0603f;background:#fdeee9}.fs.ge{border-right-color:#3b5bdb;background:#edf1fd}.fs.gpl{border-right-color:#e8960c;background:#fff6dd}
+.fs.used{opacity:.45}
+.fs.flying{box-shadow:0 10px 24px rgba(0,0,0,.25);background:#fff}
+.flyt td{font-size:17.5px;padding:4px 10px}.flyt td.amt{min-width:120px}
+.flyt .fa.st{transition:opacity .35s ease .65s}
+.flyt .fa.landing{animation:landp .9s ease}
+@keyframes landp{60%{background:#fff0c2}100%{background:transparent}}
+.morebtn.drill{border:0;background:none;padding:0;margin:0;font:inherit;font-size:18px;color:#1b2d55;text-decoration:underline dotted #6d4df2 2px;text-underline-offset:4px;cursor:pointer;text-align:right}
+.morebtn.drill .dz{font-size:14px;text-decoration:none}
+tr.tot .morebtn.drill{font-weight:800}
+.fhint{font-size:16.5px;color:#5d6a86;margin:8px 0 0}
+.more-in .sub{width:100%;margin-top:6px}.more-in .sub td{font-size:19px;padding:6px 10px}
+/* the column map: each click lights a group of columns and names its report */
+.mapt{width:100%;border-collapse:collapse;table-layout:fixed}
+.mapt th,.mapt td{border:1px solid #c8c8c8;padding:8px 4px;text-align:center;font-size:16.5px}
+.mapt th{background:#f3f2f1;line-height:1.2}
+.mapt .st.mg{opacity:1!important;transition:background .4s,box-shadow .4s}
+.mapt .st.mg.show.mis{background:#ffe7a6}.mapt .st.mg.show.ma{background:#c9efe8}.mapt .st.mg.show.ml{background:#fbd5c9}.mapt .st.mg.show.me{background:#d3dcfa}
+.mapt tr.dst td{border:0;padding:8px 2px 0;vertical-align:top}
+.dtag{border-radius:10px;padding:8px 6px;font-weight:800;font-size:16.5px;line-height:1.25;color:#1b2d55}
+.dtag.mis{background:#ffe7a6}.dtag.ma{background:#c9efe8}.dtag.ml{background:#fbd5c9}.dtag.me{background:#d3dcfa}
+/* meeting 3: the question of 2027 beside the opening balance sheet */
+.q27{display:grid;grid-template-columns:260px minmax(0,1fr);gap:14px;align-items:start}
+.op27c .tbl2 td,.op27c .tbl2 th{font-size:16.5px;padding:3px 8px}
+.q27 .omerq .oq2{columns:2;column-gap:20px}.q27 .omerq p{font-size:16.5px;margin:0 0 4px;break-inside:avoid}
+/* part 5: analyses */
+.anq{margin-top:8px}.anq.k0{border-right:6px solid #0f9d90}.anq.k1{border-right:6px solid #e8960c}.anq.k2{border-right:6px solid #6d4df2}
+.hor td,.hor th{font-size:18px;padding:6px 10px}.hor td.up{color:#087469}.hor td.dn2{color:#c4421f}
+.vcard{padding:14px 18px}.vh{font-size:19px;font-weight:800;color:#1b2d55;margin-bottom:8px}
+.vbar{display:flex;align-items:center;gap:12px;margin:6px 0}.vy{width:56px;font-weight:800;font-size:19px;color:#1b2d55}
+.vsegs{flex:1;display:flex;height:64px;border-radius:10px;overflow:hidden;background:#eef0f6}
+.seg{display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-size:16.5px;line-height:1.15;min-width:0;border-left:2px solid #fff}
+.seg b{font-size:19px}.seg span{font-size:16.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.seg.c0,.vleg i.c0{background:#5d6a86}.seg.c1,.vleg i.c1{background:#e8960c}.seg.c2,.vleg i.c2{background:#6d4df2}.seg.c3,.vleg i.c3{background:#c4421f}.seg.c4,.vleg i.c4{background:#8a5a2b}.seg.c5,.vleg i.c5{background:#0f9d90}
+.vleg{display:flex;flex-wrap:wrap;gap:16px;margin-top:8px;font-size:16.5px}.vleg i{display:inline-block;width:16px;height:16px;border-radius:4px;margin-left:6px;vertical-align:-2px}
+.towers.an4{grid-template-columns:repeat(4,1fr);height:440px}
