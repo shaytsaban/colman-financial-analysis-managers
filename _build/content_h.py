@@ -56,7 +56,7 @@ def POP(n, html, cls=''):
     return ST(n, html, cls='pop ' + cls)
 
 
-def MC1(sid, title, q, opts, a, why, art=None, story=None, side=None, foot=None):
+def MC1(sid, title, q, opts, a, why, art=None, story=None, side=None, foot=None, toon=None):
     """One multiple choice question on its own slide, in large type, with an illustration beside it."""
     item = mc(sid + '-q', q, opts, a, why)
     if MODE == 'pdf':
@@ -64,6 +64,9 @@ def MC1(sid, title, q, opts, a, why, art=None, story=None, side=None, foot=None)
     sideh = side
     side = f'<div class="mc1d">{sideh}</div>' if sideh else (f'<div class="mc1art">{_svg(TOONS.get(art, art))}</div>' if art else '')
     st = f'<div class="card qstem mc1s"><p>{TX(story)}</p></div>' if story else ''
+    # a cartoon with a method tip (never the answer), under the data it talks about
+    if toon and sideh:
+        side = side[:-6] + f'<div class="mctn">{_svg(TOONS[toon[0]])}<div class="mbub">{TX(toon[1])}</div></div></div>'
     S(sid, title, title, f'<div class="mc1{" wd" if sideh else ""}">{side}<div class="mc1q">{st}{item}' + (f'<p class="mcfoot">* {TX(foot)}</p>' if foot else '') + '</div></div>', kick=f'חלק {CUR[0]} · שאלה אחת')
 
 
@@ -371,3 +374,39 @@ def ONE(sid, title, intro, a, op, b, results, meaning, tag='רכיב אחד'):
             f'<div class="onerow">{card(1, *a)}{ST(2, op, cls="oop")}{card(2, *b)}</div><div class="oneres">{res}</div>'
             + ''.join(BAND('dg' if i == 0 else 'note', m, k + i) for i, m in enumerate(meaning)))
     S(sid, title, title, body, kick=f'חלק {CUR[0]} · {tag}')
+
+
+
+def FRAC(top, bottom, res='', cls=''):
+    """A ratio drawn as a fraction: what goes on top, what goes below, and the result."""
+    r = f'<div class="fr-eq">=</div><div class="fr-r">{res}</div>' if res else ''
+    return f'<div class="dfrac {cls}"><div class="fr-f"><div class="fr-t">{top}</div><div class="fr-b">{bottom}</div></div>{r}</div>'
+
+
+def FUNNEL(sid, title, levels, note=None, tag='המשפך'):
+    """The logical funnel of the meeting, level by level: from all the numbers to one decision."""
+    if MODE == 'pdf':
+        S(sid, title, title, '<ol>' + ''.join(f'<li><b>{TX(h)}</b> {TX(t)}</li>' for h, t in levels) + '</ol>' + (BAND('dg', note[0]) if note else ''), kick=f'חלק {CUR[0]} · {tag}')
+        return
+    n = len(levels)
+    body = '<div class="funnel">' + ''.join(ST(i + 1, f'<b>{TX(h)}</b><span>{TX(t)}</span>', cls=f'fn fn{i}" style="width:{100 - i * (52 // max(1, n - 1))}%') for i, (h, t) in enumerate(levels)) + '</div>'
+    if note: body += BAND('dg', note[0], note[1])
+    S(sid, title, title, body, kick=f'חלק {CUR[0]} · {tag}')
+
+
+def TOOLCARD(sid, title, question, formula, noa, insight, trap, toon=None):
+    """What we learned about one tool, on one card: the question, the formula drawn, Noa's numbers, what it showed, the trap."""
+    if MODE == 'pdf':
+        S(sid, title, title, '<div class="card">' + f'<p><b>השאלה:</b> {TX(question)}</p><p><b>הנוסחה:</b> {formula}</p><p><b>אצל נועה:</b> ' + '; '.join(TX(r[0] + ': ' + (f'{r[1]} ב-2026, {r[2]} ב-2027' if len(r) == 3 else r[1])) for r in noa)
+          + f'</p><p><b>מה ראינו:</b> {TX(insight)}</p><p><b>המלכודת:</b> {TX(trap)}</p></div>', kick=f'חלק {CUR[0]} · כרטיס כלי')
+        return
+    two = any(len(r) == 3 for r in noa)      # rows of (label, 2026, 2027) get a header; rows of (label, value) do not
+    noa_t = ('<table class="tbl2 stmt tcn">' + ('<tr><th></th><th>2026</th><th>2027</th></tr>' if two else '')
+             + ''.join('<tr><td>' + TX(r[0]) + '</td>' + ''.join(f'<td class="c"><b class="n">{v}</b></td>' for v in r[1:]) + '</tr>' for r in noa) + '</table>')
+    body = ('<div class="tcard">'
+            + ST(1, f'<div class="tc-h">❓ {TX("השאלה")}</div><p>{TX(question)}</p>', cls='tc q')
+            + ST(2, f'<div class="tc-h">🧮 {TX("הנוסחה")}</div>{formula}', cls='tc f')
+            + ST(3, f'<div class="tc-h">☕ {TX("אצל קפה נועה")}</div>{noa_t}', cls='tc n')
+            + ST(4, f'<div class="tc-h">💡 {TX("מה ראינו")}</div><p>{TX(insight)}</p>', cls='tc i')
+            + '</div><div class="tcfoot">' + BAND('note', f'<b>המלכודת:</b> {trap}', 5) + (TOON(toon[0], toon[1], 6) if toon else '') + '</div>')
+    S(sid, title, title, body, kick=f'חלק {CUR[0]} · כרטיס כלי')

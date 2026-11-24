@@ -104,7 +104,8 @@ document.documentElement.setAttribute('data-test',JSON.stringify(R));
 })();
 '''
 html = open(SRC, encoding='utf8').read().replace('window.__deck={', 'window.__deckT={G,')
-html = html.replace('</body>', '<script>' + TEST + '</script></body>')
+# like a viewer: the test starts once the fonts are in and every autofit slide is fitted to them
+html = html.replace('</body>', '<script>(document.fonts?document.fonts.ready:Promise.resolve()).then(function(){window.__autofit&&window.__autofit();' + TEST + '});</script></body>')
 d = tempfile.mkdtemp(dir=os.environ.get('TMPDIR'))
 import atexit, shutil; atexit.register(shutil.rmtree, d, True)
 p = os.path.join(d, 't.html'); open(p, 'w', encoding='utf8').write(html)

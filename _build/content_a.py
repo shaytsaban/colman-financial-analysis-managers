@@ -24,7 +24,7 @@ LMETA = {
          cover='רענון של מפגש 2; קפה נועה 2027: יתרות פתיחה ושתים עשרה עסקאות, עסקה בכל שקף; מהטבלה לדוח רווח והפסד ולמאזן: מה הולך לאן; מעבדת התיקונים של עומר, מהעסקאות ועד הדוחות; תרגול עצמי.',
          next_h='ניתוח בסיסי של דוחות כספיים', next_t='מה עושים עם הדוחות שבנינו: משווים לשנה הקודמת, למכירות ולשורות אחרות, ומקבלים החלטה. רכיב אחר רכיב, ורק אחר כך הכול יחד.'),
  # meeting 4 (26.11.2026): the basics of financial statement analysis, built 24.11.2026 (see PLAN_L4.md)
- 4: dict(date='26.11.2026', h1=('ניתוח בסיסי', 'של דוחות כספיים'), title='ניתוח בסיסי של דוחות כספיים',
+ 4: dict(date='26.11.2026', autofit=True, h1=('ניתוח בסיסי', 'של דוחות כספיים'), title='ניתוח בסיסי של דוחות כספיים',
          sub='מה עושים עם הדוחות שבנינו: נועה מבקשת הלוואה, והבנקאית משווה. רכיב אחר רכיב, ואז הכול יחד: ניתוח אופקי, ניתוח אנכי, מבנה המאזן ויחסים בסיסיים.', chip='כל שאלה נפתרת ב-Excel',
          cover='רענון: הדרך מעסקה לדוחות; סיפור מקרה: נועה בבנק; ניתוח אופקי; ניתוח אנכי ושיעורי רווח; מבנה המאזן ומבנה המימון; יחס שוטף, תשואה על הנכסים ותשואה על ההון; ההחלטה בבנק; תרגול עצמי.',
          next_h='ניתוח דוחות באמצעות יחסים פיננסיים', next_t='נזילות, איתנות, יעילות ורווחיות, לעומק: עוד יחסים, ואיך מחשבים אותם נכון.')}[LESSON]
@@ -81,9 +81,9 @@ def MCS(sid, title, h, items):
     S(sid, title, h, f'<div class="mcrow n{len(items)}">' + ''.join(items) + '</div>', kick=f'חלק {CUR[0]} · בדיקת הבנה')
 
 
-def opener(n, title, q, learn, mins, note='', self=False):
+def opener(n, title, q, learn, mins, note='', self=False, art=None):
     CUR[0] = n
-    SL.append(dict(id=f'p-{n}', title=f'פתיחת חלק {n}: {title}', h=title, kind='opener', part=n, q=q, learn=learn, mins=mins, note=note, self=self, cls='', kick=None, body=''))
+    SL.append(dict(id=f'p-{n}', title=f'פתיחת חלק {n}: {title}', h=title, kind='opener', part=n, q=q, learn=learn, mins=mins, note=note, self=self, cls='', kick=None, body='', art=art))
 
 
 def calc(cid, title, h, intro, fields, pdfx):

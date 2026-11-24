@@ -34,3 +34,19 @@ the judgment footnote. The data of every question is on its slide.
 8. **Self practice**: Omer's vertical analysis, Omer against Noa in four ratios, Liat's two years, Omer's balance sheet structure.
 
 Booklet after meeting 4: 3-4 (profitability) and 3-6 (horizontal and vertical analysis).
+
+## Round 2 (Shay, 24.11.2026: "what can be improved: looks, process, gradualness, pictures, diagrams, the logical funnel, the full use of the slides; more self practice; pictures, fun and summarising elements")
+
+Audit: a script measured how much of each slide's height is used with every reveal shown. Low: every multiple-choice slide
+(53 to 69%), the ratio rule slide (59%), the bank conclusions (56%), the summary (57%). No interim summary between the tools,
+self practice only four sheets, no closing slide, illustrations only in the dialogue.
+
+1. **The logical funnel, drawn**: after the three comparisons, a funnel slide (all the numbers, four questions, four tools, one
+   decision), revealed level by level. Every part opener carries an illustration of its question.
+2. **A tool card after every tool** (horizontal, vertical, balance sheet, ratios): the question it answers, the formula drawn as
+   a fraction, Noa's numbers, what it showed, and the classic mistake. At the end, a pocket card with every formula.
+3. **Space and fun**: larger type on the question slides, and a cartoon with a method tip (never the answer) under every data
+   table; fractions drawn under the ratio definitions; a before-and-after meme in the summary; a closing slide.
+4. **Self practice from 4 to 11**: a sorter (which tool answers which question), a full new case (Tamar's ice cream shop, second
+   year: horizontal sheet, vertical sheet, a conclusion question), two error hunts (dividing by the wrong year, an inverted ratio),
+   one judgment question. Booklet: a new 3-7 (four ratios over two years).

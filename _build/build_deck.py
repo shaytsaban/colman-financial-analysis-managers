@@ -6,6 +6,8 @@ R = lambda f: open(os.path.join(H, f), encoding='utf8').read()
 MODE = 'deck'
 LESSON = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 exec(R('content_a.py'))
+# styles of the 2026-11-24 review round, from meeting 4 on only: taught decks rebuild byte-identical
+L4CSS = ('\n' + R('deck_l4.css')) if LESSON >= 4 else ''
 
 HEAD = f'{COURSE} · מפגש {LESSON}' + (f' · {LMETA["date"]}' if LMETA['date'] else '')
 
@@ -33,11 +35,16 @@ def render(s, total):
         n = s['part']
         when = f'לתרגול עצמי · כ-{s["mins"]} דקות' if s.get('self') else f'כ-{s["mins"]} דקות'
         note = f'<div class="pd-note">{TX(s["note"])}</div>' if s.get('note') else ''
-        return (f'<section class="slide dark pd" id="{s["id"]}" data-title="{s["title"]}" style="--pc:#7fe3d6"><div class="pd-num">{n}</div><div class="pd-in">'
+        art = (f'<div class="pd-art"><div class="pd-ac">{_svg(TOONS[s["art"][0]])}</div><div class="pd-acap">{TX(s["art"][1])}</div></div>') if s.get('art') else ''
+        return (f'<section class="slide dark pd" id="{s["id"]}" data-title="{s["title"]}" style="--pc:#7fe3d6"><div class="pd-num">{n}</div>{art}<div class="pd-in">'
                 f'<div class="kick" style="color:#ffb199"><span>חלק <span class="n">{n}</span> מתוך <span class="n">{total}</span> · {TX(when)}</span></div><div class="pd-h">{s["h"]}</div><div class="pd-q">{TX(s["q"])}</div>{note}'
                 f'<div class="pd-cols"><div class="pd-box"><b>מה נעשה בחלק הזה</b><ul>{"".join("<li>" + TX(x) + "</li>" for x in s["learn"])}</ul></div></div></div></section>')
     kick = f'<div class="kick"><span>{TX(s["kick"])}</span></div>' if s.get('kick') else ''
-    return f'<section class="slide {s["cls"]}" id="{s["id"]}" data-title="{re.sub("<[^>]+>", "", s["title"])}">{kick}<h2>{TX(s["h"])}</h2>{s["body"]}</section>'
+    body = s['body']
+    # Shay, 2026-11-24: no empty halves. The body of a content slide (not a live sheet) is scaled to fill the free height (act.js).
+    if LMETA.get('autofit') and 'qtslide' not in s['cls']:
+        body = f'<div class="afit">{body}</div>'
+    return f'<section class="slide {s["cls"]}" id="{s["id"]}" data-title="{re.sub("<[^>]+>", "", s["title"])}">{kick}<h2>{TX(s["h"])}</h2>{body}</section>'
 
 
 NMC = sum(s['body'].count('class="mc"') for s in SL)
@@ -50,17 +57,17 @@ tail = R('shell/tail.html')
 # the glossary of a lesson holds the terms its slides use
 _used = set(re.findall(r'data-t="(\w+)"', slides_html))
 gj = json.dumps({k: {f: (TX(FXW(v)) if f != 'en' else v) for f, v in g.items()} for k, g in G.items() if k in _used}, ensure_ascii=False)
-js = f'const COURSE={json.dumps(COURSE, ensure_ascii=False)};const LESSON={LESSON};\nconst G={gj};\n' + R('deck.js') + '\n' + R('xl.js') + '\n' + R('act.js')
+js = f'const COURSE={json.dumps(COURSE, ensure_ascii=False)};const LESSON={LESSON};\nconst G={gj};\n' + R('deck.js') + '\n' + R('xl.js') + '\n' + R('act.js') + (('\n' + R('autofit.js')) if LMETA.get('autofit') else '')
 title = f'{COURSE} | שיעור {LESSON} | {LMETA["title"]}'
 html = (f'<!doctype html>\n<html lang="he" dir="rtl">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>{title}</title>\n<style>\n'
-        + fonts + base + R('deck.css') + '</style>\n</head>\n<body>\n<div class="stage" id="stage">\n' + slides_html + '\n' + tail
+        + fonts + base + R('deck.css') + L4CSS + '</style>\n</head>\n<body>\n<div class="stage" id="stage">\n' + slides_html + '\n' + tail
         + '<script>\n(function(){\n' + js + '\n})();\n</script>\n</body>\n</html>\n').replace('¤', '$')
 for bad in ('—', '־', '–', '…'):
     assert bad not in html.replace(fonts, ''), 'forbidden character ' + bad
 out = os.path.join(H, '..', 'lectures', f'lecture-{LESSON}')
 os.makedirs(out, exist_ok=True)
 open(os.path.join(out, 'presentation.html'), 'w', encoding='utf8').write(html)
-css = fonts + base + R('deck.css')
+css = fonts + base + R('deck.css') + L4CSS
 used = set()
 for m in re.finditer(r'class="([^"]+)"', slides_html + tail + R('deck.js') + R('act.js')):
     for c in m.group(1).split():
