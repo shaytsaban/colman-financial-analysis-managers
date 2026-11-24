@@ -300,3 +300,74 @@ def ARROWS(eff, accts):
         if k == 'exp': out.append('הוצאות ↑'); continue
         out.append(re.sub(r'\s*\(.*\)$', '', n) + (' ↑' if v > 0 else ' ↓'))
     return ', '.join(out)
+
+
+# ---- analysis helpers (moved from the meeting 3 draft to here on 2026-11-24, shared by meeting 4)
+# Shay, 2026-11-19: beside every judgment question, a footnote that the real-world judgment is complex and reasoned readings are accepted
+FOOT = 'בעולם האמיתי שיפוט כזה מורכב. לכן המבחן שלכם פתוח, ויתקבלו בו גם פרשנויות מנומקות שסוטות במעט מהכיוון שלנו, כל עוד ההיגיון שלהן מבוסס.'
+def _calc(n, shown, title, lines, cls=''):
+    """A number revealed on click n; clicking it opens the calculation behind it."""
+    if MODE == 'pdf':
+        return f'<span class="n">{shown}</span>'
+    return ST(n, f'<button class="morebtn calc {cls}" type="button"><span class="n">{shown}</span></button><div class="more-c" hidden><div class="more-h">{TX(title)}</div>'
+              + ''.join(f'<p>{TX(x)}</p>' for x in lines) + '</div>', tag='span', cls='hc')
+
+
+def _dt(heads, rows, hl=None, cls=''):
+    """A small data table; hl = {row index: (step, colour)} lights that row on that click."""
+    hl = hl or {}
+    out = '<table class="tbl2 stmt hor ' + cls + '"><tr>' + ''.join(f'<th>{TX(h)}</th>' for h in heads) + '</tr>'
+    for i, r in enumerate(rows):
+        tds = [f'<td>{TX(r[0])}</td>'] + [f'<td class="c"><span class="n">{x}</span></td>' for x in r[1:]]
+        if i in hl:
+            st, k = hl[i]
+            tds = [t.replace('<td', f'<td data-n="{st * 10}"', 1).replace('class="c"', '').replace('<td data', f'<td class="st hlc {k}{" c" if j else ""}" data', 1) for j, t in enumerate(tds)]
+        out += '<tr>' + ''.join(tds) + '</tr>'
+    return out + '</table>'
+
+
+def _pc(x):
+    return f'{x * 100:.1f}%'
+
+
+def _sg(x, pct=False):
+    return ('+' if x >= 0 else '') + (f'{x * 100:.1f}%' if pct else f'{x:,}')
+
+
+def _bigsheet(heads, rows, sol_cols, widths, fmts, notes, extra=None):
+    """An analysis sheet: given figures, answer columns, numbers centred, a larger font, Excel-like widths."""
+    d, g, f, st = {}, {}, {}, {}
+    for j, h in enumerate(heads):
+        c = chr(65 + j); d[f'{c}1'] = h; st[f'{c}1'] = {'fill': '#e1e7f8', 'b': True, 'al': 'center' if j else 'right'}
+    sol, steps = {}, []
+    for i, r in enumerate(rows):
+        rr = 2 + i; d[f'A{rr}'] = r[0]
+        for j, v in enumerate(r[1:]):
+            c = chr(66 + j); g[f'{c}{rr}'] = v; f[f'{c}{rr}'] = 'acc0'; st[f'{c}{rr}'] = {'al': 'center'}
+        cells = {}
+        for c, fx, fm in sol_cols:
+            a = f'{c}{rr}'; sol[a] = fx.format(r=rr); f[a] = fm; st[a] = {'al': 'center'}; cells[a] = sol[a]
+        steps.append(dict(cells=cells, note=notes(i, r), sel=list(cells)[0] if cells else None))
+    if extra: extra(d, g, f, st, sol, steps)
+    return STSHEET(d, g, sol, steps, widths, f, st)
+
+
+
+
+def ONE(sid, title, intro, a, op, b, results, meaning, tag='רכיב אחד'):
+    """One component at a time (Shay, 2026-11-24): two numbers revealed one after the other, then each result on its own click
+    (clickable: it opens its calculation), then what it means in words. a, b: (label, value); results: [(label, value, title, lines)]."""
+    if MODE == 'pdf':
+        S(sid, title, title, f'<p>{TX(intro)}</p>' + TABLE(['', ''], [[TX(a[0]), a[1]], [TX(b[0]), b[1]]] + [[TX(l.replace('|', ': ')), v] for l, v, _, _ in results], cls='tight')
+          + ''.join(BAND('dg', m) for m in meaning), kick=f'חלק {CUR[0]} · {tag}')
+        return
+    card = lambda n, l, v: ST(n, f'<span class="ol">{TX(l)}</span><b class="n">{v}</b>', cls='ocard')
+    lab = lambda l: '<span class="oln">' + TX(l.split('|')[0]) + '</span>' + (f'<span class="of" dir="ltr">{l.split("|")[1]}</span>' if '|' in l else '')
+    res = ''.join(ST(3 + i, f'<button class="morebtn ores" type="button"><span class="ol">{lab(l)}</span><b class="n">{v}</b><span class="oz">🔍</span></button>'
+                     f'<div class="more-c" hidden><div class="more-h">{TX(t)}</div>' + ''.join(f'<p>{TX(x)}</p>' for x in ls) + '</div>', cls='orw')
+                  for i, (l, v, t, ls) in enumerate(results))
+    k = 3 + len(results)
+    body = (f'<div class="card qstem q1line onei"><div class="q1t"><p>{TX(intro)}</p></div></div>'
+            f'<div class="onerow">{card(1, *a)}{ST(2, op, cls="oop")}{card(2, *b)}</div><div class="oneres">{res}</div>'
+            + ''.join(BAND('dg' if i == 0 else 'note', m, k + i) for i, m in enumerate(meaning)))
+    S(sid, title, title, body, kick=f'חלק {CUR[0]} · {tag}')

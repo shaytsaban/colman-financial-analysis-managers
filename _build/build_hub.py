@@ -26,6 +26,11 @@ D = open(os.path.join(H, '..', 'lectures', 'lecture-1', 'presentation.html'), en
 D2 = open(os.path.join(H, '..', 'lectures', 'lecture-2', 'presentation.html'), encoding='utf8').read()
 D3 = open(os.path.join(H, '..', 'lectures', 'lecture-3', 'presentation.html'), encoding='utf8').read()
 NS3, NX3 = D3.count('<section class="slide'), D3.count('act xlq')
+D4 = open(os.path.join(H, '..', 'lectures', 'lecture-4', 'presentation.html'), encoding='utf8').read()
+NS4, NX4 = D4.count('<section class="slide'), D4.count('act xlq')
+_ids = lambda D: re.findall(r'<section class="slide[^"]*" id="([^"]+)"', D)
+SL3, SL4 = _ids(D3), _ids(D4)
+sn = lambda L, i: L.index(i) + 1          # the slide number of a slide id, as the deck shows it
 NS2, NX2 = D2.count('<section class="slide'), D2.count('act xlq')
 NS, NX, NM = D.count('<section class="slide'), D.count('act xlq'), D.count('class="mc"')
 NB = len(re.findall(r"^E\('", open(os.path.join(H, 'booklet.py'), encoding='utf8').read(), re.M))
@@ -46,11 +51,30 @@ SOLVE2 = ('<div class="todo solve"><h4>📝 מה לפתור אחרי מפגש 2,
           + '</table><p class="slvn"><b>עוד לא:</b> סיכום העמודות, דוח רווח והפסד ומאזן מתוך הטבלה, ותרגיל עומר. נלמד אותם בתחילת מפגש 3, ואז נפתח גם את התרגול שלהם.</p></div>')
 
 
+# what to solve after meetings 3 and 4, in order: the same compact table as meeting 2
+def solve(m, rows, later):
+    return (f'<div class="todo solve"><h4>📝 מה לפתור אחרי מפגש {m}, ובאיזה סדר</h4><table class="slv"><tr><th></th><th>מה</th><th>איפה</th><th>על מה זה מתרגל</th><th>בודקים ב</th></tr>'
+            + ''.join(f'<tr><td class="k">{n(k)}</td><td><b>{a}</b></td><td>{b}</td><td>{c}</td><td>{d}</td></tr>' for k, (a, b, c, d) in enumerate(rows, 1))
+            + f'</table><p class="slvn">{later}</p></div>')
+
+
+SOLVE3 = solve(3, [
+    ('שמונת תרגולי העצמי', f'מצגת מפגש 3, חלק 5 (שקפים {sn(SL3, "t-1")} עד {sn(SL3, "t-8")}), או קובץ התרגול של מפגש 3', 'שני מיונים, מספרת ליאת מהטבלה ועד המאזן, פרמיה, חילוץ רווח ומציאת טעות', '״הצעד הבא״ בשקף, או קובץ הפתרונות של מפגש 3'),
+    ('מעבדת התיקונים של עומר, שוב, בלי להסתכל', f'מצגת מפגש 3, חלק 4 (שקפים {sn(SL3, "s-omer")} עד {sn(SL3, "x-o6")})', 'כל הדרך: 12 עסקאות, סיכום העמודות, דוח רווח והפסד ומאזן', '״הצעד הבא״ בשקף, או קובץ הפתרונות של מפגש 3'),
+    ('חוברת: תרגיל 2-6', 'קובץ התרגילים של מפגש 3 (למטה בכרטיס)', 'משורת הסיכום של טבלת הזהות לשני הדוחות, והעודפים בסוף השנה', 'הפתרונות של מפגש 3 בחוברת')],
+    '<b>עוד לא:</b> ניתוח הדוחות, אופקי, אנכי ויחסים. נלמד אותו במפגש 4, ואז נפתח גם את התרגול שלו.')
+SOLVE4 = solve(4, [
+    ('ארבעת תרגולי העצמי', f'מצגת מפגש 4, חלק 8 (שקפים {sn(SL4, "t-9")} עד {sn(SL4, "t-12")}), או קובץ התרגול של מפגש 4', 'ניתוח אנכי, ארבעה יחסים, שנה מול שנה, ומבנה המאזן', '״הצעד הבא״ בשקף, או קובץ הפתרונות של מפגש 4'),
+    ('שלושת הגיליונות של השיעור, שוב', f'מצגת מפגש 4 (שקפים {sn(SL4, "x-an-hor")}, {sn(SL4, "x-an-ver")} ו-{sn(SL4, "x-an-rat")})', 'ניתוח אופקי, ניתוח אנכי ויחסים על קפה נועה', 'קובץ הפתרונות של מפגש 4'),
+    ('חוברת: תרגילים 3-6 ו-3-4', 'קובץ התרגילים של מפגש 4 (למטה בכרטיס)', 'ניתוח אופקי ואנכי, ושיעורי רווח ותשואות', 'הפתרונות של מפגש 4 בחוברת')],
+    '<b>עוד לא:</b> יחסי נזילות, יעילות ואיתנות לעומק. נלמד אותם בהמשך הנושא.')
+
+
 def bk(m):
     """The part of the exercise booklet that belongs to meeting m: only exercises on what that meeting taught."""
     ids = MEET[m]
     lst = ', '.join(n(i) for i in ids)
-    return (f'<div class="grp bkm"><h5>{"4" if m < 3 else "2"}. חוברת התרגילים: רק מה שנלמד במפגש {m}</h5><p class="bkl">תרגילים {lst} מהחוברת. אלה כל התרגילים שאפשר לפתור עכשיו; כל השאר מחכים למפגשים הבאים.</p><div class="links">'
+    return (f'<div class="grp bkm"><h5>4. חוברת התרגילים: רק מה שנלמד במפגש {m}</h5><p class="bkl">תרגילים {lst} מהחוברת. אלה כל התרגילים שאפשר לפתור עכשיו; כל השאר מחכים למפגשים הבאים.</p><div class="links">'
             f'<a class="lk s" href="materials/booklet-m{m}.pdf" target="_blank" rel="noopener"><span class="e">📘</span><span><b>התרגילים של מפגש {m} (PDF)</b><span class="d">{n(len(ids))} תרגילים, השאלה המלאה של כל אחד.</span></span></a>'
             f'<a class="lk x" href="materials/booklet-m{m}-practice.xlsx" download><span class="e">📊</span><span><b>קובץ התרגול שלהם (Excel)</b><span class="d">גיליון לכל תרגיל, תאים צהובים ריקים לנוסחאות.</span></span></a>'
             f'<a class="lk r" href="materials/booklet-m{m}-solutions.pdf" target="_blank" rel="noopener"><span class="e">✅</span><span><b>הפתרונות שלהם (PDF)</b><span class="d">הנוסחה בכל תא, התוצאה והמסקנה.</span></span></a>'
@@ -207,26 +231,58 @@ page = f'''<!doctype html>
 {SOLVE2}
 </article>
 <article class="lec" id="lesson-3">
-<div class="lec-head"><div class="lec-n">3</div><div><h3>מהזהות לדוחות, ומהדוחות להחלטות <span class="draft">טיוטה</span></h3><div class="sub">מפגש {n(3)}</div></div></div>
+<div class="lec-head"><div class="lec-n">3</div><div><h3>מהזהות לדוחות: שנה שלמה, מהטבלה ועד המאזן</h3><div class="sub">מפגש {n(3)} · {n("19.11.2026")}</div></div></div>
 <div class="lec-body">
 <div><h4>מה לומדים בשיעור</h4><ul class="learn">
 <li>רענון של מפגש 2: מקור מימון, טבלת הזהות, והרווח בתוך ההון</li>
 <li>קפה נועה, 2027: שנה שלמה מיתרות הפתיחה ועד המאזן, עסקה בכל שקף</li>
 <li>מהטבלה לדוחות: מה הולך לאן, ופירוט של כל שורה בדוח</li>
 <li>תרגיל מלא עם פתרון מלא: מעבדת התיקונים של עומר</li>
-<li>מה עושים עם הדוחות: ניתוח אופקי, ניתוח אנכי, מבנה המימון, ויחסים בסיסיים, והחלטה בבנק</li>
-<li>תרגול עצמי: אחד עשר תרגולים עם פתרון מלא</li>
-</ul></div>
+<li>תרגול עצמי: שמונה תרגולים עם פתרון מלא</li>
+</ul>{rec_wait(3, "19.11.2026")}</div>
 <div><h4>חומרי השיעור</h4>
-<div class="grp"><h5>טיוטה</h5><div class="links">
-<a class="lk p" href="lectures/lecture-3/presentation.html"><span class="e">🖥️</span><span><b>מצגת השיעור (טיוטה)</b><span class="d">{n(NS3)} שקפים, {n(NX3)} גיליונות Excel חיים.</span></span></a>
-<a class="lk s" href="lectures/lecture-3/summary.pdf"><span class="e">📄</span><span><b>סיכום השיעור (טיוטה, PDF)</b><span class="d">כל תוכן המצגת במסמך אחד.</span></span></a>
-<a class="lk x" href="materials/practice-3.xlsx" download><span class="e">📊</span><span><b>קובץ התרגול של מפגש 3 (Excel, טיוטה)</b><span class="d">השאלות של המצגת, באותן כתובות תאים.</span></span></a>
-<a class="lk r" href="materials/practice-3-solutions.xlsx" download><span class="e">✅</span><span><b>קובץ הפתרונות של מפגש 3 (Excel, טיוטה)</b><span class="d">אותם גיליונות עם נוסחאות חיות.</span></span></a>
+<div class="grp"><h5>1. בשיעור</h5><div class="links">
+<a class="lk p" href="lectures/lecture-3/presentation.html"><span class="e">🖥️</span><span><b>מצגת השיעור</b><span class="d">{n(NS3)} שקפים, וגיליון Excel חי ליד כל שאלה ({n(NX3)} גיליונות), עם בדיקה, רמזים ופתרון צעד אחר צעד.</span></span></a>
+</div></div>
+<div class="grp"><h5>2. אחרי השיעור, לחזרה</h5><div class="links">
+<a class="lk s" href="lectures/lecture-3/summary.pdf"><span class="e">📄</span><span><b>סיכום השיעור (PDF)</b><span class="d">כל תוכן המצגת במסמך אחד: הטבלאות, הדוחות והפתרון שלהם בגיליון, ומילון מושגים.</span></span></a>
+</div></div>
+<div class="grp"><h5>3. תרגול</h5><div class="links">
+<a class="lk x" href="materials/practice-3.xlsx" download><span class="e">📊</span><span><b>קובץ התרגול של מפגש 3 (Excel)</b><span class="d">כל {n(NX3)} השאלות של המצגת, באותן כתובות תאים. התאים הצהובים ריקים.</span></span></a>
+<a class="lk r" href="materials/practice-3-solutions.xlsx" download><span class="e">✅</span><span><b>קובץ הפתרונות של מפגש 3 (Excel)</b><span class="d">אותם גיליונות עם נוסחאות חיות. פותחים רק אחרי שפותרים.</span></span></a>
 </div></div>
 {bk(3)}
 </div>
 </div>
+{SOLVE3}
+</article>
+<article class="lec" id="lesson-4">
+<div class="lec-head"><div class="lec-n">4</div><div><h3>ניתוח בסיסי של דוחות כספיים</h3><div class="sub">מפגש {n(4)} · {n("26.11.2026")}</div></div></div>
+<div class="lec-body">
+<div><h4>מה לומדים בשיעור</h4><ul class="learn">
+<li>רענון בתרשים: הדרך מעסקה לדוחות, בשש תחנות</li>
+<li>סיפור מקרה: נועה בבנק, ולמה מספר אחד לבד לא מספיק</li>
+<li>ניתוח אופקי: רכיב אחר רכיב, ואז הכול יחד</li>
+<li>ניתוח אנכי ושיעורי רווח: כמה נשאר מכל שקל של מכירות</li>
+<li>מבנה המאזן: מה יש לחברה, ומי מימן</li>
+<li>יחס שוטף, תשואה על הנכסים ותשואה על ההון, וההחלטה בבנק</li>
+<li>תרגול עצמי: ארבעה תרגולים עם פתרון מלא</li>
+</ul>{rec_wait(4, "26.11.2026")}</div>
+<div><h4>חומרי השיעור</h4>
+<div class="grp"><h5>1. בשיעור</h5><div class="links">
+<a class="lk p" href="lectures/lecture-4/presentation.html"><span class="e">🖥️</span><span><b>מצגת השיעור</b><span class="d">{n(NS4)} שקפים, {n(NX4)} גיליונות Excel חיים ושאלות ליד הנתונים, מהקל אל הכבד.</span></span></a>
+</div></div>
+<div class="grp"><h5>2. אחרי השיעור, לחזרה</h5><div class="links">
+<a class="lk s" href="lectures/lecture-4/summary.pdf"><span class="e">📄</span><span><b>סיכום השיעור (PDF)</b><span class="d">כל תוכן המצגת במסמך אחד: כל רכיב, כל טבלה, השאלות והפתרונות, ומילון מושגים.</span></span></a>
+</div></div>
+<div class="grp"><h5>3. תרגול</h5><div class="links">
+<a class="lk x" href="materials/practice-4.xlsx" download><span class="e">📊</span><span><b>קובץ התרגול של מפגש 4 (Excel)</b><span class="d">כל {n(NX4)} הגיליונות של המצגת, באותן כתובות תאים. התאים הצהובים ריקים.</span></span></a>
+<a class="lk r" href="materials/practice-4-solutions.xlsx" download><span class="e">✅</span><span><b>קובץ הפתרונות של מפגש 4 (Excel)</b><span class="d">אותם גיליונות עם נוסחאות חיות. פותחים רק אחרי שפותרים.</span></span></a>
+</div></div>
+{bk(4)}
+</div>
+</div>
+{SOLVE4}
 </article>
 <h2 class="sec" style="margin-top:36px">הנושאים הבאים</h2>
 <ul class="ups">{ups}</ul>

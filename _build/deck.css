@@ -853,3 +853,46 @@ tr.tot .morebtn.drill{font-weight:800}
 .qt.big .xl-g td{font-size:18px;height:32px}
 .rdc .ct{font-size:19px}.rdc .lg{font-size:18px}
 .fcols .flyt td{padding:2px 8px}.flyt tr.sh td{padding:4px 8px 1px}
+/* meeting 4: one component at a time */
+.onei{margin-bottom:12px}
+.onerow{display:flex;justify-content:center;align-items:stretch;gap:22px;margin:6px 0 14px}
+.ocard{background:#fff;border-radius:18px;padding:16px 30px;min-width:260px;text-align:center;box-shadow:0 2px 0 var(--line),0 10px 24px rgba(22,33,58,.08);border-top:8px solid #1b2d55}
+.ocard .ol{display:block;font-size:19px;color:#5d6a86;font-weight:700}.ocard b{display:block;font-size:44px;color:#1b2d55;margin-top:4px}
+.oop{align-self:center;font-size:46px;font-weight:800;color:#ff6a4d}
+.oneres{display:flex;justify-content:center;flex-wrap:wrap;gap:16px;margin-bottom:12px}
+.morebtn.ores{margin:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 26px;border-radius:16px;border:3px solid #0f9d90;background:#e9f7f4;color:#16213a}
+.morebtn.ores .ol{font-size:18px;font-weight:700;color:#087469}.morebtn.ores b{font-size:34px;color:#087469}.morebtn.ores .oz{font-size:14px}
+/* the recap diagram: six stations */
+.pflow{display:flex;align-items:stretch;gap:0;margin:10px 0 14px}
+.pflow .pn{flex:1;display:flex;align-items:center;min-width:0}
+.pflow .par{font-style:normal;font-size:30px;color:#ff6a4d;font-weight:800;padding:0 4px}
+.morebtn.pnode{margin:0;flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 8px;border-radius:16px;border:3px solid #1b2d55;background:#fff;color:#16213a;box-shadow:0 8px 20px rgba(22,33,58,.08);height:100%}
+.morebtn.pnode:hover{background:#f4f1ff}
+.pnode .pi{font-size:34px}.pnode b{font-size:19px;color:#1b2d55}.pnode .pt{font-size:16.5px;font-weight:500;color:#5d6a86;line-height:1.3;text-align:center}
+.pn:nth-child(1) .pnode{border-color:#0f9d90}.pn:nth-child(2) .pnode{border-color:#e8960c}.pn:nth-child(3) .pnode{border-color:#6d4df2}.pn:nth-child(4) .pnode{border-color:#187a43}.pn:nth-child(5) .pnode{border-color:#2f6fd6}.pn:nth-child(6) .pnode{border-color:#c4421f}
+/* the dialogue at the bank */
+.dlg{display:flex;flex-direction:column;gap:12px;max-width:1020px;margin:4px auto 10px}
+.dl{display:flex;align-items:center;gap:14px}.dl.l{flex-direction:row-reverse}
+.dav{width:86px;height:86px;flex:none}.dav svg{width:100%;height:100%}
+.dbub{background:#fff;border-radius:18px;padding:12px 20px;font-size:20.5px;line-height:1.4;box-shadow:0 2px 0 var(--line),0 8px 20px rgba(22,33,58,.08);max-width:780px}
+.dl.r .dbub{border-right:6px solid #e8960c}.dl.l .dbub{border-left:6px solid #1b2d55}
+.dwho{display:block;font-size:16.5px;font-weight:800;color:#5d6a86}
+/* one number, three comparisons */
+.bign{text-align:center;margin:4px 0 12px}.bign b{font-size:56px;color:#1b2d55}.bign span{display:block;font-size:20px;color:#5d6a86;font-weight:700}
+.cmp3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.cmpc{background:#fff;border-radius:16px;padding:14px 18px;box-shadow:0 2px 0 var(--line),0 10px 24px rgba(22,33,58,.07);border-top:7px solid #0f9d90}
+.cmpc:nth-child(2){border-top-color:#e8960c}.cmpc:nth-child(3){border-top-color:#6d4df2}
+.cmpc .ch{font-size:19px;font-weight:800;color:#1b2d55}.cmpc p{font-size:18px;line-height:1.4;margin:6px 0}
+.cmpc .ctool{display:inline-block;margin-top:4px;background:#1b2d55;color:#fff;border-radius:99px;padding:3px 14px;font-size:16.5px;font-weight:800}
+/* meeting 4 review round: bigger cards, the calculation under each result, bigger stations and dialogue */
+.ocard{padding:20px 44px;min-width:330px}.ocard .ol{font-size:20px}.ocard b{font-size:58px}
+.oop{font-size:56px}
+.morebtn.ores{padding:12px 34px}.morebtn.ores .ol{font-size:19px;display:flex;flex-direction:column;align-items:center}.morebtn.ores b{font-size:44px}
+.morebtn.ores .of{display:block;font-size:18px;font-weight:700;color:#16213a;unicode-bidi:isolate}
+.onerow{gap:30px;margin:12px 0 18px}.oneres{gap:22px}
+.pflow{margin:18px 0 20px}.morebtn.pnode{padding:22px 10px;gap:8px}.pnode .pi{font-size:46px}.pnode b{font-size:21px}.pnode .pt{font-size:17.5px}
+.pflow .par{font-size:36px}
+.dlg{gap:16px}.dav{width:104px;height:104px}.dbub{font-size:23px;padding:14px 24px}.dwho{font-size:17px}
+.bign span{white-space:nowrap}.bign b{font-size:64px}
+.cmpc{padding:18px 22px}.cmpc .ch{font-size:21px}.cmpc p{font-size:19.5px}
+.morebtn.ores .oln{display:block;white-space:nowrap}
