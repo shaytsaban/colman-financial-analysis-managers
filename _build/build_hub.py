@@ -3,7 +3,7 @@ import os, re
 H = os.path.dirname(os.path.abspath(__file__))
 n = lambda s: f'<span class="n">{s}</span>'
 # the recordings of each meeting: (YouTube id or '' until it is uploaded, label)
-REC = {1: [('esIJkot7pak', 'חלק א׳: עד ההפסקה'), ('c-G8rGVlHvk', 'חלק ב׳: אחרי ההפסקה')], 2: [('xTjCtHV8bIE', 'השיעור המלא')]}
+REC = {1: [('esIJkot7pak', 'חלק א׳: עד ההפסקה'), ('c-G8rGVlHvk', 'חלק ב׳: אחרי ההפסקה')], 2: [('xTjCtHV8bIE', 'השיעור המלא')], 3: [('YC2izhGAWrY', 'השיעור המלא')]}
 
 
 def rec(k, date='5.11.2026'):
@@ -239,7 +239,7 @@ page = f'''<!doctype html>
 <li>מהטבלה לדוחות: מה הולך לאן, ופירוט של כל שורה בדוח</li>
 <li>תרגיל מלא עם פתרון מלא: מעבדת התיקונים של עומר</li>
 <li>תרגול עצמי: שמונה תרגולים עם פתרון מלא</li>
-</ul>{rec_wait(3, "19.11.2026")}</div>
+</ul>{rec(3, "19.11.2026")}</div>
 <div><h4>חומרי השיעור</h4>
 <div class="grp"><h5>1. בשיעור</h5><div class="links">
 <a class="lk p" href="lectures/lecture-3/presentation.html"><span class="e">🖥️</span><span><b>מצגת השיעור</b><span class="d">{n(NS3)} שקפים, וגיליון Excel חי ליד כל שאלה ({n(NX3)} גיליונות), עם בדיקה, רמזים ופתרון צעד אחר צעד.</span></span></a>
