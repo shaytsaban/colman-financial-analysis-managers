@@ -44,3 +44,6 @@
 .afit .tcfoot .toon{margin-top:0;flex:none}
 .tcfoot .toon svg{width:96px;height:96px}
 .tcfoot .toon .bub{max-width:230px}
+/* 2026-11-26: a clickable result is a pill around its number. The old .calc grid rule (a two-column layout) squeezed the number out of its pill. */
+.morebtn.calc{display:inline-block;white-space:nowrap}
+.morebtn.calc .n{display:inline}
