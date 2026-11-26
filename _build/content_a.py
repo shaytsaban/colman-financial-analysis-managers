@@ -6,7 +6,7 @@ COURSE = 'מימון וניתוח פיננסי למנהלים'
 INST = 'המסלול האקדמי של המכללה למנהל · בית הספר לתקשורת וניהול'
 SEM = 'סמסטר א׳ תשפ״ז'
 LESSON = globals().get('LESSON', 1)
-TOTAL_PARTS = {1: 4, 2: 5, 3: 5, 4: 8}[LESSON]
+TOTAL_PARTS = {1: 4, 2: 5, 3: 5, 4: 6, 5: 9}[LESSON]
 # per lesson: deck title, subtitle, chips, cover line and the next meeting. The meeting dates are not in the syllabus.
 LMETA = {
  1: dict(date='5.11.2026', h1=('חשבונאות פיננסית', 'ומידע לקבלת החלטות'), title='מבוא לחשבונאות פיננסית',
@@ -23,11 +23,17 @@ LMETA = {
          sub='רענון של מפגש 2, שנה שלמה של קפה נועה מיתרות הפתיחה ועד דוח רווח והפסד והמאזן, ותרגיל מלא נוסף עם פתרון מלא.', chip='כל שאלה נפתרת ב-Excel',
          cover='רענון של מפגש 2; קפה נועה 2027: יתרות פתיחה ושתים עשרה עסקאות, עסקה בכל שקף; מהטבלה לדוח רווח והפסד ולמאזן: מה הולך לאן; מעבדת התיקונים של עומר, מהעסקאות ועד הדוחות; תרגול עצמי.',
          next_h='ניתוח בסיסי של דוחות כספיים', next_t='מה עושים עם הדוחות שבנינו: משווים לשנה הקודמת, למכירות ולשורות אחרות, ומקבלים החלטה. רכיב אחר רכיב, ורק אחר כך הכול יחד.'),
- # meeting 4 (26.11.2026): the basics of financial statement analysis, built 24.11.2026 (see PLAN_L4.md)
+ # meeting 4 as taught on 26.11.2026: it reached slide 37, the opener of the ratios. The deck ends with the balance sheet structure,
+ # then a summary and self practice on the three tools taught. Ratios and the decision at the bank moved to meeting 5.
  4: dict(date='26.11.2026', autofit=True, h1=('ניתוח בסיסי', 'של דוחות כספיים'), title='ניתוח בסיסי של דוחות כספיים',
-         sub='מה עושים עם הדוחות שבנינו: נועה מבקשת הלוואה, והבנקאית משווה. רכיב אחר רכיב, ואז הכול יחד: ניתוח אופקי, ניתוח אנכי, מבנה המאזן ויחסים בסיסיים.', chip='כל שאלה נפתרת ב-Excel',
-         cover='רענון: הדרך מעסקה לדוחות; סיפור מקרה: נועה בבנק; ניתוח אופקי; ניתוח אנכי ושיעורי רווח; מבנה המאזן ומבנה המימון; יחס שוטף, תשואה על הנכסים ותשואה על ההון; ההחלטה בבנק; תרגול עצמי.',
-         next_h='ניתוח דוחות באמצעות יחסים פיננסיים', next_t='נזילות, איתנות, יעילות ורווחיות, לעומק: עוד יחסים, ואיך מחשבים אותם נכון.')}[LESSON]
+         sub='מה עושים עם הדוחות שבנינו: נועה מבקשת הלוואה, והבנקאית משווה. רכיב אחר רכיב, ואז הכול יחד: ניתוח אופקי, ניתוח אנכי ומבנה המאזן.', chip='כל שאלה נפתרת ב-Excel',
+         cover='רענון: הדרך מעסקה לדוחות; סיפור מקרה: נועה בבנק; ניתוח אופקי; ניתוח אנכי ושיעורי רווח; מבנה המאזן ומבנה המימון; מה למדנו, כרטיס כיס ותרגול עצמי.',
+         next_h='יחסים פיננסיים: נזילות, איתנות, יעילות ורווחיות', next_t='ממשיכים מהמקום שבו עצרנו: כל משפחות היחסים, יחס אחר יחס על קפה נועה, ואז ההחלטה בבנק.'),
+ # meeting 5 (3.12.2026, DRAFT): financial ratios of every kind, built 26.11.2026 (see PLAN_L5.md)
+ 5: dict(date='3.12.2026', draft=True, autofit=True, h1=('יחסים פיננסיים', 'מכל הסוגים'), title='ניתוח דוחות באמצעות יחסים פיננסיים',
+         sub='נועה עדיין בבנק. היום הבנקאית מחשבת יחסים: נזילות, איתנות, יעילות, רווחיות ויחסי שוק. יחס אחר יחס, ואז הכול יחד, וההחלטה.', chip='כל שאלה נפתרת ב-Excel',
+         cover='רענון של שלושת הכלים; מפת היחסים: חמש משפחות, חמש שאלות; יחסי נזילות; יחסי איתנות; יחסי יעילות ומחזור המזומנים; יחסי רווחיות, יתרה ממוצעת ופירוק דופונט; יחסי שוק; ההחלטה בבנק ואיתותי אזהרה; תרגול עצמי.',
+         next_h='יסודות המימון: ריבית וערך הזמן של הכסף', next_t='שקל היום שווה יותר משקל בעוד שנה. ריבית, ערך עתידי וערך נוכחי, ב-Excel.')}[LESSON]
 XSPECS = []        # every live sheet, in deck order: the practice workbooks are built from these
 SL = []            # every slide, in order
 CUR = [None]       # current part number
@@ -540,5 +546,5 @@ exec(R('content_v.py'))
 exec(R('content_h.py'))
 for _f in {1: ['content_l1a.py', 'content_l1d.py', 'content_l1e.py'], 2: ['content_l2a.py', 'content_noa.py', 'content_l2b.py', 'content_l2d.py'],
            3: ['content_l3o.py', 'content_noa.py', 'content_l3r.py', 'content_l3n.py', 'content_l3m.py', 'content_l3t.py'],
-           4: ['content_l4o.py', 'content_l4x.py', 'content_l4t.py']}[LESSON]:
+           4: ['content_l4o.py', 'content_l4x.py', 'content_l4t.py'], 5: ['content_l5o.py', 'content_l5x.py', 'content_l5y.py', 'content_l5t.py']}[LESSON]:
     exec(R(_f))

@@ -1,0 +1,28 @@
+/* meeting 5 (2026-11-26): styles of the new elements only, loaded from meeting 5 on, so taught decks rebuild byte-identical */
+.rk3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.rkc{border-top:7px solid #0f9d90;padding:12px 16px}.rkc:nth-child(2){border-top-color:#e8960c}.rkc:nth-child(3){border-top-color:#6d4df2}
+.rk-h{display:flex;flex-direction:column;gap:2px;margin-bottom:6px}.rk-h b{font-size:22px;color:#1b2d55}.rk-h span{font-size:16.5px;color:#5d6a86}.rk-i{font-size:28px}
+.rkc .tbl2 td{font-size:18px;padding:5px 8px}.rk-r{font-size:17.5px;color:#087469;font-weight:700;margin:6px 0 0}
+.fam5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.fmc{border-top:7px solid #0f9d90;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.fmc:nth-child(2){border-top-color:#27447f}.fmc:nth-child(3){border-top-color:#e8960c}.fmc:nth-child(4){border-top-color:#187a43}.fmc:nth-child(5){border-top-color:#6d4df2}
+.fm-i{font-size:30px}.fm-h{font-size:22px;color:#1b2d55}.fmc p{font-size:17px;line-height:1.4;margin:0}
+.fm-w{font-size:16.5px;color:#5d6a86;font-weight:700}.fm-x{font-size:16.5px;background:#eef7f6;color:#087469;border-radius:8px;padding:3px 8px;font-weight:700}
+.rlc{position:relative}.rl-n{position:absolute;left:12px;top:8px;font-size:34px;color:#e1e7f8}
+.ccl{position:relative;background:#fff;border-radius:16px;padding:18px 18px 54px;box-shadow:0 2px 0 var(--line),0 10px 24px rgba(22,33,58,.07)}
+.cc-r{position:relative;height:56px;margin-bottom:10px}
+.cc-bar{position:absolute;top:0;height:52px;border-radius:10px;display:flex;flex-direction:column;justify-content:center;align-items:center;color:#fff;overflow:hidden;white-space:nowrap}
+.cc-bar b{font-size:17px}.cc-bar .n{font-size:19px;font-weight:800}
+.cc-bar.inv{background:#e8960c}.cc-bar.cus{background:#27447f}.cc-bar.sup{background:#0f9d90}.cc-bar.gap{background:#c4421f}
+.cc-ax{position:absolute;left:18px;right:18px;bottom:30px;height:2px;background:#c9d0de}
+.cc-ax span{position:absolute;top:4px;transform:translateX(50%)}.cc-ax i{font-style:normal;font-size:16px;color:#5d6a86}
+.cc-cap{position:absolute;bottom:4px;right:18px;font-size:16.5px;color:#5d6a86}
+.dup .dpw{font-size:16.5px;color:#5d6a86;font-weight:400}.dup tr.dpx td{text-align:center;font-size:22px;font-weight:800;color:#c4421f;padding:0;border:0;background:none}
+.learn.l5{grid-template-columns:repeat(5,1fr);gap:12px}.learn.l5 .lcard{padding:12px 14px}.learn.l5 .lcard b{font-size:21px}.learn.l5 .lcard p{font-size:17px}
+.lcard:nth-child(5){border-right-color:#187a43}
+.warn4{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.wrc{border-right:7px solid #c4421f;background:#fff8f5}.wrc .ct{font-size:21px}.wrc p{font-size:18.5px;margin:4px 0 0}
+.pk2 td,.pk2 th{font-size:16.5px;padding:5px 8px}
+.fl3{display:flex;flex-direction:column;gap:6px}
+.fl-r{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:6px;align-items:center;font-size:17.5px;background:#f6f8fc;border-radius:8px;padding:4px 8px}
+.fl-r b{color:#1b2d55;font-size:18px}.fl-r i{font-style:normal;font-weight:800;color:#c4421f}

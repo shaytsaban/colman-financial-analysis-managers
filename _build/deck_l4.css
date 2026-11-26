@@ -47,3 +47,5 @@
 /* 2026-11-26: a clickable result is a pill around its number. The old .calc grid rule (a two-column layout) squeezed the number out of its pill. */
 .morebtn.calc{display:inline-block;white-space:nowrap}
 .morebtn.calc .n{display:inline}
+/* 2026-11-26: meeting 4 cut after the balance sheet: the summary has three cards in one row */
+.learn.l3{grid-template-columns:repeat(3,1fr)}

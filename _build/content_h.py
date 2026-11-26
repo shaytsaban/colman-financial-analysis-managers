@@ -394,19 +394,19 @@ def FUNNEL(sid, title, levels, note=None, tag='המשפך'):
     S(sid, title, title, body, kick=f'חלק {CUR[0]} · {tag}')
 
 
-def TOOLCARD(sid, title, question, formula, noa, insight, trap, toon=None):
+def TOOLCARD(sid, title, question, formula, noa, insight, trap, toon=None, who='אצל קפה נועה', yrs=('2026', '2027')):
     """What we learned about one tool, on one card: the question, the formula drawn, Noa's numbers, what it showed, the trap."""
     if MODE == 'pdf':
-        S(sid, title, title, '<div class="card">' + f'<p><b>השאלה:</b> {TX(question)}</p><p><b>הנוסחה:</b> {formula}</p><p><b>אצל נועה:</b> ' + '; '.join(TX(r[0] + ': ' + (f'{r[1]} ב-2026, {r[2]} ב-2027' if len(r) == 3 else r[1])) for r in noa)
+        S(sid, title, title, '<div class="card">' + f'<p><b>השאלה:</b> {TX(question)}</p><p><b>הנוסחה:</b> {formula}</p><p><b>{"אצל נועה" if who == "אצל קפה נועה" else TX(who)}:</b> ' + '; '.join(TX(r[0] + ': ' + (f'{r[1]} ב-{yrs[0]}, {r[2]} ב-{yrs[1]}' if len(r) == 3 else r[1])) for r in noa)
           + f'</p><p><b>מה ראינו:</b> {TX(insight)}</p><p><b>המלכודת:</b> {TX(trap)}</p></div>', kick=f'חלק {CUR[0]} · כרטיס כלי')
         return
     two = any(len(r) == 3 for r in noa)      # rows of (label, 2026, 2027) get a header; rows of (label, value) do not
-    noa_t = ('<table class="tbl2 stmt tcn">' + ('<tr><th></th><th>2026</th><th>2027</th></tr>' if two else '')
+    noa_t = ('<table class="tbl2 stmt tcn">' + (f'<tr><th></th><th>{yrs[0]}</th><th>{yrs[1]}</th></tr>' if two else '')
              + ''.join('<tr><td>' + TX(r[0]) + '</td>' + ''.join(f'<td class="c"><b class="n">{v}</b></td>' for v in r[1:]) + '</tr>' for r in noa) + '</table>')
     body = ('<div class="tcard">'
             + ST(1, f'<div class="tc-h">❓ {TX("השאלה")}</div><p>{TX(question)}</p>', cls='tc q')
             + ST(2, f'<div class="tc-h">🧮 {TX("הנוסחה")}</div>{formula}', cls='tc f')
-            + ST(3, f'<div class="tc-h">☕ {TX("אצל קפה נועה")}</div>{noa_t}', cls='tc n')
+            + ST(3, f'<div class="tc-h">{"☕" if who == "אצל קפה נועה" else "🏢"} {TX(who)}</div>{noa_t}', cls='tc n')
             + ST(4, f'<div class="tc-h">💡 {TX("מה ראינו")}</div><p>{TX(insight)}</p>', cls='tc i')
             + '</div><div class="tcfoot">' + BAND('note', f'<b>המלכודת:</b> {trap}', 5) + (TOON(toon[0], toon[1], 6) if toon else '') + '</div>')
     S(sid, title, title, body, kick=f'חלק {CUR[0]} · כרטיס כלי')

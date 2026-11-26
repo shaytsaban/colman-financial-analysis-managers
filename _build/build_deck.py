@@ -7,7 +7,7 @@ MODE = 'deck'
 LESSON = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 exec(R('content_a.py'))
 # styles of the 2026-11-24 review round, from meeting 4 on only: taught decks rebuild byte-identical
-L4CSS = ('\n' + R('deck_l4.css')) if LESSON >= 4 else ''
+L4CSS = (('\n' + R('deck_l4.css')) if LESSON >= 4 else '') + (('\n' + R('deck_l5.css')) if LESSON >= 5 else '')
 
 HEAD = f'{COURSE} · מפגש {LESSON}' + (f' · {LMETA["date"]}' if LMETA['date'] else '')
 
